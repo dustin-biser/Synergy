@@ -1,4 +1,12 @@
+
+#define GLFW_INCLUDE_GLCOREARB
 #include <GLFW/glfw3.h>
+
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#elif defined __linux
+    #include <GL/gl.h>
+#endif
 
 int main(void)
 {
@@ -23,6 +31,8 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
+        glClearColor(0.1,0.1,0.5,0);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
