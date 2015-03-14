@@ -1,6 +1,8 @@
+# Ignore Build Files and Directories
+build
 *.o
 
-# OSX Specific
+# Ignore OSX Specific Files
 .DS_Store
 .idea
 *.xcodeproj/project.xcworkspace/xcuserdata/*

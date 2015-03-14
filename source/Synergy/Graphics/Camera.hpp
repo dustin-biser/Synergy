@@ -75,5 +75,3 @@ namespace Synergy {
 
     };
 }
-
-#endif /* Synergy_CAMERA_HPP_ */

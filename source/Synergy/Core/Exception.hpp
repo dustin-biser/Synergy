@@ -1,5 +1,7 @@
 /**
 * Exception
+*
+* @brief For throwing exceptions within Synergy with useful error messages.
 */
 
 #pragma once

@@ -24,4 +24,3 @@ public:
 
 }
 
-#endif // RIGID3D_OBJ_FILE_LOADER_HPP_
