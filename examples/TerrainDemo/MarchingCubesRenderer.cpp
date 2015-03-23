@@ -54,7 +54,7 @@ void MarchingCubesRenderer::setupShaders() {
 
 		// Link outWsPosition to stream index 0.
 		// Link outWsNormal to stream index 1.
-		const GLchar *feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
+		const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
 		glTransformFeedbackVaryings(shaderProgram_genIsoSurface.getProgramObject(), 2,
 				feedbackVaryings, GL_SEPARATE_ATTRIBS);
 
@@ -127,7 +127,7 @@ void MarchingCubesRenderer::uploadUniformArrays() {
 			0, 0, 0,
 			1, 0, 0,
 			1, 1, 0,
-			0, 0, 0,
+			0, 1, 0,
 			0, 0, 1,
 			1, 0, 1,
 			1, 1, 1,
@@ -150,11 +150,11 @@ void MarchingCubesRenderer::uploadUniformArrays() {
 			1, 0, 0,
 			0, 1, 0,
 			-1, 0, 0,
-			0, 1, 0, 
+			0, -1, 0,
 			1, 0, 0,
 			0, 1, 0,
 			-1, 0, 0,
-			0, 1, 0,
+			0, -1, 0,
 			0, 0, 1,
 			0, 0, 1,
 			0, 0, 1,
@@ -619,8 +619,8 @@ void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
 			3,7,    // Right Front Vertical
 			0,4,    // Left Back Vertical
 			1,5,    // Right Back Vertical
-
 	};
+
 	// Upload Index Data:
 	glGenBuffers(1, &voxelEdges_indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, voxelEdges_indexBuffer);
@@ -854,17 +854,16 @@ void MarchingCubesRenderer::updateShaderUniforms(const Synergy::Camera &camera){
 	shaderProgram_renderIsoSurface.setUniform("MVP_Matrix", vpMatrix);
 	shaderProgram_renderIsoSurface.setUniform("NormalMatrix", glm::transpose(glm::inverse(viewMatrix)));
 
-	mat4 modelMatrix = glm::scale(vec3(2.0f/(gridWidth-1)));
-	shaderProgram_voxelEdges.setUniform("MVP_Matrix", vpMatrix * modelMatrix);
+	shaderProgram_voxelEdges.setUniform("MVP_Matrix", vpMatrix);
 }
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::render(
         const Synergy::Camera & camera,
         GLuint volumeData_texture3d,
-        float32 isoSurfaceThreshold
+        float32 isoSurfaceValue
 ){
-	generateIsoSurfaceTriangles(volumeData_texture3d, isoSurfaceThreshold);
+	generateIsoSurfaceTriangles(volumeData_texture3d, isoSurfaceValue);
 	renderIsoSurface(camera);
 	renderVoxelEdges(camera);
 }
@@ -872,9 +871,9 @@ void MarchingCubesRenderer::render(
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 	GLuint volumeData_texture3d,
-	float isoSurfaceThreshold
+	float isoSurfaceValue
 ){
-	shaderProgram_genIsoSurface.setUniform("isoSurfaceThreshold", isoSurfaceThreshold);
+	shaderProgram_genIsoSurface.setUniform("isoSurfaceValue", isoSurfaceValue);
 
 	// Prevent rasterization.
 	glEnable(GL_RASTERIZER_DISCARD);

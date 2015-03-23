@@ -63,7 +63,7 @@ void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 	               dot(cornerBmask4567[edgeNum], gs_in[0].f4567);
 
 	// Distance along edge for the isosurface crossing.
-	float t = (gs_in[0].isoValue - aValue) / (bValue - aValue); // [0..1]
+	float t = (gs_in[0].isoValue - aValue) / (bValue - aValue); // t is in [0,1]
 
 	vec3 pos_within_cell = edge_start[edgeNum] + t * edge_dir[edgeNum];
 

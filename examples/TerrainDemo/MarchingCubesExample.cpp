@@ -87,7 +87,7 @@ void MarchingCubesExample::createTextureStorage() {
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-        // Default border color = (0,0,0,0).
+        // Default border color is (0,0,0,0).
 
         glBindTexture(GL_TEXTURE_3D, 0);
         CHECK_GL_ERRORS;
@@ -103,22 +103,24 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
     for(int k(0); k < kGridDepth; ++k) {
         for(int j(0); j < kGridHeight; ++j) {
             for(int i(0); i < kGridWidth; ++i) {
-                data[(k * kGridHeight * kGridWidth) + (j * kGridWidth) + i] = 0;
+	            // Set all values below isosurface value
+                data[(k * kGridHeight * kGridWidth) + (j * kGridWidth) + i] =
+		                kIsoSurfaceValue - 1.0f;
             }
         }
     }
 
     // Initialize first voxel:
-    float value = kIsoSurfaceThreshold;
-    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value - 1;  // Vertex 0
-    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
+    float value = kIsoSurfaceValue;
+    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
+//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
     data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 2
-    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 3
-
-    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 4
-    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 5
-    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 6
-    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 7
+//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 3
+//
+//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 4
+//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 5
+//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 6
+//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 7
 
     glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, kGridWidth,
             kGridHeight, kGridDepth, GL_RED, GL_FLOAT, data);
@@ -141,14 +143,14 @@ void MarchingCubesExample::fillCubeDensityTexture() {
     for(int k(0); k < kGridDepth; ++k) {
         for(int j(0); j < kGridHeight; ++j) {
             for(int i(0); i < kGridWidth; ++i) {
-                float value = kIsoSurfaceThreshold + 1.0f;
+                float value = kIsoSurfaceValue + 1.0f;
 
                 if (i == 0 || i == kGridWidth - 1)
-                    value = kIsoSurfaceThreshold - 1.0f;
+                    value = kIsoSurfaceValue - 1.0f;
                 if (j == 0 || j == kGridHeight - 1)
-                    value = kIsoSurfaceThreshold - 1.0f;
+                    value = kIsoSurfaceValue - 1.0f;
                 if (k == 0 || k == kGridDepth - 1)
-                    value = kIsoSurfaceThreshold - 1.0f;
+                    value = kIsoSurfaceValue - 1.0f;
 
                 data[(k * kGridHeight * kGridWidth) + (j * kGridWidth) + i] = value;
             }
@@ -182,7 +184,7 @@ void MarchingCubesExample::logic() {
 
 //---------------------------------------------------------------------------------------
 void MarchingCubesExample::draw() {
-    marchingCubesRenderer->render(camera, cubeDensity_texture3d, kIsoSurfaceThreshold);
+    marchingCubesRenderer->render(camera, volumeDensity_texture3d, kIsoSurfaceValue);
 }
 
 //---------------------------------------------------------------------------------------

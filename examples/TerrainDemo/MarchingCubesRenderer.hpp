@@ -43,7 +43,7 @@ public:
 
     void render(const Synergy::Camera & camera,
                 GLuint volumeData_texture3d,
-                Synergy::float32 isoSurfaceThreshold);
+                Synergy::float32 isoSurfaceValue);
 
 private:
     Synergy::float32 gridWidth;
@@ -96,7 +96,7 @@ private:
 
     void generateIsoSurfaceTriangles(
             GLuint volumeData_texture3d,
-            float isoSurfaceThreshold
+            float isoSurfaceValue
     );
 
     void renderIsoSurface(const Synergy::Camera &camera);

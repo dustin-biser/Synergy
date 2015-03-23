@@ -25,5 +25,13 @@ void main() {
 	}
 
 	out_color = vec4(fragColor * n_dot_z, 1.0);
+
+
+//	vec3 fragColor = color;
+//	if (!gl_FrontFacing) {
+//		// Flip the color on back facing polygons:
+//		fragColor = vec3(1.0) - color;
+//	}
+//	out_color = vec4(fragColor, 1.0);
 }
 

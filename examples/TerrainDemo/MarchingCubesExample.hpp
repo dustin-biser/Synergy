@@ -17,11 +17,12 @@ class MarchingCubesRenderer;
 const int kScreenWidth = 1024;
 const int kScreenHeight = 768;
 
-const int kGridWidth = 4;
-const int kGridHeight = 4;
-const int kGridDepth = 4;
+// Density grid dimensions
+const int kGridWidth = 2;
+const int kGridHeight = 2;
+const int kGridDepth = 2;
 
-const float kIsoSurfaceThreshold = 1.0f;
+const float kIsoSurfaceValue = 0.0f;
 
 class MarchingCubesExample : public GlfwOpenGlWindow {
 

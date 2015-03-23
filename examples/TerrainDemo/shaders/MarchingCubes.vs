@@ -14,7 +14,7 @@ uniform sampler3D volumeData;
 uniform float gridWidth;
 uniform float gridHeight;
 uniform float gridDepth;
-uniform float isoSurfaceThreshold;
+uniform float isoSurfaceValue;
 
 out vsOutputGsInput {
 	vec3 wsPosition; // World-space position of voxel's minimum corner.
@@ -49,12 +49,12 @@ void main() {
 						 texture(volumeData, uvw + step.wyz).r );
 
 
-	vs_out.isoValue = isoSurfaceThreshold;
-	vec4 threshold = vec4(isoSurfaceThreshold);
+	vs_out.isoValue = isoSurfaceValue;
+	vec4 threshold = vec4(isoSurfaceValue);
 
 	// Each vector element corresponds a voxel corner.  An element is set to 1 if it's
-	// corner is below the isoSurfaceThreshold.  An element is set to 0 it's corner is
-	// above the isoSurfaceThreshold.
+	// corner is below the isoSurfaceValue.  An element is set to 0 it's corner is
+	// above the isoSurfaceValue.
 	uvec4 n0123 = uvec4(1-step(threshold, vs_out.f0123));
 	uvec4 n4567 = uvec4(1-step(threshold, vs_out.f4567));
 
