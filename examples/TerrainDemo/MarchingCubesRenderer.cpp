@@ -831,6 +831,13 @@ void MarchingCubesRenderer::setupTransformFeedback() {
 		CHECK_GL_ERRORS;
 	}
 }
+//----------------------------------------------------------------------------------------
+template<typename T>
+static void zeroOutArray(T * data, uint32 numElements) {
+	for(uint32 i = 0; i < numElements; ++i) {
+		data[i] = T(0);
+	}
+}
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::inspectTransformFeedbackBuffer() {
@@ -842,6 +849,9 @@ void MarchingCubesRenderer::inspectTransformFeedbackBuffer() {
     GLsizei numElements =  transformFeedbackBufferSize / sizeof(GLfloat);
     GLfloat * stream0Data = new GLfloat[numElements];
 	GLfloat * stream1Data = new GLfloat[numElements];
+
+	zeroOutArray<GLfloat>(stream0Data, numElements);
+	zeroOutArray<GLfloat>(stream1Data, numElements);
 
 	glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsPositions);
 	glGetBufferSubData(GL_ARRAY_BUFFER, 0, transformFeedbackBufferSize, stream0Data);

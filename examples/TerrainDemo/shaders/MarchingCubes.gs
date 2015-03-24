@@ -3,7 +3,7 @@
 
 layout(points) in;
 
-layout(points, max_vertices = 15) out;
+layout(points, max_vertices = 30) out; // 15 vertices and 15 normals
 
 in vsOutputGsInput {
 	vec3 wsPosition; // World-space position of voxel's minimum corner.
@@ -91,7 +91,6 @@ void computeNormal(vec3 vertexA, vec3 vertexB, vec3 vertexC) {
 }
 
 void main() {
-
 	uint mc_case = gs_in[0].mc_case;
 	uint numTriangles = case_to_numTriangles[mc_case];
 
