@@ -112,15 +112,15 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
         }
     }
 
-//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
-    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
-//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 2
+    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
+//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
+    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 2
 //    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 3
 
-    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 4
-//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 5
-    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 6
-//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 7
+//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 4
+    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 5
+//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 6
+    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 7
 
     glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, kGridWidth,
             kGridHeight, kGridDepth, GL_RED, GL_FLOAT, data);

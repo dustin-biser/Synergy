@@ -23,9 +23,8 @@ MarchingCubesRenderer::MarchingCubesRenderer(
 	generateTriTableTexture();
     setShaderUniforms();
 
-    setupVoxelUvCoordVboData();
-    setupVoxelZLayerVboData();
-	setupVaoForVoxelData();
+	setupVoxelVboPositionData();
+	setupVoxelDataVao();
 
     setupSamplerObject();
 
@@ -593,15 +592,6 @@ void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
 
 	//  Voxel vertex offsets in world-space
 	float32 voxelVertices[] = {
-//			-0.5f, -0.5f, -0.5f,    // 0 Left Bottom Back
-//			 0.5f, -0.5f, -0.5f,    // 1 Right Bottom Back
-//			-0.5f, -0.5f,  0.5f,    // 2 Left Bottom Front
-//			 0.5f, -0.5f,  0.5f,    // 3 Right Bottom Front
-//			-0.5f,  0.5f, -0.5f,    // 4 Left Top Back
-//		     0.5f,  0.5f, -0.5f,    // 5 Right Top Back
-//			-0.5f,  0.5f,  0.5f,    // 6 Left Top Front
-//			 0.5f,  0.5f,  0.5f,    // 7 Right Top Front
-
 			0,0,0,  // 0 left bottom front
 			1,0,0,  // 1 right bottom front
 			1,0,-1, // 2 right bottom back
@@ -623,12 +613,6 @@ void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
 	// Voxel corner indices for constructing GL_LINES.
 	// Every two indices is a new line.
 	GLushort indices [] = {
-//			2,3,3,1,1,0,0,2,   // Bottom Face
-//			6,7,7,5,5,4,4,6,   // Top Face
-//			2,6,    // Left Front Vertical
-//			3,7,    // Right Front Vertical
-//			0,4,    // Left Back Vertical
-//			1,5,    // Right Back Vertical
 			0,1, 1,2, 2,3, 3,0,
 			4,5, 5,6, 6,7, 7,4,
 			0,4, 1,5, 2,6, 3,7
@@ -644,31 +628,31 @@ void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupVoxelUvCoordVboData() {
+void MarchingCubesRenderer::setupVoxelVboPositionData() {
     glGenBuffers(1, &vbo_voxelUvCoords);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelUvCoords);
 
-    // Every 2 floats will represent the texture-space coordinate of lower-left corner
-    // vertex of voxel cell.
-    vector<vec2> texelCoords;
+    // Every 2 floats will represent the position of minimum vertex of voxel within
+	// parent Block.  Only storing vec2's since layer can be computed automatically via
+	// gl_InstanceID in the VS.
+    vector<vec2> gridPositions;
 
-    vec2 uv(0.0f);
+	// position.x in [0, gridWidth - 1]
+	// position.y in [0, gridHeight - 1]
+    vec2 position(0.0f);
 
-    // i spans [0..gridWidth-2]
-    // j spans [0..gridHeight-2]
-    for (int32 j = 0; j <= gridHeight-2; ++j) {
-		for (int32 i = 0; i <= gridWidth-2; ++i) {
+    for (int32 j = 0; j < gridHeight; ++j) {
+		for (int32 i = 0; i < gridWidth; ++i) {
 
-            // texel center coordinates
-            uv.x = (i + 0.5f) / gridWidth;
-            uv.y = (j + 0.5f) / gridHeight;
+            position.x = i;
+            position.y = j;
 
-            texelCoords.push_back(uv);
-            ++numVoxelsPerLayer;
+            gridPositions.push_back(position);
         }
     }
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vec2)*texelCoords.size(), texelCoords.data(),
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec2)* gridPositions.size(), gridPositions.data(),
             GL_STATIC_DRAW);
 
 
@@ -677,37 +661,11 @@ void MarchingCubesRenderer::setupVoxelUvCoordVboData() {
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupVoxelZLayerVboData() {
-    glGenBuffers(1, &vbo_voxelZLayer);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelZLayer);
-
-    vector<float32> layerCoords;
-
-    float32 zLayer;
-
-    // i spans [0..gridDepth-2]
-    for (int32 i = 0; i <= gridDepth-2; ++i) {
-
-        // texel center z position
-        zLayer = (i + 0.5) / gridDepth;
-
-        layerCoords.push_back(zLayer);
-    }
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float32) * layerCoords.size(),
-            layerCoords.data(), GL_STATIC_DRAW);
-
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    CHECK_GL_ERRORS;
-}
-
-//----------------------------------------------------------------------------------------
 // Set Vao Data Bindings
-void MarchingCubesRenderer::setupVaoForVoxelData() {
+void MarchingCubesRenderer::setupVoxelDataVao() {
     glGenVertexArrays(1, &vao_voxelData);
     glBindVertexArray(vao_voxelData);
-    glEnableVertexAttribArray(uvCoord_attrib_index);
-    glEnableVertexAttribArray(zLayerCoord_attrib_index);
+    glEnableVertexAttribArray(position_attrib_index);
 
     //-- voxel uv coordinates:
     {
@@ -716,25 +674,8 @@ void MarchingCubesRenderer::setupVaoForVoxelData() {
         int32 elementsPerVertex = 2;
         int32 stride = 0;
         int32 offsetToFirstElement = 0;
-        glVertexAttribPointer(uvCoord_attrib_index, elementsPerVertex, GL_FLOAT,
+        glVertexAttribPointer(position_attrib_index, elementsPerVertex, GL_FLOAT,
                 GL_FALSE, stride, reinterpret_cast<void *>(offsetToFirstElement));
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        CHECK_GL_ERRORS;
-    }
-
-    //-- voxel z layer texture coordinates (instanced):
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelZLayer);
-
-        int32 elementsPerVertex = 1;
-        int32 stride = 0;
-        int32 offsetToFirstElement = 0;
-        glVertexAttribPointer(zLayerCoord_attrib_index, elementsPerVertex, GL_FLOAT,
-                GL_FALSE, stride, reinterpret_cast<void *>(offsetToFirstElement));
-
-        // Advance once per 2D layer of GL_POINT primitives
-        glVertexAttribDivisor(zLayerCoord_attrib_index, 1);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         CHECK_GL_ERRORS;
@@ -910,9 +851,15 @@ void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedbackObj);
 
+	numVoxelsPerLayer = (gridWidth-1) * (gridHeight-1);
+
 	shaderProgram_genIsoSurface.enable();
 		glBeginTransformFeedback(GL_POINTS);
+
+		// Each instance is a 2D grid of points, where each point is located
+		// at the center of each grid box.
 		glDrawArraysInstanced(GL_POINTS, 0, numVoxelsPerLayer, gridDepth - 1);
+
 		glEndTransformFeedback();
 	shaderProgram_genIsoSurface.disable();
 

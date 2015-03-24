@@ -1,14 +1,10 @@
 // MarchingCubes.vs
 #version 410
 
-// texel-center coordinates for lower-left corner of voxel.
-// uvCoord.x = (i+0.5)/gridWidth, i in [0,gridWidth-1].
-// uvCoord.y = (j+0.5)/gridHeight, j in [0,gridHeight-1].
-layout (location = 0) in vec2 uvCoord;
-
-// texel-center coordinate for z texture layer
-// zLayer = (i+0.5)/gridDepth, i in [0,gridDepth-1].
-layout (location = 1) in float zLayer;
+// Position of current voxel's minimum vertex within parent Block.
+// position.x in [0, gridWidth - 1]
+// position.y in [0, gridHeight - 1]
+layout (location = 0) in vec2 position;
 
 uniform sampler3D volumeData;
 uniform float gridWidth;
@@ -16,7 +12,7 @@ uniform float gridHeight;
 uniform float gridDepth;
 uniform float isoSurfaceValue;
 
-out vsOutputGsInput {
+out vsOutGsIn {
 	vec3 wsPosition; // World-space position of voxel's minimum corner (v0).
 	vec3 wsVoxelSize; // World-space voxel size in each dimension xyz.
 	vec4 f0123; // Density values at all
@@ -26,7 +22,10 @@ out vsOutputGsInput {
 } vs_out;
 
 void main() {
-	vec3 uvw = vec3(uvCoord, zLayer);
+	vec3 uvw;
+	uvw.x = (position.x + 0.5) / gridWidth;
+	uvw.y = (position.y + 0.5) / gridHeight;
+	uvw.z = (gl_InstanceID + 0.5) / gridDepth;
 
 	vs_out.wsPosition = vec3(0);
 

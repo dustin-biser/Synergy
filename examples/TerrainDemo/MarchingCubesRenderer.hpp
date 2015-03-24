@@ -7,11 +7,6 @@
 
 #include <Synergy/Synergy.hpp>
 
-//-- For vao_voxelData:
-const GLuint uvCoord_attrib_index = 0;
-const GLuint zLayerCoord_attrib_index = 1;
-
-//-- For vao_isoSurfaceTriangles:
 const GLuint position_attrib_index = 0;
 const GLuint normal_attrib_index = 1;
 
@@ -65,7 +60,6 @@ private:
 
     //-- Vertex Buffers:
     GLuint vbo_voxelUvCoords;  // texture coordinate for lower-left corner of each voxel.
-    GLuint vbo_voxelZLayer;  // texture z layer of each voxel.
     GLuint streamBuffer_wsPositions; // For transform feedback.
     GLuint streamBuffer_wsNormals; // For transform feedback.
     GLuint voxelEdges_vertexBuffer; // Vertex data for voxel edge lines.
@@ -79,12 +73,11 @@ private:
     GLuint transformFeedbackObj;
 
 
-    void setupVoxelUvCoordVboData();
-    void setupVaoForVoxelData();
+    void setupVoxelVboPositionData();
+    void setupVoxelDataVao();
     void setupShaders();
     void setShaderUniforms();
     void uploadUniformArrays();
-    void setupVoxelZLayerVboData();
     void setupSamplerObject();
     void setupTransformFeedback();
     void generateTriTableTexture();

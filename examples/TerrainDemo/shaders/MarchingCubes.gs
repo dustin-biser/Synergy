@@ -5,7 +5,7 @@ layout(points) in;
 
 layout(points, max_vertices = 30) out; // 15 vertices and 15 normals
 
-in vsOutputGsInput {
+in vsOutGsIn {
 	vec3 wsPosition; // World-space position of voxel's minimum corner.
 	vec3 wsVoxelSize; // World-space voxel size in each dimension xyz.
 	vec4 f0123; // Density values at all
