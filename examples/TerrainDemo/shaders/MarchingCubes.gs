@@ -5,14 +5,15 @@ layout(points) in;
 
 layout(points, max_vertices = 30) out; // 15 vertices and 15 normals
 
+uniform vec3 wsVoxelDim; // World-space voxel size in each dimension xyz.
+
 in vsOutGsIn {
-	vec3 wsPosition; // World-space position of voxel's minimum corner.
-	vec3 wsVoxelSize; // World-space voxel size in each dimension xyz.
+	vec3 wsMinVertexPos; // World-space position of voxel's minimum vertex.
 	vec4 f0123; // Density values at all
 	vec4 f4567; // ... 8 voxel corners.
 	uint mc_case; // 0-255, triTable case.
 	float isoValue; // iso-surface value.
-} gs_in[1];
+} gs_in[];
 
 
 // Number of edges per voxel.
@@ -20,8 +21,6 @@ const int numEdges = 12;
 
 // Total number of marching cube cases.
 const int numCases = 256;
-
-
 
 // Maps mc_case to a set of 5 edge number triplets (RGB) that the isosurface intersects.
 // If a set starts with -1, then there are no more intersecting edges for the case.
@@ -67,7 +66,7 @@ void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 
 	vec3 pos_within_cell = edge_start[edgeNum] + t * edge_dir[edgeNum];
 
-	vertexPosition = gs_in[0].wsPosition + pos_within_cell * gs_in[0].wsVoxelSize;
+	vertexPosition = gs_in[0].wsMinVertexPos + pos_within_cell * wsVoxelDim;
 
 	outWsPosition = vertexPosition;
 

@@ -88,9 +88,16 @@ void MarchingCubesRenderer::setShaderUniforms() {
 
     shaderProgram_genIsoSurface.setUniform("volumeData", volumeData_texUnitOffset);
 	shaderProgram_genIsoSurface.setUniform("triTable", triTable_texUnitOffset);
-    shaderProgram_genIsoSurface.setUniform("gridWidth", gridWidth);
-    shaderProgram_genIsoSurface.setUniform("gridHeight", gridHeight);
-    shaderProgram_genIsoSurface.setUniform("gridDepth", gridDepth);
+    shaderProgram_genIsoSurface.setUniform("inv_gridWidth", 1.0f/gridWidth);
+    shaderProgram_genIsoSurface.setUniform("inv_gridHeight", 1.0f/gridHeight);
+    shaderProgram_genIsoSurface.setUniform("inv_gridDepth", 1.0f/gridDepth);
+
+	// World-space voxel dimensions
+	vec3 wsVoxelDim = vec3(1.0f/(gridWidth-1.0f),
+			               1.0f/(gridHeight - 1.0f),
+	                       1.0f/(gridDepth - 1.0f));
+
+	shaderProgram_genIsoSurface.setUniform("wsVoxelDim", wsVoxelDim);
 	uploadUniformArrays();
 
 	shaderProgram_renderIsoSurface.setUniform("color", vec3(0.1f,0.2f,0.8f));
@@ -667,7 +674,7 @@ void MarchingCubesRenderer::setupVoxelDataVao() {
     glBindVertexArray(vao_voxelData);
     glEnableVertexAttribArray(position_attrib_index);
 
-    //-- voxel uv coordinates:
+    //-- voxel minimum vertex positions:
     {
         glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelUvCoords);
 
