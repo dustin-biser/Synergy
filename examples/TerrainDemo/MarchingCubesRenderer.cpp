@@ -7,6 +7,7 @@ using std::vector;
 
 using namespace Synergy;
 
+
 //---------------------------------------------------------------------------------------
 MarchingCubesRenderer::MarchingCubesRenderer(
     uint32 gridWidth,
@@ -46,14 +47,13 @@ void MarchingCubesRenderer::setupShaders() {
 	//-- shaderProgram_genIsoSurface:
 	{
 		shaderProgram_genIsoSurface.generateProgramObject();
-		shaderProgram_genIsoSurface.attachVertexShader
-				("shaders/MarchingCubes.vs");
+		shaderProgram_genIsoSurface.attachVertexShader("shaders/MarchingCubes.vs");
 
-		shaderProgram_genIsoSurface.attachGeometryShader
-				("shaders/MarchingCubes.gs");
+		shaderProgram_genIsoSurface.attachGeometryShader("shaders/MarchingCubes.gs");
 
 		// Link outWsPosition to stream index 0.
 		// Link outWsNormal to stream index 1.
+
 		const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
 		glTransformFeedbackVaryings(shaderProgram_genIsoSurface.getProgramObject(), 2,
 				feedbackVaryings, GL_SEPARATE_ATTRIBS);
@@ -126,16 +126,16 @@ void MarchingCubesRenderer::uploadUniformArrays() {
 	int edge_start[12 * 3] = {
 			0, 0, 0,
 			1, 0, 0,
-			1, 1, 0,
+			1, 0, -1,
+			0, 0, -1,
 			0, 1, 0,
-			0, 0, 1,
-			1, 0, 1,
-			1, 1, 1,
-			0, 1, 1,
+			1, 1, 0,
+			1, 1, -1,
+			0, 1, -1,
 			0, 0, 0,
 			1, 0, 0,
-			1, 1, 0,
-			0, 1, 0
+			1, 0, -1,
+			0, 0, -1
 	};
 
 	GLint edge_start_location = shaderProgram_genIsoSurface.getUniformLocation("edge_start");
@@ -148,17 +148,17 @@ void MarchingCubesRenderer::uploadUniformArrays() {
 	// Edge direction from vertexA to vertexB
 	int edge_dir[12 * 3] = {
 			1, 0, 0,
-			0, 1, 0,
+			0, 0, -1,
 			-1, 0, 0,
-			0, -1, 0,
+			0, 0, 1,
 			1, 0, 0,
-			0, 1, 0,
+			0, 0, -1,
 			-1, 0, 0,
-			0, -1, 0,
 			0, 0, 1,
-			0, 0, 1,
-			0, 0, 1,
-			0, 0, 1
+			0, 1, 0,
+			0, 1, 0,
+			0, 1, 0,
+			0, 1, 0
 	};
 
 	GLint edge_dir_location = shaderProgram_genIsoSurface.getUniformLocation("edge_dir");
@@ -593,14 +593,24 @@ void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
 
 	//  Voxel vertex offsets in world-space
 	float32 voxelVertices[] = {
-			-0.5f, -0.5f, -0.5f,    // 0 Left Bottom Back
-			 0.5f, -0.5f, -0.5f,    // 1 Right Bottom Back
-			-0.5f, -0.5f,  0.5f,    // 2 Left Bottom Front
-			 0.5f, -0.5f,  0.5f,    // 3 Right Bottom Front
-			-0.5f,  0.5f, -0.5f,    // 4 Left Top Back
-		     0.5f,  0.5f, -0.5f,    // 5 Right Top Back
-			-0.5f,  0.5f,  0.5f,    // 6 Left Top Front
-			 0.5f,  0.5f,  0.5f,    // 7 Right Top Front
+//			-0.5f, -0.5f, -0.5f,    // 0 Left Bottom Back
+//			 0.5f, -0.5f, -0.5f,    // 1 Right Bottom Back
+//			-0.5f, -0.5f,  0.5f,    // 2 Left Bottom Front
+//			 0.5f, -0.5f,  0.5f,    // 3 Right Bottom Front
+//			-0.5f,  0.5f, -0.5f,    // 4 Left Top Back
+//		     0.5f,  0.5f, -0.5f,    // 5 Right Top Back
+//			-0.5f,  0.5f,  0.5f,    // 6 Left Top Front
+//			 0.5f,  0.5f,  0.5f,    // 7 Right Top Front
+
+			0,0,0,  // 0 left bottom front
+			1,0,0,  // 1 right bottom front
+			1,0,-1, // 2 right bottom back
+			0,0,-1, // 3 left bottom back
+
+			0,1,0,  // 4 left top front
+			1,1,0,  // 5 right top front
+			1,1,-1, // 6 right top back
+			0,1,-1, // 7 left top back
 	};
 	// Upload Vertex Position Data:
 	glGenBuffers(1, &voxelEdges_vertexBuffer);
@@ -613,12 +623,16 @@ void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
 	// Voxel corner indices for constructing GL_LINES.
 	// Every two indices is a new line.
 	GLushort indices [] = {
-			2,3,3,1,1,0,0,2,   // Bottom Face
-			6,7,7,5,5,4,4,6,   // Top Face
-			2,6,    // Left Front Vertical
-			3,7,    // Right Front Vertical
-			0,4,    // Left Back Vertical
-			1,5,    // Right Back Vertical
+//			2,3,3,1,1,0,0,2,   // Bottom Face
+//			6,7,7,5,5,4,4,6,   // Top Face
+//			2,6,    // Left Front Vertical
+//			3,7,    // Right Front Vertical
+//			0,4,    // Left Back Vertical
+//			1,5,    // Right Back Vertical
+			0,1, 1,2, 2,3, 3,0,
+			4,5, 5,6, 6,7, 7,4,
+			0,4, 1,5, 2,6, 3,7
+
 	};
 
 	// Upload Index Data:
@@ -773,10 +787,9 @@ void MarchingCubesRenderer::setupTransformFeedback() {
 	//-- Set an upper limit for vertex buffer transform feedback storage:
 	int vec3_size = sizeof(GLfloat) * 3;
 	int vertices_per_triangle = 3;
-	int one_mega_byte = sizeof(char) * 1000000;
-	transformFeedbackBufferSize = vertices_per_triangle * vec3_size;
-	transformFeedbackBufferSize *=
-			std::min(std::max(64, int(gridWidth * gridHeight * gridDepth)),  one_mega_byte);
+	int max_triangles_per_voxel = 5;
+	transformFeedbackBufferSize =
+			max_triangles_per_voxel * vertices_per_triangle * vec3_size;
 
 
 	//-- Allocate stream buffer storage for vertex positions:
@@ -800,7 +813,6 @@ void MarchingCubesRenderer::setupTransformFeedback() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		CHECK_GL_ERRORS;
 	}
-
 
 	//-- Setup transform feedback stream index binding points:
 	{
@@ -836,7 +848,6 @@ void MarchingCubesRenderer::inspectTransformFeedbackBuffer() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsNormals);
 	glGetBufferSubData(GL_ARRAY_BUFFER, 0, transformFeedbackBufferSize, stream1Data);
-
 
 	delete [] stream0Data;
 	delete [] stream1Data;
@@ -892,15 +903,12 @@ void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 	shaderProgram_genIsoSurface.enable();
 		glBeginTransformFeedback(GL_POINTS);
 		glDrawArraysInstanced(GL_POINTS, 0, numVoxelsPerLayer, gridDepth - 1);
-
-		// TODO Dustin - remove:
-			// Process only first voxel:
-//			glDrawArrays(GL_POINTS, 0, 1);
-
 		glEndTransformFeedback();
 	shaderProgram_genIsoSurface.disable();
 
-	inspectTransformFeedbackBuffer();
+	#ifdef DEBUG
+		inspectTransformFeedbackBuffer();
+	#endif
 
 	//-- Restore defaults:
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);

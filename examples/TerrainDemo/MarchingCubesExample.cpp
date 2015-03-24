@@ -100,26 +100,26 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
 
     float32 * data = new float32[kGridDepth * kGridHeight * kGridWidth];
 
+	float value = kIsoSurfaceValue;
+
     for(int k(0); k < kGridDepth; ++k) {
         for(int j(0); j < kGridHeight; ++j) {
             for(int i(0); i < kGridWidth; ++i) {
 	            // Set all values below isosurface value
                 data[(k * kGridHeight * kGridWidth) + (j * kGridWidth) + i] =
-		                kIsoSurfaceValue - 1.0f;
+		                value - 1.0f;
             }
         }
     }
 
-    // Initialize first voxel:
-    float value = kIsoSurfaceValue;
-    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
-//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
-    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 2
+//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
+    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
+//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 2
 //    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 3
-//
-//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 4
+
+    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 4
 //    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 5
-//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 6
+    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 6
 //    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 7
 
     glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, kGridWidth,
@@ -169,8 +169,8 @@ void MarchingCubesExample::fillCubeDensityTexture() {
 //---------------------------------------------------------------------------------------
 void MarchingCubesExample::setupCamera() {
     camera.setNearZDistance(0.1f);
-    camera.setPosition(vec3(0,1,1.5));
-    camera.lookAt(vec3(0,0,0));
+    camera.setPosition(vec3(1.8,1.2,1.2));
+    camera.lookAt(vec3(0.5,0.5,-0.5));
 
     cameraController.setForwardScaleFactor(0.05f/kGridWidth);
     cameraController.setSideStrafeScaleFactor(0.05f/kGridWidth);

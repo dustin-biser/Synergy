@@ -84,6 +84,7 @@ void computeNormal(vec3 vertexA, vec3 vertexB, vec3 vertexC) {
 	for(int i = 0; i < 3; ++i) {
 		// Must reassign output variables after each EmitStreamVertex() call.
 		outWsNormal = normal;
+
 		EmitStreamVertex(1);
 		EndStreamPrimitive(1);
 	}
