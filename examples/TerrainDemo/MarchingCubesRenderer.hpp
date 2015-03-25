@@ -45,13 +45,14 @@ private:
     Synergy::float32 gridHeight;
     Synergy::float32 gridDepth;
     GLsizei numVoxelsPerLayer;
+	GLsizei numVoxels;
     GLsizei transformFeedbackBufferSize;
     GLuint sampler_volumeData;
 
     //-- Shaders:
-    Synergy::ShaderProgram shaderProgram_genIsoSurface;
-    Synergy::ShaderProgram shaderProgram_renderIsoSurface;
-    Synergy::ShaderProgram shaderProgram_voxelEdges;
+    Synergy::ShaderProgram shader_genIsoSurface;
+    Synergy::ShaderProgram shader_renderIsoSurface;
+    Synergy::ShaderProgram shader_voxelEdges;
 
     //-- Vertex Array Objects:
     GLuint vao_voxelData; // For generating MC voxel data.
@@ -77,7 +78,7 @@ private:
     void setupVoxelDataVao();
     void setupShaders();
     void setShaderUniforms();
-    void uploadUniformArrays();
+    void uploadShaderUniformArrays();
     void setupSamplerObject();
     void setupTransformFeedback();
     void generateTriTableTexture();
@@ -99,5 +100,6 @@ private:
 
     // TODO Dustin - remove after testing:
     void inspectTransformFeedbackBuffer();
+	GLuint streamBuffer_debugOut; // For transform feedback.
 
 };

@@ -65,10 +65,9 @@ void MarchingCubesExample::createTextureStorage() {
 
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-        // Default border color = (0,0,0,0).
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
         glBindTexture(GL_TEXTURE_3D, 0);
         CHECK_GL_ERRORS;
@@ -84,10 +83,9 @@ void MarchingCubesExample::createTextureStorage() {
 
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-        // Default border color is (0,0,0,0).
+	    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
         glBindTexture(GL_TEXTURE_3D, 0);
         CHECK_GL_ERRORS;
@@ -106,21 +104,48 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
         for(int j(0); j < kGridHeight; ++j) {
             for(int i(0); i < kGridWidth; ++i) {
 	            // Set all values below isosurface value
-                data[(k * kGridHeight * kGridWidth) + (j * kGridWidth) + i] =
+                data[k * (kGridHeight * kGridWidth) + (j * kGridWidth) + i] =
 		                value - 1.0f;
             }
         }
     }
 
-    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
+//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
 //    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
-    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 2
-//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 3
+//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1;  // Vertex 2
 
-//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 4
-    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 5
-//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 6
-    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 7
+//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 3
+//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 4
+//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 2] = value + 1;  // Vertex 5
+
+//    data[(0 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1;  // Vertex 6
+//    data[(0 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 1] = value + 1;  // Vertex 7
+//	  data[(0 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 2] = value + 1;  // Vertex 8
+
+//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1; //Vertex 9
+//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1; //Vertex 10
+//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1; //Vertex 11
+
+//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1; //Vertex 12
+    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1; //Vertex 13
+//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 2] = value + 1; //Vertex 14
+
+//    data[(1 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1; //Vertex 15
+//    data[(1 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 1] = value + 1; //Vertex 16
+//    data[(1 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 2] = value + 1; //Vertex 17
+
+//    data[(2 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1; //Vertex 18
+//    data[(2 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1; //Vertex 19
+//    data[(2 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1; //Vertex 20
+
+//    data[(2 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1; //Vertex 21
+//    data[(2 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1; //Vertex 22
+//    data[(2 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 2] = value + 1; //Vertex 23
+
+//    data[(2 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1; //Vertex 24
+//    data[(2 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 1] = value + 1; //Vertex 25
+//    data[(2 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 2] = value + 1; //Vertex 26
+
 
     glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, kGridWidth,
             kGridHeight, kGridDepth, GL_RED, GL_FLOAT, data);

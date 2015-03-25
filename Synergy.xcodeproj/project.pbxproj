@@ -352,7 +352,7 @@
 		EF6691F332CD4658066F9D9D /* MarchingCubesRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarchingCubesRenderer.hpp; sourceTree = "<group>"; };
 		EF669292477E6CE6C22017B8 /* MarchingCubesRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarchingCubesRenderer.cpp; sourceTree = "<group>"; };
 		EF66944617254E84CE2186AA /* DemoException.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DemoException.hpp; sourceTree = "<group>"; };
-		EF66945C56A12A7253E56CC0 /* LineRender.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = LineRender.vs; sourceTree = "<group>"; };
+		EF66945C56A12A7253E56CC0 /* VoxelEdges.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = VoxelEdges.vs; sourceTree = "<group>"; };
 		EF66947CD453FAD224549442 /* Exception.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Exception.hpp; sourceTree = "<group>"; };
 		EF6694BA68B9C3F19E67F217 /* PerlinNoise.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = PerlinNoise.fs; sourceTree = "<group>"; };
 		EF6696671BB1CDFE3AE3D31B /* RenderIsoSurface.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = RenderIsoSurface.vs; sourceTree = "<group>"; };
@@ -367,7 +367,7 @@
 		EF669D739C5025BA638E8C3C /* PerlinNoise.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = PerlinNoise.gs; sourceTree = "<group>"; };
 		EF669DE23AC154467C825FCD /* MarchingCubes.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = MarchingCubes.vs; sourceTree = "<group>"; };
 		EF669E415A2B7928F89B01E4 /* MarchingCubes.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = MarchingCubes.gs; sourceTree = "<group>"; };
-		EF669EE2F2BB6E649D879479 /* LineRender.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = LineRender.fs; sourceTree = "<group>"; };
+		EF669EE2F2BB6E649D879479 /* VoxelEdges.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = VoxelEdges.fs; sourceTree = "<group>"; };
 		EF669F04997DD6EF5212A83E /* RenderIsoSurface.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = RenderIsoSurface.fs; sourceTree = "<group>"; };
 		EF669F15F87AE50B6CEFA4EA /* PerlinNoiseDemo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoiseDemo.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -847,8 +847,8 @@
 		EF669EB41BDB52AD11DFE4E0 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
-				EF669EE2F2BB6E649D879479 /* LineRender.fs */,
-				EF66945C56A12A7253E56CC0 /* LineRender.vs */,
+				EF669EE2F2BB6E649D879479 /* VoxelEdges.fs */,
+				EF66945C56A12A7253E56CC0 /* VoxelEdges.vs */,
 				EF669E415A2B7928F89B01E4 /* MarchingCubes.gs */,
 				EF669DE23AC154467C825FCD /* MarchingCubes.vs */,
 				EF669F04997DD6EF5212A83E /* RenderIsoSurface.fs */,

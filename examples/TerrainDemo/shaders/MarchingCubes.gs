@@ -5,10 +5,14 @@ layout(points) in;
 
 layout(points, max_vertices = 30) out; // 15 vertices and 15 normals
 
-uniform vec3 wsVoxelDim; // World-space voxel size in each dimension xyz.
+// World-space voxel size in each dimension xyz.
+uniform vec3 wsVoxelDim;
+
+// World-space position of parent Block's min vertex.
+uniform vec3 wsParentBlockPos;
 
 in vsOutGsIn {
-	vec3 wsMinVertexPos; // World-space position of voxel's minimum vertex.
+	vec3 voxelIndex; // Voxel's index within parent Block.
 	vec4 f0123; // Density values at all
 	vec4 f4567; // ... 8 voxel corners.
 	uint mc_case; // 0-255, triTable case.
@@ -51,6 +55,11 @@ uniform vec4 cornerBmask4567[numEdges]; // .xyzw corresponds to vertex 4,5,6,7.
 layout (stream = 0) out vec3 outWsPosition;
 layout (stream = 1) out vec3 outWsNormal;
 
+// Converts texture coordinates 'ts' to world space coordinates
+vec3 textureSpaceToWorldSpace(vec3 ts) {
+	return vec3(ts.x, ts.z, -ts.y);
+}
+
 void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 
 	// Obtain value at vertex A.
@@ -66,7 +75,11 @@ void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 
 	vec3 pos_within_cell = edge_start[edgeNum] + t * edge_dir[edgeNum];
 
-	vertexPosition = gs_in[0].wsMinVertexPos + pos_within_cell * wsVoxelDim;
+	// World-space position of voxel's minimum vertex.
+	vec3 wsMinVertexPos =
+			wsParentBlockPos + textureSpaceToWorldSpace(gs_in[0].voxelIndex * wsVoxelDim);
+
+	vertexPosition = wsMinVertexPos + pos_within_cell * wsVoxelDim;
 
 	outWsPosition = vertexPosition;
 
@@ -89,6 +102,11 @@ void computeNormal(vec3 vertexA, vec3 vertexB, vec3 vertexC) {
 	}
 }
 
+	/////////////////////////////
+	// TODO Dustin - Remove after testing:
+	layout (stream = 2) out vec4 debugOut;
+	/////////////////////////////
+
 void main() {
 	uint mc_case = gs_in[0].mc_case;
 	uint numTriangles = case_to_numTriangles[mc_case];
@@ -106,4 +124,13 @@ void main() {
 
 		computeNormal(vertexPosition[0], vertexPosition[1], vertexPosition[2]);
 	}
+
+
+	//////////////////////////////
+	// TODO Dustin - Remove after testing:
+	debugOut = vec4(0);
+	EmitStreamVertex(2);
+	EndStreamPrimitive(2);
+	//////////////////////////////
+
 }
