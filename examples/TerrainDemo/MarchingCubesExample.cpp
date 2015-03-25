@@ -110,6 +110,8 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
         }
     }
 
+    data[(3 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1;
+
 //    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
 //    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
 //    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1;  // Vertex 2
@@ -127,7 +129,7 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
 //    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1; //Vertex 11
 
 //    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1; //Vertex 12
-    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1; //Vertex 13
+//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1; //Vertex 13
 //    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 2] = value + 1; //Vertex 14
 
 //    data[(1 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1; //Vertex 15

@@ -20,7 +20,7 @@ const int kScreenHeight = 768;
 // Density grid dimensions
 const int kGridWidth = 3;
 const int kGridHeight = 3;
-const int kGridDepth = 3;
+const int kGridDepth = 4;
 
 const float kIsoSurfaceValue = 0.0f;
 

@@ -102,9 +102,10 @@ void MarchingCubesRenderer::setShaderUniforms() {
 	shader_genIsoSurface.setUniform("wsParentBlockPos", vec3(0.0f));
 
 	// World-space voxel dimensions
+	// Convert from grid-space to world-space:
 	vec3 wsVoxelDim = vec3(1.0f/(gridWidth-1.0f),
-			               1.0f/(gridHeight - 1.0f),
-	                       1.0f/(gridDepth - 1.0f));
+	                       1.0f/(gridDepth - 1.0f),
+	                       1.0f/(gridHeight - 1.0f));
 
 	shader_genIsoSurface.setUniform("wsVoxelDim", wsVoxelDim);
 	shader_genIsoSurface.setUniform("inv_gridDepth", 1.0f/gridDepth);

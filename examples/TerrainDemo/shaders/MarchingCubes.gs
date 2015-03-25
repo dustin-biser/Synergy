@@ -77,7 +77,7 @@ void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 
 	// World-space position of voxel's minimum vertex.
 	vec3 wsMinVertexPos =
-			wsParentBlockPos + textureSpaceToWorldSpace(gs_in[0].voxelIndex * wsVoxelDim);
+			wsParentBlockPos + textureSpaceToWorldSpace(gs_in[0].voxelIndex) *  wsVoxelDim;
 
 	vertexPosition = wsMinVertexPos + pos_within_cell * wsVoxelDim;
 
