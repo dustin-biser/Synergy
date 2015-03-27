@@ -11,6 +11,8 @@ uniform vec3 wsVoxelDim;
 // World-space position of parent Block's min vertex.
 uniform vec3 wsParentBlockPos;
 
+uniform sampler3D densityGrid;
+
 in vsOutGsIn {
 	vec3 voxelIndex; // Voxel's index within parent Block.
 	vec4 f0123; // Density values at all

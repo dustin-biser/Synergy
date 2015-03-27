@@ -11,7 +11,7 @@
 // position.y in [0, gridHeight - 1]
 layout (location = 0) in vec2 position;
 
-uniform sampler3D volumeData;
+uniform sampler3D densityGrid;
 uniform float inv_gridWidth;
 uniform float inv_gridHeight;
 uniform float inv_gridDepth;
@@ -37,16 +37,16 @@ void main() {
 	vec4 step = vec4(inv_gridWidth, inv_gridHeight, inv_gridDepth, 0.0);
 
 	// Sample 4 lower level voxel corners:
-	vs_out.f0123 = vec4( texture(volumeData, uvw).r,
-						 texture(volumeData, uvw + step.xww).r,
-						 texture(volumeData, uvw + step.xyw).r,
-						 texture(volumeData, uvw + step.wyw).r );
+	vs_out.f0123 = vec4( texture(densityGrid, uvw).r,
+						 texture(densityGrid, uvw + step.xww).r,
+						 texture(densityGrid, uvw + step.xyw).r,
+						 texture(densityGrid, uvw + step.wyw).r );
 
 	// Sample 4 upper level voxel corners:
-	vs_out.f4567 = vec4( texture(volumeData, uvw + step.wwz).r,
-						 texture(volumeData, uvw + step.xwz).r,
-						 texture(volumeData, uvw + step.xyz).r,
-						 texture(volumeData, uvw + step.wyz).r );
+	vs_out.f4567 = vec4( texture(densityGrid, uvw + step.wwz).r,
+						 texture(densityGrid, uvw + step.xwz).r,
+						 texture(densityGrid, uvw + step.xyz).r,
+						 texture(densityGrid, uvw + step.wyz).r );
 
 	vs_out.isoValue = isoSurfaceValue;
 

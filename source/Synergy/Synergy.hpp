@@ -15,3 +15,4 @@
 #include "Synergy/Graphics/GlErrorCheck.hpp"
 #include "Synergy/Graphics/ShaderException.hpp"
 #include "Synergy/Graphics/ShaderProgram.hpp"
+#include "Synergy/Graphics/Texture.hpp"

@@ -1,5 +1,4 @@
 #include "MarchingCubesRenderer.hpp"
-#include "MarchingCubesExample.hpp"
 #include <glm/gtx/transform.hpp>
 
 #include <vector>
@@ -20,6 +19,8 @@ MarchingCubesRenderer::MarchingCubesRenderer(
 	  transformFeedbackBufferSize(0)
 {
 	numVoxels = (gridWidth - 1.0f) * (gridHeight - 1.0f) * (gridDepth - 1.0f);
+	glGenVertexArrays(1, &vao_junk);
+
     setupShaders();
 	generateTriTableTexture();
     setShaderUniforms();
@@ -34,6 +35,8 @@ MarchingCubesRenderer::MarchingCubesRenderer(
 
 	setupVoxelEdgesVertexBuffer();
 	setupVoxelEdgesVao();
+
+	createLightingTexture();
 }
 
 //---------------------------------------------------------------------------------------
@@ -89,12 +92,20 @@ void MarchingCubesRenderer::setupShaders() {
 		shader_voxelEdges.attachFragmentShader("shaders/VoxelEdges.fs");
 		shader_voxelEdges.link();
 	}
+
+	//-- shader_computeLighting:
+	{
+		shader_computeLighting.generateProgramObject();
+		shader_computeLighting.attachVertexShader("shaders/ScreenQuad.vs");
+		shader_computeLighting.attachFragmentShader("shaders/ComputeNormalAmbo.fs");
+		shader_computeLighting.link();
+	}
 }
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::setShaderUniforms() {
 
-    shader_genIsoSurface.setUniform("volumeData", volumeData_texUnitOffset);
+    shader_genIsoSurface.setUniform("densityGrid", densityGrid_texUnitOffset);
 	shader_genIsoSurface.setUniform("triTable", triTable_texUnitOffset);
     shader_genIsoSurface.setUniform("inv_gridWidth", 1.0f/gridWidth);
     shader_genIsoSurface.setUniform("inv_gridHeight", 1.0f/gridHeight);
@@ -118,6 +129,26 @@ void MarchingCubesRenderer::setShaderUniforms() {
 	shader_voxelEdges.setUniform("numVoxelCols", gridWidth - 1.0f);
 	shader_voxelEdges.setUniform("numVoxelRows", gridHeight - 1.0f);
 	shader_voxelEdges.setUniform("numVoxelLayers", gridDepth - 1.0f);
+}
+
+//----------------------------------------------------------------------------------------
+void MarchingCubesRenderer::createLightingTexture() {
+	Synergy::TextureSpec textureSpec;
+	textureSpec.width = uint32(gridWidth);
+	textureSpec.height = uint32(gridWidth);
+	textureSpec.depth = uint32(gridWidth);
+	textureSpec.internalFormat = GL_RGBA16F;
+	textureSpec.format = GL_RGBA;
+	textureSpec.dataType = GL_FLOAT;
+
+	normalAmbo_texture3d.allocateStorage(textureSpec);
+	normalAmbo_texture3d.bind();
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	normalAmbo_texture3d.unbind();
 }
 
 //----------------------------------------------------------------------------------------
@@ -653,8 +684,8 @@ void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::setupVoxelVboPositionData() {
-    glGenBuffers(1, &vbo_voxelUvCoords);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelUvCoords);
+    glGenBuffers(1, &vbo_voxelIndices);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelIndices);
 
     // Every 2 floats will represent the position of minimum vertex of voxel within
 	// parent Block.  Only storing vec2's since layer can be computed automatically via
@@ -692,7 +723,7 @@ void MarchingCubesRenderer::setupVoxelDataVao() {
 
     //-- voxel minimum vertex positions:
     {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelUvCoords);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelIndices);
 
         int32 elementsPerVertex = 2;
         int32 stride = 0;
@@ -738,9 +769,9 @@ void MarchingCubesRenderer::setupVaoForIsoSurfaceTriangles() {
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::setupSamplerObject() {
-    glGenSamplers(1, &sampler_volumeData);
-    glSamplerParameterf(sampler_volumeData, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glSamplerParameterf(sampler_volumeData, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glGenSamplers(1, &sampler_densityGrid);
+    glSamplerParameterf(sampler_densityGrid, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glSamplerParameterf(sampler_densityGrid, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     CHECK_GL_ERRORS;
 }
@@ -874,18 +905,19 @@ void MarchingCubesRenderer::updateShaderUniforms(const Synergy::Camera &camera){
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::render(
         const Synergy::Camera & camera,
-        GLuint volumeData_texture3d,
+		const Synergy::Texture3D & densityGrid_texture3d,
         float32 isoSurfaceValue
 ){
-	generateIsoSurfaceTriangles(volumeData_texture3d, isoSurfaceValue);
+	computeNormalAmboTexture(densityGrid_texture3d);
+	generateIsoSurfaceTriangles(densityGrid_texture3d, isoSurfaceValue);
 	renderIsoSurface(camera);
 	renderVoxelEdges(camera);
 }
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::generateIsoSurfaceTriangles(
-	GLuint volumeData_texture3d,
-	float isoSurfaceValue
+		const Texture3D & densityGrid,
+		float isoSurfaceValue
 ){
 	shader_genIsoSurface.setUniform("isoSurfaceValue", isoSurfaceValue);
 
@@ -894,9 +926,9 @@ void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 
 	glBindVertexArray(vao_voxelData);
 
-	glActiveTexture(GL_TEXTURE0 + volumeData_texUnitOffset);
-	glBindTexture(GL_TEXTURE_3D, volumeData_texture3d);
-	glBindSampler(volumeData_texUnitOffset, sampler_volumeData);
+	glActiveTexture(GL_TEXTURE0 + densityGrid_texUnitOffset);
+	densityGrid.bind();
+	glBindSampler(densityGrid_texUnitOffset, sampler_densityGrid);
 
 	glActiveTexture(GL_TEXTURE0 + triTable_texUnitOffset);
 	glBindTexture(GL_TEXTURE_2D, triTable_texture2d);
@@ -909,8 +941,7 @@ void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 	shader_genIsoSurface.enable();
 		glBeginTransformFeedback(GL_POINTS);
 
-		// Each instance is a 2D grid of points, where each point is located
-		// at the center of each grid box.
+		// Each instance is a 2D grid of points.
 		glDrawArraysInstanced(GL_POINTS, 0, numVoxelsPerLayer, numInstances);
 
 		glEndTransformFeedback();
@@ -923,9 +954,9 @@ void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 	//-- Restore defaults:
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_3D, 0);
+	densityGrid.bind();
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindSampler(volumeData_texUnitOffset, 0);
+	glBindSampler(densityGrid_texUnitOffset, 0);
 	glDisable(GL_RASTERIZER_DISCARD);
 	CHECK_GL_ERRORS;
 }
@@ -960,5 +991,37 @@ void MarchingCubesRenderer::renderVoxelEdges(const Synergy::Camera &camera) {
 
 	glBindVertexArray(0);
 	CHECK_GL_ERRORS;
+}
+
+//----------------------------------------------------------------------------------------
+void MarchingCubesRenderer::computeNormalAmboTexture(
+		const Synergy::Texture3D &densityGrid_texture3d
+) {
+//	glViewport(0, 0, texture.width(), texture.height());
+//	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+//
+//	glDisable(GL_DEPTH_TEST);
+//	glDepthMask(GL_FALSE);
+//
+//	glActiveTexture(GL_TEXTURE0);
+//	glBindTexture(GL_TEXTURE_BUFFER, texture_noiseHashTable);
+//
+//	// Bind junkVao to make gl driver happy.
+//	glBindVertexArray(junkVao);
+//
+//	shader_perlinNoise.enable();
+//	GLsizei numInstances = texture.depth;
+//	// Each instance is a viewport filling triangle without using vbo data.
+//	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
+//	shader_perlinNoise.disable();
+//
+//	//-- Reset defaults:
+//	glViewport(0, 0, defaultFramebufferWidth(), defaultFramebufferHeight());
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//	glBindVertexArray(0);
+//	glBindTexture(GL_TEXTURE_BUFFER, 0);
+//	glEnable(GL_DEPTH_TEST);
+//	glDepthMask(GL_TRUE);
+//	CHECK_GL_ERRORS;
 }
 

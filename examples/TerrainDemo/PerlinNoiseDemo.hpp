@@ -13,20 +13,7 @@ const int kScreenHeight = 600;
 const GLint kAttribIndex_positions = 0;
 const GLint kAttribIndex_texCoords = 0;
 
-struct Texture {
-	GLenum type;
-	GLuint id;
-	GLuint width;
-	GLuint height;
-	GLuint depth;
-	GLenum internalFormat;
-	GLenum format;
-	GLenum dataType;
-};
-
-Texture noise_texture3d = {
-		GL_TEXTURE_3D,
-		0,
+Synergy::TextureSpec noise_texture3dspec = {
 		16,
 		16,
 		16,
@@ -34,6 +21,7 @@ Texture noise_texture3d = {
 		GL_RED,
 		GL_FLOAT
 };
+Synergy::Texture3D noise_texture3d;
 
 class PerlinNoiseDemo : public GlfwOpenGlWindow {
 public:
@@ -68,16 +56,16 @@ private:
 
 	void initShaders();
 	void initNoiseHashTableTextureBuffer();
-	void createTextureStorage(Texture & texture);
-	void initFramebufferWithRenderTarget(Texture const & texture);
+	void createTextureStorage(Synergy::Texture3D & texture);
+	void initFramebufferWithRenderTarget(Synergy::Texture3D const & texture);
 
 	void setShaderUniforms();
-	void fillNoiseTexture3d(const Texture & texture);
+	void fillNoiseTexture3d(const Synergy::Texture3D & texture);
 
 	void generateNoiseTexture3d();
 
-	void inspectTextureData(const Texture & texture);
+	void inspectTextureData(const Synergy::Texture3D & texture);
 
-	void renderTextureToScreen(const Texture & texture);
+	void renderTextureToScreen(const Synergy::Texture3D & texture);
 
 };

@@ -86,9 +86,9 @@ void PerlinNoiseDemo::setShaderUniforms() {
 }
 
 //---------------------------------------------------------------------------------------
-void PerlinNoiseDemo::renderTextureToScreen(const Texture & texture) {
+void PerlinNoiseDemo::renderTextureToScreen(const Texture3D & texture) {
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(texture.type, texture.id);
+	texture.bind();
 
 	shader_screenQuad.setUniform("layer", 0);
 
@@ -100,6 +100,7 @@ void PerlinNoiseDemo::renderTextureToScreen(const Texture & texture) {
 
 
 	glBindVertexArray(0);
+	texture.unbind();
 	CHECK_GL_ERRORS;
 }
 
@@ -166,37 +167,25 @@ void PerlinNoiseDemo::generateNoiseTexture3d() {
 }
 
 //---------------------------------------------------------------------------------------
-void PerlinNoiseDemo::createTextureStorage(Texture & texture) {
-	glGenTextures(1, &texture.id);
-	glBindTexture(texture.type, texture.id);
-	glTexImage3D(
-			texture.type,
-			0,
-			texture.internalFormat,
-			texture.width,
-			texture.height,
-			texture.depth,
-			0,
-			texture.format,
-			texture.dataType,
-			nullptr
-	);
+void PerlinNoiseDemo::createTextureStorage(Texture3D & texture) {
+	texture.allocateStorage(noise_texture3dspec);
 
-	glTexParameteri(texture.type, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(texture.type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(texture.type, GL_TEXTURE_WRAP_R, GL_REPEAT);
-	glTexParameteri(texture.type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(texture.type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBindTexture(texture.type, 0);
-	CHECK_GL_ERRORS;
+	texture.bind();
+		glTexParameteri(texture.type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(texture.type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(texture.type, GL_TEXTURE_WRAP_R, GL_REPEAT);
+		glTexParameteri(texture.type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(texture.type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	texture.unbind();
 }
 
 //---------------------------------------------------------------------------------------
-void PerlinNoiseDemo::initFramebufferWithRenderTarget(const Texture & texture) {
+void PerlinNoiseDemo::initFramebufferWithRenderTarget (
+		const Texture3D & texture
+) {
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.id, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.name(), 0);
 
 
 	CHECK_FRAMEBUFFER_COMPLETENESS;
@@ -208,8 +197,10 @@ void PerlinNoiseDemo::initFramebufferWithRenderTarget(const Texture & texture) {
 * Renders viewport filling triangles without any vbo data.
 * Each instance fills one layer of attached 3d texture render target.
 */
-void PerlinNoiseDemo::fillNoiseTexture3d(const Texture & texture) {
-	glViewport(0, 0, texture.width, texture.height);
+void PerlinNoiseDemo::fillNoiseTexture3d (
+		const Texture3D & texture
+) {
+	glViewport(0, 0, texture.width(), texture.height());
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	glDisable(GL_DEPTH_TEST);
@@ -222,7 +213,7 @@ void PerlinNoiseDemo::fillNoiseTexture3d(const Texture & texture) {
 	glBindVertexArray(junkVao);
 
 	shader_perlinNoise.enable();
-	GLsizei numInstances = texture.depth;
+	GLsizei numInstances = texture.depth();
 	// Each instance is a viewport filling triangle without using vbo data.
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
 	shader_perlinNoise.disable();
@@ -253,10 +244,10 @@ void PerlinNoiseDemo::cleanup() {
 }
 
 //---------------------------------------------------------------------------------------
-void PerlinNoiseDemo::inspectTextureData(const Texture & texture) {
-	int width = texture.width;
-	int height = texture.height;
-	int depth = texture.depth;
+void PerlinNoiseDemo::inspectTextureData(const Texture3D & texture) {
+	int width = texture.width();
+	int height = texture.height();
+	int depth = texture.depth();
 	float * data = new float[width * height * depth];
 	for(int i(0); i < width; ++i) {
 		for(int j(0); j < height; ++j) {
@@ -269,8 +260,9 @@ void PerlinNoiseDemo::inspectTextureData(const Texture & texture) {
 
 	glFlush();
 	glFinish();
-	glBindTexture(texture.type, texture.id);
-	glGetTexImage(texture.type, 0, texture.format, texture.dataType, data);
+
+	texture.bind();
+	glGetTexImage(GL_TEXTURE_3D, 0, texture.format(), texture.dataType(), data);
 
 	float min = FLT_MAX;
 	float max = FLT_MIN;
@@ -289,6 +281,6 @@ void PerlinNoiseDemo::inspectTextureData(const Texture & texture) {
 	cout << "max: " << max << endl;
 
 	delete [] data;
-	glBindTexture(texture.type, 0);
+	texture.unbind();
 	CHECK_GL_ERRORS;
 }

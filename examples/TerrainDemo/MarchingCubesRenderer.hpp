@@ -15,8 +15,9 @@ const GLuint streamIndex_wsPositions = 0;
 const GLuint streamIndex_wsNormals = 1;
 
 //-- Texture Unit Offsets:
-const GLint volumeData_texUnitOffset = 0;
+const GLint densityGrid_texUnitOffset = 0;
 const GLint triTable_texUnitOffset = 1;
+
 
 
 /**
@@ -37,7 +38,7 @@ public:
     ~MarchingCubesRenderer();
 
     void render(const Synergy::Camera & camera,
-                GLuint volumeData_texture3d,
+                const Synergy::Texture3D & densityGrid_texture3d,
                 Synergy::float32 isoSurfaceValue);
 
 private:
@@ -47,20 +48,32 @@ private:
     GLsizei numVoxelsPerLayer;
 	GLsizei numVoxels;
     GLsizei transformFeedbackBufferSize;
-    GLuint sampler_volumeData;
+    GLuint sampler_densityGrid;
+
+	// 3D texture (RGBA8) for storing normals and ambient occlusion factor.
+	// Texture components correspond to the following:
+	// RGB: surface normal.xyz (gradient of density texture)
+	// A: ambient occlusion factor.
+	Synergy::Texture3D normalAmbo_texture3d;
 
     //-- Shaders:
     Synergy::ShaderProgram shader_genIsoSurface;
     Synergy::ShaderProgram shader_renderIsoSurface;
     Synergy::ShaderProgram shader_voxelEdges;
+	Synergy::ShaderProgram shader_computeLighting;
+
 
     //-- Vertex Array Objects:
     GLuint vao_voxelData; // For generating MC voxel data.
     GLuint vao_isoSurfaceTriangles; // For isosurface triangles rendering.
     GLuint vao_voxelEdgeLines; // For voxel edge line rendering.
 
+	// Junk vao for processing normalAmbo_texture3d within computeNormalAmboTexture() using
+	// no VBO data.
+	GLuint vao_junk;
+
     //-- Vertex Buffers:
-    GLuint vbo_voxelUvCoords;  // texture coordinate for lower-left corner of each voxel.
+    GLuint vbo_voxelIndices; // Voxel indices within parent block.
     GLuint streamBuffer_wsPositions; // For transform feedback.
     GLuint streamBuffer_wsNormals; // For transform feedback.
     GLuint voxelEdges_vertexBuffer; // Vertex data for voxel edge lines.
@@ -74,10 +87,12 @@ private:
     GLuint transformFeedbackObj;
 
 
+	//-- Initialization Methods:
     void setupVoxelVboPositionData();
     void setupVoxelDataVao();
     void setupShaders();
     void setShaderUniforms();
+	void createLightingTexture();
     void uploadShaderUniformArrays();
     void setupSamplerObject();
     void setupTransformFeedback();
@@ -86,16 +101,26 @@ private:
     void setupVoxelEdgesVao();
     void setupVoxelEdgesVertexBuffer();
 
-    void updateShaderUniforms(const Synergy::Camera &camera);
-
-    void generateIsoSurfaceTriangles(
-            GLuint volumeData_texture3d,
-            float isoSurfaceValue
+    void updateShaderUniforms(
+		    const Synergy::Camera & camera
     );
 
-    void renderIsoSurface(const Synergy::Camera &camera);
+    void generateIsoSurfaceTriangles(
+		    const Synergy::Texture3D & densityGrid,
+		    float isoSurfaceValue
+    );
 
-    void renderVoxelEdges(const Synergy::Camera &camera);
+    void renderIsoSurface(
+		    const Synergy::Camera & camera
+    );
+
+    void renderVoxelEdges (
+		    const Synergy::Camera & camera
+    );
+
+	void computeNormalAmboTexture(
+			const Synergy::Texture3D &densityGrid_texture3d
+	);
 
 
     // TODO Dustin - remove after testing:

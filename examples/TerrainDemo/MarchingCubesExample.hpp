@@ -20,9 +20,10 @@ const int kScreenHeight = 768;
 // Density grid dimensions
 const int kGridWidth = 3;
 const int kGridHeight = 3;
-const int kGridDepth = 4;
+const int kGridDepth = 3;
 
 const float kIsoSurfaceValue = 0.0f;
+
 
 class MarchingCubesExample : public GlfwOpenGlWindow {
 
@@ -36,10 +37,7 @@ private:
 
     MarchingCubesRenderer * marchingCubesRenderer;
 
-    //-- 3D data sets to be rendered:
-    GLuint volumeDensity_texture3d;
-    GLuint cubeDensity_texture3d;
-
+    Synergy::Texture3D volumeDensity;
 
     virtual void init();
     virtual void logic();
@@ -48,7 +46,5 @@ private:
 
     void createTextureStorage();
     void fillVolumeDensityTexture();
-    void fillCubeDensityTexture();
     void setupCamera();
-
 };

@@ -36,9 +36,9 @@ void Texture<textureTarget>::unbind() const {
 //---------------------------------------------------------------------------------------
 template<GLenum textureTarget>
 void Texture<textureTarget>::allocateStorage(
-		GLint mipMaplevel,
 		const TextureSpec & spec,
-		const GLvoid *data
+		const GLvoid * data,
+		GLint mipMaplevel
 ) {
 	if (objName == 0) {
 		glGenTextures(1, &objName);

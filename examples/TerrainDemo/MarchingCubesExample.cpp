@@ -34,7 +34,6 @@ void MarchingCubesExample::init() {
 
     createTextureStorage();
     fillVolumeDensityTexture();
-    fillCubeDensityTexture();
     setupCamera();
 
 
@@ -55,143 +54,90 @@ void MarchingCubesExample::init() {
 
 //---------------------------------------------------------------------------------------
 void MarchingCubesExample::createTextureStorage() {
-    // volumeDensity_texture3d
-    {
-        glGenTextures(1, &volumeDensity_texture3d);
-        glBindTexture(GL_TEXTURE_3D, volumeDensity_texture3d);
-
-        glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, kGridWidth, kGridHeight,
-                kGridDepth, 0, GL_RED, GL_FLOAT, NULL);
-
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glBindTexture(GL_TEXTURE_3D, 0);
-        CHECK_GL_ERRORS;
-    }
-
-    // cubeDensity_texture3d
-    {
-        glGenTextures(1, &cubeDensity_texture3d);
-        glBindTexture(GL_TEXTURE_3D, cubeDensity_texture3d);
-
-        glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, kGridWidth, kGridHeight,
-                kGridDepth, 0, GL_RED, GL_FLOAT, NULL);
-
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glBindTexture(GL_TEXTURE_3D, 0);
-        CHECK_GL_ERRORS;
-    }
+	Synergy::TextureSpec textureSpec;
+	textureSpec.width = kGridWidth;
+	textureSpec.height = kGridHeight;
+	textureSpec.depth = kGridDepth;
+	textureSpec.internalFormat = GL_RED;
+	textureSpec.format = GL_RED;
+	textureSpec.dataType = GL_FLOAT;
+	volumeDensity.allocateStorage(textureSpec);
+	volumeDensity.bind();
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	volumeDensity.unbind();
 }
 
 //---------------------------------------------------------------------------------------
 void MarchingCubesExample::fillVolumeDensityTexture() {
-    glBindTexture(GL_TEXTURE_3D, volumeDensity_texture3d);
+	const int width = volumeDensity.width();
+	const int height = volumeDensity.height();
+	const int depth = volumeDensity.depth();
 
-    float32 * data = new float32[kGridDepth * kGridHeight * kGridWidth];
+    float32 * data = new float32[depth * height * width];
 
 	float value = kIsoSurfaceValue;
 
-    for(int k(0); k < kGridDepth; ++k) {
-        for(int j(0); j < kGridHeight; ++j) {
-            for(int i(0); i < kGridWidth; ++i) {
+    for(int k(0); k < depth; ++k) {
+        for(int j(0); j < height; ++j) {
+            for(int i(0); i < width; ++i) {
 	            // Set all values below isosurface value
-                data[k * (kGridHeight * kGridWidth) + (j * kGridWidth) + i] =
+                data[k * (height * width) + (j * width) + i] =
 		                value - 1.0f;
             }
         }
     }
 
-    data[(3 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1;
+//    data[(0 * height * width) + (0 * width) + 0] = value + 1;  // Vertex 0
+//    data[(0 * height * width) + (0 * width) + 1] = value + 1;  // Vertex 1
+//    data[(0 * height * width) + (0 * width) + 2] = value + 1;  // Vertex 2
 
-//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1;  // Vertex 0
-//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1;  // Vertex 1
-//    data[(0 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1;  // Vertex 2
+//    data[(0 * height * width) + (1 * width) + 0] = value + 1;  // Vertex 3
+//    data[(0 * height * width) + (1 * width) + 1] = value + 1;  // Vertex 4
+//    data[(0 * height * width) + (1 * width) + 2] = value + 1;  // Vertex 5
 
-//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1;  // Vertex 3
-//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1;  // Vertex 4
-//    data[(0 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 2] = value + 1;  // Vertex 5
+//    data[(0 * height * width) + (2 * width) + 0] = value + 1;  // Vertex 6
+//    data[(0 * height * width) + (2 * width) + 1] = value + 1;  // Vertex 7
+//	  data[(0 * height * width) + (2 * width) + 2] = value + 1;  // Vertex 8
 
-//    data[(0 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1;  // Vertex 6
-//    data[(0 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 1] = value + 1;  // Vertex 7
-//	  data[(0 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 2] = value + 1;  // Vertex 8
+//    data[(1 * height * width) + (0 * width) + 0] = value + 1; //Vertex 9
+//    data[(1 * height * width) + (0 * width) + 1] = value + 1; //Vertex 10
+//    data[(1 * height * width) + (0 * width) + 2] = value + 1; //Vertex 11
 
-//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1; //Vertex 9
-//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1; //Vertex 10
-//    data[(1 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1; //Vertex 11
+//    data[(1 * height * width) + (1 * width) + 0] = value + 1; //Vertex 12
+    data[(1 * height * width) + (1 * width) + 1] = value + 1; //Vertex 13
+//    data[(1 * height * width) + (1 * width) + 2] = value + 1; //Vertex 14
 
-//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1; //Vertex 12
-//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1; //Vertex 13
-//    data[(1 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 2] = value + 1; //Vertex 14
+//    data[(1 * height * width) + (2 * width) + 0] = value + 1; //Vertex 15
+//    data[(1 * height * width) + (2 * width) + 1] = value + 1; //Vertex 16
+//    data[(1 * height * width) + (2 * width) + 2] = value + 1; //Vertex 17
 
-//    data[(1 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1; //Vertex 15
-//    data[(1 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 1] = value + 1; //Vertex 16
-//    data[(1 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 2] = value + 1; //Vertex 17
+//    data[(2 * height * width) + (0 * width) + 0] = value + 1; //Vertex 18
+//    data[(2 * height * width) + (0 * width) + 1] = value + 1; //Vertex 19
+//    data[(2 * height * width) + (0 * width) + 2] = value + 1; //Vertex 20
 
-//    data[(2 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 0] = value + 1; //Vertex 18
-//    data[(2 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 1] = value + 1; //Vertex 19
-//    data[(2 * kGridHeight * kGridWidth) + (0 * kGridWidth) + 2] = value + 1; //Vertex 20
+//    data[(2 * height * width) + (1 * width) + 0] = value + 1; //Vertex 21
+//    data[(2 * height * width) + (1 * width) + 1] = value + 1; //Vertex 22
+//    data[(2 * height * width) + (1 * width) + 2] = value + 1; //Vertex 23
 
-//    data[(2 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 0] = value + 1; //Vertex 21
-//    data[(2 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 1] = value + 1; //Vertex 22
-//    data[(2 * kGridHeight * kGridWidth) + (1 * kGridWidth) + 2] = value + 1; //Vertex 23
-
-//    data[(2 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 0] = value + 1; //Vertex 24
-//    data[(2 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 1] = value + 1; //Vertex 25
-//    data[(2 * kGridHeight * kGridWidth) + (2 * kGridWidth) + 2] = value + 1; //Vertex 26
+//    data[(2 * height * width) + (2 * width) + 0] = value + 1; //Vertex 24
+//    data[(2 * height * width) + (2 * width) + 1] = value + 1; //Vertex 25
+//    data[(2 * height * width) + (2 * width) + 2] = value + 1; //Vertex 26
 
 
-    glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, kGridWidth,
-            kGridHeight, kGridDepth, GL_RED, GL_FLOAT, data);
+	volumeDensity.bind();
+		// Copy texture into data's memory:
+		glTexSubImage3D(volumeDensity.type, 0, 0, 0, 0, width,
+				height, depth, GL_RED, GL_FLOAT, data);
+	volumeDensity.unbind();
 
 
     delete [] data;
-    glBindTexture(GL_TEXTURE_3D, 0);
-    CHECK_GL_ERRORS;
 };
 
-
-//---------------------------------------------------------------------------------------
-void MarchingCubesExample::fillCubeDensityTexture() {
-    glBindTexture(GL_TEXTURE_3D, cubeDensity_texture3d);
-
-    float32 * data = new float32[kGridDepth * kGridHeight * kGridWidth];
-
-    // Set all border values below isoSurfaceThreshold, and interior cells above
-    // isoSurfaceThreshold.
-    for(int k(0); k < kGridDepth; ++k) {
-        for(int j(0); j < kGridHeight; ++j) {
-            for(int i(0); i < kGridWidth; ++i) {
-                float value = kIsoSurfaceValue + 1.0f;
-
-                if (i == 0 || i == kGridWidth - 1)
-                    value = kIsoSurfaceValue - 1.0f;
-                if (j == 0 || j == kGridHeight - 1)
-                    value = kIsoSurfaceValue - 1.0f;
-                if (k == 0 || k == kGridDepth - 1)
-                    value = kIsoSurfaceValue - 1.0f;
-
-                data[(k * kGridHeight * kGridWidth) + (j * kGridWidth) + i] = value;
-            }
-        }
-    }
-
-    glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, kGridWidth,
-            kGridHeight, kGridDepth, GL_RED, GL_FLOAT, data);
-
-
-    delete [] data;
-    glBindTexture(GL_TEXTURE_3D, 0);
-    CHECK_GL_ERRORS;
-}
 
 //---------------------------------------------------------------------------------------
 void MarchingCubesExample::setupCamera() {
@@ -211,7 +157,7 @@ void MarchingCubesExample::logic() {
 
 //---------------------------------------------------------------------------------------
 void MarchingCubesExample::draw() {
-    marchingCubesRenderer->render(camera, volumeDensity_texture3d, kIsoSurfaceValue);
+    marchingCubesRenderer->render(camera, volumeDensity, kIsoSurfaceValue);
 }
 
 //---------------------------------------------------------------------------------------
