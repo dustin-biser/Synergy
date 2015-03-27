@@ -89,6 +89,22 @@ private:
 
 };
 
+
+//-- Type Defines for various Texture Types:
+typedef Texture<GL_TEXTURE_1D> Texture1D;
+typedef Texture<GL_TEXTURE_2D> Texture2D;
+typedef Texture<GL_TEXTURE_3D> Texture3D;
+typedef Texture<GL_TEXTURE_1D_ARRAY> Texture1DArray;
+typedef Texture<GL_TEXTURE_2D_ARRAY> Texture2DArray;
+typedef Texture<GL_TEXTURE_RECTANGLE> TextureRectangle;
+typedef Texture<GL_TEXTURE_CUBE_MAP> TextureCubeMap;
+typedef Texture<GL_TEXTURE_CUBE_MAP> TextureCubeMap;
+typedef Texture<GL_TEXTURE_CUBE_MAP_ARRAY> TextureCubeMapArray;
+typedef Texture<GL_TEXTURE_BUFFER> TextureBuffer;
+typedef Texture<GL_TEXTURE_2D_MULTISAMPLE> Texture2DMultisample;
+typedef Texture<GL_TEXTURE_2D_MULTISAMPLE_ARRAY> Texture2DMultisampleArray;
+
+
 } // end namespace Synergy
 
 #include "Texture.inl"
