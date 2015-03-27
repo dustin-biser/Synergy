@@ -44,6 +44,15 @@
 		0C8CA2921AB624C400E162CE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DF01A7ED3930078F3FE /* IOKit.framework */; };
 		0C8CA2931AB624DE00E162CE /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DEC1A7ED3580078F3FE /* libglfw3.a */; };
 		0C8CA2941AB8898000E162CE /* PerlinNoiseDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF66994B00A605169878D82C /* PerlinNoiseDemo.cpp */; };
+		0CA959C61AC506CE00F044C5 /* GlfwOpenGlWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C8CA25F1AB3A43700E162CE /* GlfwOpenGlWindow.cpp */; };
+		0CA959C91AC506CE00F044C5 /* CameraController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6697241EB4FC8B54F134C4 /* CameraController.cpp */; };
+		0CA959CB1AC506CE00F044C5 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DEC1A7ED3580078F3FE /* libglfw3.a */; };
+		0CA959CC1AC506CE00F044C5 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DF01A7ED3930078F3FE /* IOKit.framework */; };
+		0CA959CD1AC506CE00F044C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DF41A7ED3A50078F3FE /* Cocoa.framework */; };
+		0CA959CE1AC506CE00F044C5 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DEE1A7ED38A0078F3FE /* CoreVideo.framework */; };
+		0CA959CF1AC506CE00F044C5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DF21A7ED39E0078F3FE /* OpenGL.framework */; };
+		0CA959D01AC506CE00F044C5 /* libSynergy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C8CA2681AB3E50100E162CE /* libSynergy.a */; };
+		0CA959D61AC5073700F044C5 /* VolumeFillingTriangles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6698598F0F7AE4F4933A83 /* VolumeFillingTriangles.cpp */; };
 		EF6695EA91F020A63771B89C /* MarchingCubesRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669292477E6CE6C22017B8 /* MarchingCubesRenderer.cpp */; };
 		EF669BF48433D9F88DDD581E /* Texture.inl in Sources */ = {isa = PBXBuildFile; fileRef = EF6693718186C6D6BC3263E9 /* Texture.inl */; };
 		EF669D30A231CDF758872447 /* MarchingCubesExample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6699AC6EEF855337783C66 /* MarchingCubesExample.cpp */; };
@@ -70,6 +79,15 @@
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 		0C8CA2821AB6226800E162CE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		0CA959D11AC506CE00F044C5 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -338,6 +356,7 @@
 		0C8CA2601AB3A43700E162CE /* GlfwOpenGlWindow.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GlfwOpenGlWindow.hpp; sourceTree = "<group>"; };
 		0C8CA2681AB3E50100E162CE /* libSynergy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSynergy.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C8CA2841AB6226800E162CE /* PerlinNoiseDemo */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PerlinNoiseDemo; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CA959D51AC506CE00F044C5 /* VolumeFillingTriangles */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VolumeFillingTriangles; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CFA8F0B1A918EE5006295B9 /* ObjFileLoader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ObjFileLoader.cpp; sourceTree = "<group>"; };
 		0CFA8F0C1A918EE5006295B9 /* ObjFileLoader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ObjFileLoader.hpp; sourceTree = "<group>"; };
 		0CFA8F0E1A918EE5006295B9 /* Camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
@@ -359,14 +378,17 @@
 		EF66945C56A12A7253E56CC0 /* VoxelEdges.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = VoxelEdges.vs; sourceTree = "<group>"; };
 		EF66947CD453FAD224549442 /* Exception.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Exception.hpp; sourceTree = "<group>"; };
 		EF6694BA68B9C3F19E67F217 /* PerlinNoise.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = PerlinNoise.fs; sourceTree = "<group>"; };
+		EF669536F408B50348B23541 /* VolumeFillingTriangles.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = VolumeFillingTriangles.gs; sourceTree = "<group>"; };
 		EF66958E727582F897AAE0CC /* ComputeNormalAmbo.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = ComputeNormalAmbo.fs; sourceTree = "<group>"; };
 		EF6696530D32795484A1912E /* Texture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Texture.hpp; sourceTree = "<group>"; };
 		EF6696671BB1CDFE3AE3D31B /* RenderIsoSurface.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = RenderIsoSurface.vs; sourceTree = "<group>"; };
 		EF669691F241EEF0CC7435EE /* CameraController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CameraController.hpp; sourceTree = "<group>"; };
 		EF6697241EB4FC8B54F134C4 /* CameraController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraController.cpp; sourceTree = "<group>"; };
+		EF669734D5AB3035C993D435 /* CopyTexture.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = CopyTexture.fs; sourceTree = "<group>"; };
 		EF6698598F0F7AE4F4933A83 /* VolumeFillingTriangles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeFillingTriangles.cpp; sourceTree = "<group>"; };
 		EF66986A9F4D190CEE6BE9DE /* ScreenQuad.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = ScreenQuad.fs; sourceTree = "<group>"; };
 		EF66994B00A605169878D82C /* PerlinNoiseDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerlinNoiseDemo.cpp; sourceTree = "<group>"; };
+		EF669953C3DC597CF6B4447F /* VolumeFillingTriangles.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = VolumeFillingTriangles.vs; sourceTree = "<group>"; };
 		EF6699AC6EEF855337783C66 /* MarchingCubesExample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarchingCubesExample.cpp; sourceTree = "<group>"; };
 		EF669A93A88681857873007C /* MarchingCubesExample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarchingCubesExample.hpp; sourceTree = "<group>"; };
 		EF669BFCBF24622500C9356B /* Math.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Math.hpp; sourceTree = "<group>"; };
@@ -426,6 +448,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0CA959CA1AC506CE00F044C5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0CA959D01AC506CE00F044C5 /* libSynergy.a in Frameworks */,
+				0CA959CB1AC506CE00F044C5 /* libglfw3.a in Frameworks */,
+				0CA959CC1AC506CE00F044C5 /* IOKit.framework in Frameworks */,
+				0CA959CD1AC506CE00F044C5 /* Cocoa.framework in Frameworks */,
+				0CA959CE1AC506CE00F044C5 /* CoreVideo.framework in Frameworks */,
+				0CA959CF1AC506CE00F044C5 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -451,6 +486,7 @@
 				0C8CA2581AB3A30900E162CE /* TerrainDemo */,
 				0C8CA2681AB3E50100E162CE /* libSynergy.a */,
 				0C8CA2841AB6226800E162CE /* PerlinNoiseDemo */,
+				0CA959D51AC506CE00F044C5 /* VolumeFillingTriangles */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -846,6 +882,7 @@
 			children = (
 				EF6691F560CF81B62AF9E888 /* VolumeFillingTriangles.hpp */,
 				EF6698598F0F7AE4F4933A83 /* VolumeFillingTriangles.cpp */,
+				EF669975A72BB2D9528AC5AF /* shaders */,
 			);
 			path = VolumeFillingTriangles;
 			sourceTree = "<group>";
@@ -862,6 +899,16 @@
 				EF66994B00A605169878D82C /* PerlinNoiseDemo.cpp */,
 			);
 			path = TerrainDemo;
+			sourceTree = "<group>";
+		};
+		EF669975A72BB2D9528AC5AF /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				EF669734D5AB3035C993D435 /* CopyTexture.fs */,
+				EF669953C3DC597CF6B4447F /* VolumeFillingTriangles.vs */,
+				EF669536F408B50348B23541 /* VolumeFillingTriangles.gs */,
+			);
+			path = shaders;
 			sourceTree = "<group>";
 		};
 		EF669EB41BDB52AD11DFE4E0 /* shaders */ = {
@@ -975,6 +1022,23 @@
 			productReference = 0C8CA2841AB6226800E162CE /* PerlinNoiseDemo */;
 			productType = "com.apple.product-type.tool";
 		};
+		0CA959C41AC506CE00F044C5 /* VolumeFillingTriangles */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0CA959D21AC506CE00F044C5 /* Build configuration list for PBXNativeTarget "VolumeFillingTriangles" */;
+			buildPhases = (
+				0CA959C51AC506CE00F044C5 /* Sources */,
+				0CA959CA1AC506CE00F044C5 /* Frameworks */,
+				0CA959D11AC506CE00F044C5 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VolumeFillingTriangles;
+			productName = TerrainDemo;
+			productReference = 0CA959D51AC506CE00F044C5 /* VolumeFillingTriangles */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1014,6 +1078,7 @@
 				0C6E6CD71A7ED0070078F3FE /* GlfwExample */,
 				0C8CA2571AB3A30900E162CE /* TerrainDemo */,
 				0C8CA2831AB6226800E162CE /* PerlinNoiseDemo */,
+				0CA959C41AC506CE00F044C5 /* VolumeFillingTriangles */,
 			);
 		};
 /* End PBXProject section */
@@ -1058,6 +1123,16 @@
 				0C8CA2941AB8898000E162CE /* PerlinNoiseDemo.cpp in Sources */,
 				0C8CA28C1AB6243700E162CE /* GlfwOpenGlWindow.cpp in Sources */,
 				0C8CA28E1AB624A600E162CE /* CameraController.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0CA959C51AC506CE00F044C5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0CA959C61AC506CE00F044C5 /* GlfwOpenGlWindow.cpp in Sources */,
+				0CA959C91AC506CE00F044C5 /* CameraController.cpp in Sources */,
+				0CA959D61AC5073700F044C5 /* VolumeFillingTriangles.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1272,6 +1347,34 @@
 			};
 			name = Release;
 		};
+		0CA959D31AC506CE00F044C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/OSX",
+				);
+				PRODUCT_NAME = VolumeFillingTriangles;
+			};
+			name = Debug;
+		};
+		0CA959D41AC506CE00F044C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/OSX",
+				);
+				PRODUCT_NAME = VolumeFillingTriangles;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1316,6 +1419,15 @@
 			buildConfigurations = (
 				0C8CA2881AB6226800E162CE /* Debug */,
 				0C8CA2891AB6226800E162CE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0CA959D21AC506CE00F044C5 /* Build configuration list for PBXNativeTarget "VolumeFillingTriangles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CA959D31AC506CE00F044C5 /* Debug */,
+				0CA959D41AC506CE00F044C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
