@@ -12,9 +12,11 @@ uniform vec3 wsVoxelDim;
 uniform vec3 wsParentBlockPos;
 
 uniform sampler3D densityGrid;
+uniform sampler3D normalAmbo;
 
 in vsOutGsIn {
 	vec3 voxelIndex; // Voxel's index within parent Block.
+	vec3 uvw; // Texture coordinate for voxel's min vertex.
 	vec4 f0123; // Density values at all
 	vec4 f4567; // ... 8 voxel corners.
 	uint mc_case; // 0-255, triTable case.
@@ -83,26 +85,33 @@ void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 
 	vertexPosition = wsMinVertexPos + pos_within_cell * wsVoxelDim;
 
+	//-- Output stream vertex position:
 	outWsPosition = vertexPosition;
-
 	EmitStreamVertex(0);
 	EndStreamPrimitive(0);
+
+	//-- Output stream vertex normal:
+	vec3 uvw = gs_in[0].uvw + pos_within_cell * wsVoxelDim;
+	outWsNormal = texture(normalAmbo, uvw).rgb;
+	EmitStreamVertex(1);
+	EndStreamPrimitive(1);
 }
 
-void computeNormal(vec3 vertexA, vec3 vertexB, vec3 vertexC) {
-	vec3 dir_a_to_b = vertexB - vertexA;
-	vec3 dir_a_to_c = vertexC - vertexA;
-	vec3 normal = normalize(cross(dir_a_to_b, dir_a_to_c));
-
-	// Repeat 3 times, so each vertex position has a corresponding normal.
-	for(int i = 0; i < 3; ++i) {
-		// Must reassign output variables after each EmitStreamVertex() call.
-		outWsNormal = normal;
-
-		EmitStreamVertex(1);
-		EndStreamPrimitive(1);
-	}
-}
+// TODO Dustin - Remove this eventually:
+//void computeNormal(vec3 vertexA, vec3 vertexB, vec3 vertexC) {
+//	vec3 dir_a_to_b = vertexB - vertexA;
+//	vec3 dir_a_to_c = vertexC - vertexA;
+//	vec3 normal = normalize(cross(dir_a_to_b, dir_a_to_c));
+//
+//	// Repeat 3 times, so each vertex position has a corresponding normal.
+//	for(int i = 0; i < 3; ++i) {
+//		// Must reassign output variables after each EmitStreamVertex() call.
+//		outWsNormal = normal;
+//
+//		EmitStreamVertex(1);
+//		EndStreamPrimitive(1);
+//	}
+//}
 
 	/////////////////////////////
 	// TODO Dustin - Remove after testing:
@@ -115,16 +124,11 @@ void main() {
 
 	for(int i = 0; i < numTriangles; ++i) {
 		ivec3 edges = texelFetch(triTable, ivec2(i, mc_case), 0).rgb;
-
 		vec3 vertexPosition[3];
 
 		placeVertOnEdge(edges[0], vertexPosition[0]);
-
 		placeVertOnEdge(edges[1], vertexPosition[1]);
-
 		placeVertOnEdge(edges[2], vertexPosition[2]);
-
-		computeNormal(vertexPosition[0], vertexPosition[1], vertexPosition[2]);
 	}
 
 

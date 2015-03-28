@@ -19,7 +19,7 @@ MarchingCubesRenderer::MarchingCubesRenderer(
 	  transformFeedbackBufferSize(0)
 {
 	numVoxels = (gridWidth - 1.0f) * (gridHeight - 1.0f) * (gridDepth - 1.0f);
-	glGenVertexArrays(1, &vao_junk);
+	glGenVertexArrays(1, &junkVao);
 
     setupShaders();
 	generateTriTableTexture();
@@ -36,7 +36,8 @@ MarchingCubesRenderer::MarchingCubesRenderer(
 	setupVoxelEdgesVertexBuffer();
 	setupVoxelEdgesVao();
 
-	createLightingTexture();
+	allocateNormalAmboTextureStorage();
+	initFramebufferWithColorAttachment(normalAmbo_texture3d);
 }
 
 //---------------------------------------------------------------------------------------
@@ -93,30 +94,36 @@ void MarchingCubesRenderer::setupShaders() {
 		shader_voxelEdges.link();
 	}
 
-	//-- shader_computeLighting:
+	//-- shader_computeNormalAmbo:
 	{
-		shader_computeLighting.generateProgramObject();
-		shader_computeLighting.attachVertexShader("shaders/ScreenQuad.vs");
-		shader_computeLighting.attachFragmentShader("shaders/ComputeNormalAmbo.fs");
-		shader_computeLighting.link();
+		shader_computeNormalAmbo.generateProgramObject();
+		shader_computeNormalAmbo.attachVertexShader("shaders/VolumeFillingTriangles.vs");
+		shader_computeNormalAmbo.attachGeometryShader("shaders/VolumeFillingTriangles.gs");
+		shader_computeNormalAmbo.attachFragmentShader("shaders/ComputeNormalAmbo.fs");
+		shader_computeNormalAmbo.link();
 	}
 }
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesRenderer::setShaderUniforms() {
 
+	float inv_gridWidth = 1.0f / gridWidth;
+	float inv_gridHeight = 1.0f / gridHeight;
+	float inv_gridDepth = 1.0f / gridDepth;
+
     shader_genIsoSurface.setUniform("densityGrid", densityGrid_texUnitOffset);
+	shader_genIsoSurface.setUniform("normalAmbo", normalAmbo_texUnitOffset);
 	shader_genIsoSurface.setUniform("triTable", triTable_texUnitOffset);
-    shader_genIsoSurface.setUniform("inv_gridWidth", 1.0f/gridWidth);
-    shader_genIsoSurface.setUniform("inv_gridHeight", 1.0f/gridHeight);
-    shader_genIsoSurface.setUniform("inv_gridDepth", 1.0f/gridDepth);
+    shader_genIsoSurface.setUniform("inv_gridWidth", inv_gridWidth);
+    shader_genIsoSurface.setUniform("inv_gridHeight", inv_gridHeight);
+    shader_genIsoSurface.setUniform("inv_gridDepth", inv_gridDepth);
 	shader_genIsoSurface.setUniform("wsParentBlockPos", vec3(0.0f));
 
 	// World-space voxel dimensions
 	// Convert from grid-space to world-space:
-	vec3 wsVoxelDim = vec3(1.0f/(gridWidth-1.0f),
-	                       1.0f/(gridDepth - 1.0f),
-	                       1.0f/(gridHeight - 1.0f));
+	vec3 wsVoxelDim = vec3(1.0f / (gridWidth - 1.0f),
+	                       1.0f / (gridDepth - 1.0f),
+	                       1.0f / (gridHeight - 1.0f));
 
 	shader_genIsoSurface.setUniform("wsVoxelDim", wsVoxelDim);
 	shader_genIsoSurface.setUniform("inv_gridDepth", 1.0f/gridDepth);
@@ -129,14 +136,19 @@ void MarchingCubesRenderer::setShaderUniforms() {
 	shader_voxelEdges.setUniform("numVoxelCols", gridWidth - 1.0f);
 	shader_voxelEdges.setUniform("numVoxelRows", gridHeight - 1.0f);
 	shader_voxelEdges.setUniform("numVoxelLayers", gridDepth - 1.0f);
+
+	shader_computeNormalAmbo.setUniform("inv_gridWidth", inv_gridWidth);
+	shader_computeNormalAmbo.setUniform("inv_gridHeight", inv_gridHeight);
+	shader_computeNormalAmbo.setUniform("inv_gridDepth", inv_gridDepth);
+	shader_computeNormalAmbo.setUniform("densityGrid", densityGrid_texUnitOffset);
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::createLightingTexture() {
+void MarchingCubesRenderer::allocateNormalAmboTextureStorage() {
 	Synergy::TextureSpec textureSpec;
 	textureSpec.width = uint32(gridWidth);
-	textureSpec.height = uint32(gridWidth);
-	textureSpec.depth = uint32(gridWidth);
+	textureSpec.height = uint32(gridHeight);
+	textureSpec.depth = uint32(gridDepth);
 	textureSpec.internalFormat = GL_RGBA16F;
 	textureSpec.format = GL_RGBA;
 	textureSpec.dataType = GL_FLOAT;
@@ -912,6 +924,10 @@ void MarchingCubesRenderer::render(
 	generateIsoSurfaceTriangles(densityGrid_texture3d, isoSurfaceValue);
 	renderIsoSurface(camera);
 	renderVoxelEdges(camera);
+
+	#ifdef DEBUG
+		inspectTextureData(normalAmbo_texture3d, 4);
+	#endif
 }
 
 //----------------------------------------------------------------------------------------
@@ -927,8 +943,11 @@ void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 	glBindVertexArray(vao_voxelData);
 
 	glActiveTexture(GL_TEXTURE0 + densityGrid_texUnitOffset);
-	densityGrid.bind();
+	glBindTexture(GL_TEXTURE_3D, densityGrid.name());
 	glBindSampler(densityGrid_texUnitOffset, sampler_densityGrid);
+
+	glActiveTexture(GL_TEXTURE0 + normalAmbo_texUnitOffset);
+	glBindTexture(GL_TEXTURE_3D, normalAmbo_texture3d.name());
 
 	glActiveTexture(GL_TEXTURE0 + triTable_texUnitOffset);
 	glBindTexture(GL_TEXTURE_2D, triTable_texture2d);
@@ -954,7 +973,7 @@ void MarchingCubesRenderer::generateIsoSurfaceTriangles(
 	//-- Restore defaults:
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindVertexArray(0);
-	densityGrid.bind();
+	glBindTexture(GL_TEXTURE_3D, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindSampler(densityGrid_texUnitOffset, 0);
 	glDisable(GL_RASTERIZER_DISCARD);
@@ -994,34 +1013,70 @@ void MarchingCubesRenderer::renderVoxelEdges(const Synergy::Camera &camera) {
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::computeNormalAmboTexture(
-		const Synergy::Texture3D &densityGrid_texture3d
+void MarchingCubesRenderer::initFramebufferWithColorAttachment(
+		const Synergy::Texture3D & texture
 ) {
-//	glViewport(0, 0, texture.width(), texture.height());
-//	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-//
-//	glDisable(GL_DEPTH_TEST);
-//	glDepthMask(GL_FALSE);
-//
-//	glActiveTexture(GL_TEXTURE0);
-//	glBindTexture(GL_TEXTURE_BUFFER, texture_noiseHashTable);
-//
-//	// Bind junkVao to make gl driver happy.
-//	glBindVertexArray(junkVao);
-//
-//	shader_perlinNoise.enable();
-//	GLsizei numInstances = texture.depth;
-//	// Each instance is a viewport filling triangle without using vbo data.
-//	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
-//	shader_perlinNoise.disable();
-//
-//	//-- Reset defaults:
-//	glViewport(0, 0, defaultFramebufferWidth(), defaultFramebufferHeight());
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//	glBindVertexArray(0);
-//	glBindTexture(GL_TEXTURE_BUFFER, 0);
-//	glEnable(GL_DEPTH_TEST);
-//	glDepthMask(GL_TRUE);
-//	CHECK_GL_ERRORS;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.name(), 0);
+
+	CHECK_FRAMEBUFFER_COMPLETENESS;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+//----------------------------------------------------------------------------------------
+void MarchingCubesRenderer::computeNormalAmboTexture(
+		const Synergy::Texture3D & densityGrid_texture3d
+) {
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+	//-- Disable depth testing and writing to depth buffer:
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
+
+	// Bind a junk VAO so driver doesn't complain.
+	glBindVertexArray(junkVao);
+
+	glActiveTexture(GL_TEXTURE0);
+	densityGrid_texture3d.bind();
+
+	// Set viewport size to match destination texture, the texture to be written to.
+	GLint prevViewportData[4];
+	glGetIntegerv(GL_VIEWPORT, prevViewportData);
+	glViewport(0, 0, normalAmbo_texture3d.width(), normalAmbo_texture3d.height());
+
+	GLsizei numInstances = densityGrid_texture3d.depth();
+
+	shader_computeNormalAmbo.enable();
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
+	shader_computeNormalAmbo.disable();
+
+	//-- Restore defaults:
+	densityGrid_texture3d.unbind();
+	glViewport(prevViewportData[0],prevViewportData[1],
+			   prevViewportData[2],prevViewportData[3]);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	CHECK_GL_ERRORS;
+}
+
+//---------------------------------------------------------------------------------------
+void MarchingCubesRenderer::inspectTextureData (
+		const Synergy::Texture3D &texture,
+		uint32 numColorComponents
+) {
+	uint32 width = texture.width();
+	uint32 height = texture.height();
+	uint32 depth = texture.depth();
+	float * data = new float[width * height * depth * numColorComponents];
+
+	texture.bind();
+	glGetTexImage(texture.type, 0, texture.format(),
+			texture.dataType(), data);
+	texture.unbind();
+
+
+	delete [] data;
+	CHECK_GL_ERRORS;
+}

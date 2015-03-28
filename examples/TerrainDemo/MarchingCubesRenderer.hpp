@@ -17,6 +17,7 @@ const GLuint streamIndex_wsNormals = 1;
 //-- Texture Unit Offsets:
 const GLint densityGrid_texUnitOffset = 0;
 const GLint triTable_texUnitOffset = 1;
+const GLint normalAmbo_texUnitOffset = 2;
 
 
 
@@ -50,7 +51,7 @@ private:
     GLsizei transformFeedbackBufferSize;
     GLuint sampler_densityGrid;
 
-	// 3D texture (RGBA8) for storing normals and ambient occlusion factor.
+	// 3D texture for storing normals and ambient occlusion factor.
 	// Texture components correspond to the following:
 	// RGB: surface normal.xyz (gradient of density texture)
 	// A: ambient occlusion factor.
@@ -60,7 +61,7 @@ private:
     Synergy::ShaderProgram shader_genIsoSurface;
     Synergy::ShaderProgram shader_renderIsoSurface;
     Synergy::ShaderProgram shader_voxelEdges;
-	Synergy::ShaderProgram shader_computeLighting;
+	Synergy::ShaderProgram shader_computeNormalAmbo;
 
 
     //-- Vertex Array Objects:
@@ -68,9 +69,9 @@ private:
     GLuint vao_isoSurfaceTriangles; // For isosurface triangles rendering.
     GLuint vao_voxelEdgeLines; // For voxel edge line rendering.
 
-	// Junk vao for processing normalAmbo_texture3d within computeNormalAmboTexture() using
-	// no VBO data.
-	GLuint vao_junk;
+	// Junk vao for processing normalAmbo_texture3d within
+	// computeNormalAmboTexture() using no VBO data.
+	GLuint junkVao;
 
     //-- Vertex Buffers:
     GLuint vbo_voxelIndices; // Voxel indices within parent block.
@@ -86,13 +87,14 @@ private:
     // Used for gathering transform feedback primitive counts written.
     GLuint transformFeedbackObj;
 
+	GLuint framebuffer;
+
 
 	//-- Initialization Methods:
     void setupVoxelVboPositionData();
     void setupVoxelDataVao();
     void setupShaders();
     void setShaderUniforms();
-	void createLightingTexture();
     void uploadShaderUniformArrays();
     void setupSamplerObject();
     void setupTransformFeedback();
@@ -100,6 +102,12 @@ private:
     void setupVaoForIsoSurfaceTriangles();
     void setupVoxelEdgesVao();
     void setupVoxelEdgesVertexBuffer();
+
+	void allocateNormalAmboTextureStorage();
+
+	void initFramebufferWithColorAttachment (
+			const Synergy::Texture3D & texture
+	);
 
     void updateShaderUniforms(
 		    const Synergy::Camera & camera
@@ -125,6 +133,10 @@ private:
 
     // TODO Dustin - remove after testing:
     void inspectTransformFeedbackBuffer();
+	void inspectTextureData(
+			const Synergy::Texture3D & texture,
+			Synergy::uint32 numColorComponents
+	);
 	GLuint streamBuffer_debugOut; // For transform feedback.
 
 };

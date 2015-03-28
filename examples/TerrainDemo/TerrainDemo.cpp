@@ -1,19 +1,19 @@
-#include "MarchingCubesExample.hpp"
+#include "TerrainDemo.hpp"
 #include "MarchingCubesRenderer.hpp"
 
 using std::shared_ptr;
 
 //----------------------------------------------------------------------------------------
 int main() {
-    shared_ptr<GlfwOpenGlWindow> demo =  MarchingCubesExample::getInstance();
+    shared_ptr<GlfwOpenGlWindow> demo =  TerrainDemo::getInstance();
     demo->create(kScreenWidth, kScreenHeight, "Marching Cubes Demo", 1/60.0f);
 
     return 0;
 }
 
 //---------------------------------------------------------------------------------------
-shared_ptr<GlfwOpenGlWindow> MarchingCubesExample::getInstance() {
-    static GlfwOpenGlWindow * instance = new MarchingCubesExample();
+shared_ptr<GlfwOpenGlWindow> TerrainDemo::getInstance() {
+    static GlfwOpenGlWindow * instance = new TerrainDemo();
     if (p_instance == nullptr) {
         p_instance = shared_ptr<GlfwOpenGlWindow>(instance);
     }
@@ -22,13 +22,13 @@ shared_ptr<GlfwOpenGlWindow> MarchingCubesExample::getInstance() {
 }
 
 //---------------------------------------------------------------------------------------
-MarchingCubesExample::~MarchingCubesExample() {
+TerrainDemo::~TerrainDemo() {
     delete marchingCubesRenderer;
 }
 
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesExample::init() {
+void TerrainDemo::init() {
     marchingCubesRenderer =
             new MarchingCubesRenderer(kGridWidth, kGridHeight, kGridDepth);
 
@@ -53,7 +53,7 @@ void MarchingCubesExample::init() {
 }
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesExample::createTextureStorage() {
+void TerrainDemo::createTextureStorage() {
 	Synergy::TextureSpec textureSpec;
 	textureSpec.width = kGridWidth;
 	textureSpec.height = kGridHeight;
@@ -72,7 +72,7 @@ void MarchingCubesExample::createTextureStorage() {
 }
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesExample::fillVolumeDensityTexture() {
+void TerrainDemo::fillVolumeDensityTexture() {
 	const int width = volumeDensity.width();
 	const int height = volumeDensity.height();
 	const int depth = volumeDensity.depth();
@@ -91,9 +91,9 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
         }
     }
 
-//    data[(0 * height * width) + (0 * width) + 0] = value + 1;  // Vertex 0
-//    data[(0 * height * width) + (0 * width) + 1] = value + 1;  // Vertex 1
-//    data[(0 * height * width) + (0 * width) + 2] = value + 1;  // Vertex 2
+    data[(0 * height * width) + (0 * width) + 0] = value + 1;  // Vertex 0
+    data[(0 * height * width) + (0 * width) + 1] = value + 1;  // Vertex 1
+    data[(0 * height * width) + (0 * width) + 2] = value + 1;  // Vertex 2
 
 //    data[(0 * height * width) + (1 * width) + 0] = value + 1;  // Vertex 3
 //    data[(0 * height * width) + (1 * width) + 1] = value + 1;  // Vertex 4
@@ -108,7 +108,7 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
 //    data[(1 * height * width) + (0 * width) + 2] = value + 1; //Vertex 11
 
 //    data[(1 * height * width) + (1 * width) + 0] = value + 1; //Vertex 12
-    data[(1 * height * width) + (1 * width) + 1] = value + 1; //Vertex 13
+//    data[(1 * height * width) + (1 * width) + 1] = value + 1; //Vertex 13
 //    data[(1 * height * width) + (1 * width) + 2] = value + 1; //Vertex 14
 
 //    data[(1 * height * width) + (2 * width) + 0] = value + 1; //Vertex 15
@@ -136,11 +136,10 @@ void MarchingCubesExample::fillVolumeDensityTexture() {
 
 
     delete [] data;
-};
-
+}
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesExample::setupCamera() {
+void TerrainDemo::setupCamera() {
     camera.setNearZDistance(0.1f);
     camera.setPosition(vec3(1.8,1.2,1.2));
     camera.lookAt(vec3(0.5,0.5,-0.5));
@@ -151,16 +150,16 @@ void MarchingCubesExample::setupCamera() {
 }
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesExample::logic() {
+void TerrainDemo::logic() {
 
 }
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesExample::draw() {
+void TerrainDemo::draw() {
     marchingCubesRenderer->render(camera, volumeDensity, kIsoSurfaceValue);
 }
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesExample::cleanup() {
+void TerrainDemo::cleanup() {
 
 }

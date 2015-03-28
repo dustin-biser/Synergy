@@ -25,15 +25,15 @@ const int kGridDepth = 3;
 const float kIsoSurfaceValue = 0.0f;
 
 
-class MarchingCubesExample : public GlfwOpenGlWindow {
+class TerrainDemo : public GlfwOpenGlWindow {
 
 public:
-    ~MarchingCubesExample();
+    ~TerrainDemo();
 
     static std::shared_ptr<GlfwOpenGlWindow> getInstance();
 
 private:
-    MarchingCubesExample() = default; // Singleton. Prevent direct construction.
+    TerrainDemo() = default; // Singleton. Prevent direct construction.
 
     MarchingCubesRenderer * marchingCubesRenderer;
 

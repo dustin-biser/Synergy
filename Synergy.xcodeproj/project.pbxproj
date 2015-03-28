@@ -55,7 +55,7 @@
 		0CA959D61AC5073700F044C5 /* VolumeFillingTriangles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6698598F0F7AE4F4933A83 /* VolumeFillingTriangles.cpp */; };
 		EF6695EA91F020A63771B89C /* MarchingCubesRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669292477E6CE6C22017B8 /* MarchingCubesRenderer.cpp */; };
 		EF669BF48433D9F88DDD581E /* Texture.inl in Sources */ = {isa = PBXBuildFile; fileRef = EF6693718186C6D6BC3263E9 /* Texture.inl */; };
-		EF669D30A231CDF758872447 /* MarchingCubesExample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6699AC6EEF855337783C66 /* MarchingCubesExample.cpp */; };
+		EF669D30A231CDF758872447 /* TerrainDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6699AC6EEF855337783C66 /* TerrainDemo.cpp */; };
 		EF669FC6106C99573306B0BC /* Texture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = EF6696530D32795484A1912E /* Texture.hpp */; };
 /* End PBXBuildFile section */
 
@@ -385,19 +385,20 @@
 		EF669691F241EEF0CC7435EE /* CameraController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CameraController.hpp; sourceTree = "<group>"; };
 		EF6697241EB4FC8B54F134C4 /* CameraController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraController.cpp; sourceTree = "<group>"; };
 		EF669734D5AB3035C993D435 /* CopyTexture.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = CopyTexture.fs; sourceTree = "<group>"; };
+		EF6697540B8CDD280FE760AD /* VolumeFillingTriangles.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = VolumeFillingTriangles.vs; sourceTree = "<group>"; };
 		EF6698598F0F7AE4F4933A83 /* VolumeFillingTriangles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VolumeFillingTriangles.cpp; sourceTree = "<group>"; };
 		EF66986A9F4D190CEE6BE9DE /* ScreenQuad.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = ScreenQuad.fs; sourceTree = "<group>"; };
 		EF66994B00A605169878D82C /* PerlinNoiseDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerlinNoiseDemo.cpp; sourceTree = "<group>"; };
 		EF669953C3DC597CF6B4447F /* VolumeFillingTriangles.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = VolumeFillingTriangles.vs; sourceTree = "<group>"; };
-		EF6699AC6EEF855337783C66 /* MarchingCubesExample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarchingCubesExample.cpp; sourceTree = "<group>"; };
-		EF669A93A88681857873007C /* MarchingCubesExample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarchingCubesExample.hpp; sourceTree = "<group>"; };
+		EF6699AC6EEF855337783C66 /* TerrainDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TerrainDemo.cpp; sourceTree = "<group>"; };
+		EF669A93A88681857873007C /* TerrainDemo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TerrainDemo.hpp; sourceTree = "<group>"; };
 		EF669BFCBF24622500C9356B /* Math.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Math.hpp; sourceTree = "<group>"; };
 		EF669C5BF79A475D0B3353FD /* ScreenQuad.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = ScreenQuad.vs; sourceTree = "<group>"; };
 		EF669D739C5025BA638E8C3C /* PerlinNoise.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = PerlinNoise.gs; sourceTree = "<group>"; };
 		EF669DE23AC154467C825FCD /* MarchingCubes.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = MarchingCubes.vs; sourceTree = "<group>"; };
 		EF669E415A2B7928F89B01E4 /* MarchingCubes.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = MarchingCubes.gs; sourceTree = "<group>"; };
 		EF669EE2F2BB6E649D879479 /* VoxelEdges.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = VoxelEdges.fs; sourceTree = "<group>"; };
-		EF669EF36C459383351B7AAB /* ComputeNormalAmbo.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = ComputeNormalAmbo.vs; sourceTree = "<group>"; };
+		EF669EFFA7E466C17BC0B8BF /* VolumeFillingTriangles.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = VolumeFillingTriangles.gs; sourceTree = "<group>"; };
 		EF669F04997DD6EF5212A83E /* RenderIsoSurface.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = RenderIsoSurface.fs; sourceTree = "<group>"; };
 		EF669F15F87AE50B6CEFA4EA /* PerlinNoiseDemo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoiseDemo.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -891,8 +892,8 @@
 			isa = PBXGroup;
 			children = (
 				EF669EB41BDB52AD11DFE4E0 /* shaders */,
-				EF6699AC6EEF855337783C66 /* MarchingCubesExample.cpp */,
-				EF669A93A88681857873007C /* MarchingCubesExample.hpp */,
+				EF6699AC6EEF855337783C66 /* TerrainDemo.cpp */,
+				EF669A93A88681857873007C /* TerrainDemo.hpp */,
 				EF669292477E6CE6C22017B8 /* MarchingCubesRenderer.cpp */,
 				EF6691F332CD4658066F9D9D /* MarchingCubesRenderer.hpp */,
 				EF669F15F87AE50B6CEFA4EA /* PerlinNoiseDemo.hpp */,
@@ -926,7 +927,8 @@
 				EF669D739C5025BA638E8C3C /* PerlinNoise.gs */,
 				EF66910800DA8DF2C8E9A66B /* PerlinNoise.vs */,
 				EF66958E727582F897AAE0CC /* ComputeNormalAmbo.fs */,
-				EF669EF36C459383351B7AAB /* ComputeNormalAmbo.vs */,
+				EF669EFFA7E466C17BC0B8BF /* VolumeFillingTriangles.gs */,
+				EF6697540B8CDD280FE760AD /* VolumeFillingTriangles.vs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -1097,7 +1099,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C8CA2631AB3AAAB00E162CE /* GlfwOpenGlWindow.cpp in Sources */,
-				EF669D30A231CDF758872447 /* MarchingCubesExample.cpp in Sources */,
+				EF669D30A231CDF758872447 /* TerrainDemo.cpp in Sources */,
 				EF6695EA91F020A63771B89C /* MarchingCubesRenderer.cpp in Sources */,
 				0C8CA2621AB3A92800E162CE /* CameraController.cpp in Sources */,
 			);
