@@ -37,7 +37,7 @@ private:
 
     MarchingCubesRenderer * marchingCubesRenderer;
 
-    Synergy::Texture3D volumeDensity;
+    Synergy::Texture3D densityGrid;
 
     virtual void init();
     virtual void logic();

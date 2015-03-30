@@ -61,21 +61,21 @@ void TerrainDemo::createTextureStorage() {
 	textureSpec.internalFormat = GL_RED;
 	textureSpec.format = GL_RED;
 	textureSpec.dataType = GL_FLOAT;
-	volumeDensity.allocateStorage(textureSpec);
-	volumeDensity.bind();
+	densityGrid.allocateStorage(textureSpec);
+	densityGrid.bind();
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	volumeDensity.unbind();
+	densityGrid.unbind();
 }
 
 //---------------------------------------------------------------------------------------
 void TerrainDemo::fillVolumeDensityTexture() {
-	const int width = volumeDensity.width();
-	const int height = volumeDensity.height();
-	const int depth = volumeDensity.depth();
+	const int width = densityGrid.width();
+	const int height = densityGrid.height();
+	const int depth = densityGrid.depth();
 
     float32 * data = new float32[depth * height * width];
 
@@ -85,15 +85,14 @@ void TerrainDemo::fillVolumeDensityTexture() {
         for(int j(0); j < height; ++j) {
             for(int i(0); i < width; ++i) {
 	            // Set all values below isosurface value
-                data[k * (height * width) + (j * width) + i] =
-		                value - 1.0f;
+                data[k * (height * width) + (j * width) + i] = value - 1.0f;
             }
         }
     }
 
-    data[(0 * height * width) + (0 * width) + 0] = value + 1;  // Vertex 0
-    data[(0 * height * width) + (0 * width) + 1] = value + 1;  // Vertex 1
-    data[(0 * height * width) + (0 * width) + 2] = value + 1;  // Vertex 2
+//    data[(0 * height * width) + (0 * width) + 0] = value + 1;  // Vertex 0
+//    data[(0 * height * width) + (0 * width) + 1] = value + 1;  // Vertex 1
+//    data[(0 * height * width) + (0 * width) + 2] = value + 1;  // Vertex 2
 
 //    data[(0 * height * width) + (1 * width) + 0] = value + 1;  // Vertex 3
 //    data[(0 * height * width) + (1 * width) + 1] = value + 1;  // Vertex 4
@@ -108,7 +107,7 @@ void TerrainDemo::fillVolumeDensityTexture() {
 //    data[(1 * height * width) + (0 * width) + 2] = value + 1; //Vertex 11
 
 //    data[(1 * height * width) + (1 * width) + 0] = value + 1; //Vertex 12
-//    data[(1 * height * width) + (1 * width) + 1] = value + 1; //Vertex 13
+    data[(1 * height * width) + (1 * width) + 1] = value + 1; //Vertex 13
 //    data[(1 * height * width) + (1 * width) + 2] = value + 1; //Vertex 14
 
 //    data[(1 * height * width) + (2 * width) + 0] = value + 1; //Vertex 15
@@ -128,11 +127,11 @@ void TerrainDemo::fillVolumeDensityTexture() {
 //    data[(2 * height * width) + (2 * width) + 2] = value + 1; //Vertex 26
 
 
-	volumeDensity.bind();
+	densityGrid.bind();
 		// Copy texture into data's memory:
-		glTexSubImage3D(volumeDensity.type, 0, 0, 0, 0, width,
+		glTexSubImage3D(densityGrid.type, 0, 0, 0, 0, width,
 				height, depth, GL_RED, GL_FLOAT, data);
-	volumeDensity.unbind();
+	densityGrid.unbind();
 
 
     delete [] data;
@@ -156,7 +155,7 @@ void TerrainDemo::logic() {
 
 //---------------------------------------------------------------------------------------
 void TerrainDemo::draw() {
-    marchingCubesRenderer->render(camera, volumeDensity, kIsoSurfaceValue);
+    marchingCubesRenderer->render(camera, densityGrid, kIsoSurfaceValue);
 }
 
 //---------------------------------------------------------------------------------------

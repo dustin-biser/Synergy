@@ -21,19 +21,22 @@ void main() {
 
 	vec4 step = vec4(inv_gridWidth, inv_gridHeight, inv_gridDepth, 0.0);
 
+	//-- Gradient in world-space:
 	vec3 gradient;
-	gradient.x = texture(densityGrid, uvw + step.xww).r -
-				 texture(densityGrid, uvw - step.xww).r;
+	gradient.x = (texture(densityGrid, uvw + step.xww).r -
+				 texture(densityGrid, uvw - step.xww).r);
 
-	gradient.y = texture(densityGrid, uvw + step.wyw).r -
-				 texture(densityGrid, uvw - step.wyw).r;
-
-	gradient.z = texture(densityGrid, uvw + step.wwz).r -
+	gradient.y = texture(densityGrid, uvw + step.wwz).r -
 				 texture(densityGrid, uvw - step.wwz).r;
+
+	gradient.z = texture(densityGrid, uvw - step.wyw).r -
+				 texture(densityGrid, uvw + step.wyw).r;
 
 	normalAmbo.rgb = normalize(-gradient);
 
+
 	// TODO Dustin compute ambient occlusion factor and pack into alpha component
 	// of normalAmbo output.
+	normalAmbo.a = -99.0;
 }
 

@@ -20,6 +20,7 @@ uniform float isoSurfaceValue;
 out vsOutGsIn {
 	vec3 voxelIndex; // Voxel's index within parent Block.
 	vec3 uvw; // Texture coordinate for voxel's min vertex.
+	vec3 texStep; // uvw step size in texture space.
 	vec4 f0123; // Density values at all
 	vec4 f4567; // ... 8 voxel corners.
 	uint mc_case; // 0-255, triTable case.
@@ -37,6 +38,7 @@ void main() {
 	vs_out.uvw = uvw;
 
 	vec4 step = vec4(inv_gridWidth, inv_gridHeight, inv_gridDepth, 0.0);
+	vs_out.texStep = step.xyz;
 
 	// Sample 4 lower level voxel corners:
 	vs_out.f0123 = vec4( texture(densityGrid, uvw).r,

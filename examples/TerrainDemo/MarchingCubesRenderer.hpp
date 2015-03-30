@@ -137,6 +137,5 @@ private:
 			const Synergy::Texture3D & texture,
 			Synergy::uint32 numColorComponents
 	);
-	GLuint streamBuffer_debugOut; // For transform feedback.
 
 };

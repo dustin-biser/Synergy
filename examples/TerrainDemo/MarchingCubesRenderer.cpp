@@ -52,24 +52,13 @@ void MarchingCubesRenderer::setupShaders() {
 	{
 		shader_genIsoSurface.generateProgramObject();
 		shader_genIsoSurface.attachVertexShader("shaders/MarchingCubes.vs");
-
 		shader_genIsoSurface.attachGeometryShader("shaders/MarchingCubes.gs");
 
 		// Link outWsPosition to stream index 0.
 		// Link outWsNormal to stream index 1.
-
-		////////////////////////////////////////////////////
-		// TODO Dustin - Remove after testing:
-		const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal",
-				"debugOut"};
-		glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 3,
+		const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
+		glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 2,
 				feedbackVaryings, GL_SEPARATE_ATTRIBS);
-		////////////////////////////////////////////////////
-
-		// TODO Dustin - Uncomment:
-//		const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
-//		glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 2,
-//				feedbackVaryings, GL_SEPARATE_ATTRIBS);
 
 		shader_genIsoSurface.link();
 	}
@@ -78,10 +67,8 @@ void MarchingCubesRenderer::setupShaders() {
 	//-- shader_renderIsoSurface:
 	{
 		shader_renderIsoSurface.generateProgramObject();
-		shader_renderIsoSurface.attachVertexShader
-				("shaders/RenderIsoSurface.vs");
-		shader_renderIsoSurface.attachFragmentShader
-				("shaders/RenderIsoSurface.fs");
+		shader_renderIsoSurface.attachVertexShader ("shaders/RenderIsoSurface.vs");
+		shader_renderIsoSurface.attachFragmentShader ("shaders/RenderIsoSurface.fs");
 		shader_renderIsoSurface.link();
 	}
 
@@ -119,17 +106,15 @@ void MarchingCubesRenderer::setShaderUniforms() {
     shader_genIsoSurface.setUniform("inv_gridDepth", inv_gridDepth);
 	shader_genIsoSurface.setUniform("wsParentBlockPos", vec3(0.0f));
 
-	// World-space voxel dimensions
+	// Voxel dimensions
 	// Convert from grid-space to world-space:
-	vec3 wsVoxelDim = vec3(1.0f / (gridWidth - 1.0f),
+	vec3 voxelDim = vec3(1.0f / (gridWidth - 1.0f),
 	                       1.0f / (gridDepth - 1.0f),
 	                       1.0f / (gridHeight - 1.0f));
 
-	shader_genIsoSurface.setUniform("wsVoxelDim", wsVoxelDim);
+	shader_genIsoSurface.setUniform("voxelDim", voxelDim);
 	shader_genIsoSurface.setUniform("inv_gridDepth", 1.0f/gridDepth);
 	uploadShaderUniformArrays();
-
-	shader_renderIsoSurface.setUniform("color", vec3(0.1f,0.2f,0.8f));
 
 	shader_voxelEdges.setUniform("lineColor", vec3(0.7f, 0.7f, 0.7f));
 	shader_voxelEdges.setUniform("wsBlockMinVertexPos", vec3(0));
@@ -141,6 +126,7 @@ void MarchingCubesRenderer::setShaderUniforms() {
 	shader_computeNormalAmbo.setUniform("inv_gridHeight", inv_gridHeight);
 	shader_computeNormalAmbo.setUniform("inv_gridDepth", inv_gridDepth);
 	shader_computeNormalAmbo.setUniform("densityGrid", densityGrid_texUnitOffset);
+	shader_computeNormalAmbo.setUniform("textureDepth", gridDepth);
 }
 
 //----------------------------------------------------------------------------------------
@@ -799,18 +785,6 @@ void MarchingCubesRenderer::setupTransformFeedback() {
 			max_triangles_per_voxel * vertices_per_triangle * vec3_size;
 
 
-		/////////////////////////////////////////////////////////////
-		// TODO Dustin - Remove after testing:
-		glGenBuffers(1, &streamBuffer_debugOut);
-		glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_debugOut);
-
-		glBufferData(GL_ARRAY_BUFFER, transformFeedbackBufferSize, nullptr, GL_STREAM_COPY);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		CHECK_GL_ERRORS;
-		/////////////////////////////////////////////////////////////
-
-
 	//-- Allocate stream buffer storage for vertex positions:
 	{
 		glGenBuffers(1, &streamBuffer_wsPositions);
@@ -846,11 +820,6 @@ void MarchingCubesRenderer::setupTransformFeedback() {
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,
 				streamIndex_wsNormals, streamBuffer_wsNormals);
 
-		/////////////////////////////////////////////////////////////
-		// TODO Dustin - Remove after testing:
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, streamBuffer_debugOut);
-		/////////////////////////////////////////////////////////////
-
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 		CHECK_GL_ERRORS;
 	}
@@ -883,20 +852,8 @@ void MarchingCubesRenderer::inspectTransformFeedbackBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsNormals);
 	glGetBufferSubData(GL_ARRAY_BUFFER, 0, transformFeedbackBufferSize, stream1Data);
 
-
-	///////////////////////////////////////////////////
-	// TODO Dustin - Remove after testing:
-	GLfloat * stream2Data = new GLfloat[numElements];
-	glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_debugOut);
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, transformFeedbackBufferSize, stream2Data);
-
-	///////////////////////////////////////////////////
-
 	delete [] stream0Data;
 	delete [] stream1Data;
-
-		// TODO Dustin - Remove after testing:
-		delete [] stream2Data;
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
     CHECK_GL_ERRORS;
@@ -912,22 +869,6 @@ void MarchingCubesRenderer::updateShaderUniforms(const Synergy::Camera &camera){
 	shader_renderIsoSurface.setUniform("NormalMatrix", glm::transpose(glm::inverse(viewMatrix)));
 
 	shader_voxelEdges.setUniform("ViewProjMatrix", vpMatrix);
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::render(
-        const Synergy::Camera & camera,
-		const Synergy::Texture3D & densityGrid_texture3d,
-        float32 isoSurfaceValue
-){
-	computeNormalAmboTexture(densityGrid_texture3d);
-	generateIsoSurfaceTriangles(densityGrid_texture3d, isoSurfaceValue);
-	renderIsoSurface(camera);
-	renderVoxelEdges(camera);
-
-	#ifdef DEBUG
-		inspectTextureData(normalAmbo_texture3d, 4);
-	#endif
 }
 
 //----------------------------------------------------------------------------------------
@@ -1080,3 +1021,24 @@ void MarchingCubesRenderer::inspectTextureData (
 	delete [] data;
 	CHECK_GL_ERRORS;
 }
+
+//----------------------------------------------------------------------------------------
+void MarchingCubesRenderer::render(
+		const Synergy::Camera & camera,
+		const Synergy::Texture3D & densityGrid_texture3d,
+		float32 isoSurfaceValue
+){
+	computeNormalAmboTexture(densityGrid_texture3d);
+	generateIsoSurfaceTriangles(densityGrid_texture3d, isoSurfaceValue);
+	renderIsoSurface(camera);
+	renderVoxelEdges(camera);
+
+#ifdef DEBUG
+	inspectTextureData(normalAmbo_texture3d, 4);
+#endif
+}
+
+
+
+
+
