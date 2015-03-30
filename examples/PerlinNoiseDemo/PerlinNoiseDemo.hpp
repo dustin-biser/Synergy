@@ -14,9 +14,9 @@ const GLint kAttribIndex_positions = 0;
 const GLint kAttribIndex_texCoords = 0;
 
 Synergy::TextureSpec noise_texture3dspec = {
-		16,
-		16,
-		16,
+		64,
+		64,
+		64,
 		GL_R16F,
 		GL_RED,
 		GL_FLOAT

@@ -230,7 +230,7 @@ void PerlinNoiseDemo::fillNoiseTexture3d (
 
 //---------------------------------------------------------------------------------------
 void PerlinNoiseDemo::logic() {
-	inspectTextureData(noise_texture3d);
+//	inspectTextureData(noise_texture3d);
 }
 
 //---------------------------------------------------------------------------------------
