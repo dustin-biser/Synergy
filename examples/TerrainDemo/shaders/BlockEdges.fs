@@ -1,4 +1,4 @@
-// VoxelEdges.fs
+// BlockEdges.fs
 #version 410
 
 out vec4 outColor;

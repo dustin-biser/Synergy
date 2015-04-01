@@ -6,7 +6,6 @@
 
 #include "GlfwOpenGlWindow.hpp"
 #include "TerrainBlockGenerator.hpp"
-#include "PostProcessRenderer.hpp"
 
 
 //-- Forward Declarations:
@@ -60,7 +59,7 @@ private:
 	virtual void keyInput(int key, int action, int mods);
 
 	void toggleTerrainNormalVisualization();
-	void toggleVoxelEdgeVisualization();
+	void toggleBlockEdgeVisualization();
     void setupCamera();
 	void setupGl();
 	void initSkyboxTextures();

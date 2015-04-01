@@ -84,7 +84,9 @@ TerrainDemo::~TerrainDemo() {
 //---------------------------------------------------------------------------------------
 void TerrainDemo::setupGl() {
 
-	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 
 	//-- Setup depth testing:
 	glEnable(GL_DEPTH_TEST);
@@ -121,7 +123,7 @@ void TerrainDemo::keyInput(int key, int action, int mods) {
 				break;
 
 			case GLFW_KEY_2:
-				toggleVoxelEdgeVisualization();
+				toggleBlockEdgeVisualization();
 		        break;
 
 			case GLFW_KEY_3:
@@ -152,12 +154,12 @@ void TerrainDemo::toggleTerrainNormalVisualization() {
 }
 
 //---------------------------------------------------------------------------------------
-void TerrainDemo::toggleVoxelEdgeVisualization() {
+void TerrainDemo::toggleBlockEdgeVisualization() {
 	static bool visualizeVoxelEdges = false;
 	if (visualizeVoxelEdges) {
-		terrainRenderer->enableRenderVoxelEdges();
+		terrainRenderer->enableVisualizeBlocks();
 	} else {
-		terrainRenderer->disableRendVoxelEdges();
+		terrainRenderer->disableVisualizeBlocks();
 	}
 
 	visualizeVoxelEdges = !visualizeVoxelEdges;

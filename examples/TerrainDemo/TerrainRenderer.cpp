@@ -9,7 +9,7 @@ TerrainRenderer::TerrainRenderer (
 		const uvec3 & densityGridDimensions
 )
 	: visualizeNormals(false),
-	  visualizeVoxelEdges(true)
+	  visualizeBlocks(true)
 {
 	glGenVertexArrays(1, &vao_terrainSurface);
 
@@ -17,8 +17,8 @@ TerrainRenderer::TerrainRenderer (
 	numVoxelsPerBlock = dim.x * dim.y * dim.z;
 
 	setupShaderPrograms(densityGridDimensions);
-	setupVoxelEdgesVertexBuffer();
-	setupVoxelEdgesVao();
+	setupBlockEdgesVertexBuffer();
+	setupBlockEdgesVao();
 }
 
 //----------------------------------------------------------------------------------------
@@ -35,8 +35,8 @@ void TerrainRenderer::render(
 	setVertexAttributeMappings(block);
 	renderIsoSurface(block);
 
-	if (visualizeVoxelEdges) {
-		renderVoxelEdges(block);
+	if (visualizeBlocks) {
+		renderBlockEdges(block);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -57,24 +57,15 @@ void TerrainRenderer::setupShaderPrograms (
 	}
 
 
-	//-- shader_voxelEdges:
+	//-- shader_blockEdges:
 	{
-		shader_voxelEdges.generateProgramObject();
-		shader_voxelEdges.attachVertexShader("shaders/VoxelEdges.vs");
-		shader_voxelEdges.attachFragmentShader("shaders/VoxelEdges.fs");
-		shader_voxelEdges.link();
+		shader_blockEdges.generateProgramObject();
+		shader_blockEdges.attachVertexShader("shaders/BlockEdges.vs");
+		shader_blockEdges.attachFragmentShader("shaders/BlockEdges.fs");
+		shader_blockEdges.link();
 	}
 
-	float numVoxelCols = densityGridDimensions.x - 1.0f;
-	float numVoxelRows = densityGridDimensions.y - 1.0f;
-	float numVoxelLayers = densityGridDimensions.z - 1.0f;
-
-	//-- Uniform values:
-	shader_voxelEdges.setUniform("lineColor", vec3(0.7f, 0.7f, 0.7f));
-	shader_voxelEdges.setUniform("wsBlockMinVertexPos", vec3(0));
-	shader_voxelEdges.setUniform("numVoxelCols", numVoxelCols);
-	shader_voxelEdges.setUniform("numVoxelRows", numVoxelRows);
-	shader_voxelEdges.setUniform("numVoxelLayers", numVoxelLayers);
+	shader_blockEdges.setUniform("lineColor", vec3(0.7f, 0.7f, 0.7f));
 }
 
 //----------------------------------------------------------------------------------------
@@ -88,7 +79,7 @@ void TerrainRenderer::updateShaderUniforms (
 	shader_terrainSurface.setUniform("MVP_Matrix", vpMatrix);
 	shader_terrainSurface.setUniform("NormalMatrix", glm::transpose(glm::inverse(viewMatrix)));
 
-	shader_voxelEdges.setUniform("ViewProjMatrix", vpMatrix);
+	shader_blockEdges.setUniform("ViewProjMatrix", vpMatrix);
 }
 
 //----------------------------------------------------------------------------------------
@@ -112,21 +103,23 @@ void TerrainRenderer::renderIsoSurface(
 }
 
 //----------------------------------------------------------------------------------------
-void TerrainRenderer::renderVoxelEdges (
-	const TerrainBlock & block
+void TerrainRenderer::renderBlockEdges(
+		const TerrainBlock &block
 ) {
-	glBindVertexArray(vao_voxelEdges);
+	shader_blockEdges.setUniform("wsBlockMinVertPos", block.getMinVertexPos());
 
-	shader_voxelEdges.enable();
-	glDrawElementsInstanced(GL_LINES, 24, GL_UNSIGNED_SHORT, nullptr, numVoxelsPerBlock);
-	shader_voxelEdges.disable();
+	glBindVertexArray(vao_blockEdges);
+
+	shader_blockEdges.enable();
+		glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, nullptr);
+	shader_blockEdges.disable();
 
 	glBindVertexArray(0);
 	CHECK_GL_ERRORS;
 }
 
 //----------------------------------------------------------------------------------------
-void TerrainRenderer::setupVoxelEdgesVertexBuffer() {
+void TerrainRenderer::setupBlockEdgesVertexBuffer() {
 
 	//   World-Space Axes
 	//      y
@@ -149,8 +142,8 @@ void TerrainRenderer::setupVoxelEdgesVertexBuffer() {
 			0,1,-1, // 7 left top back
 	};
 	// Upload Vertex Position Data:
-	glGenBuffers(1, &vbo_voxelEdges);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelEdges);
+	glGenBuffers(1, &vbo_blockEdges);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_blockEdges);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(voxelVertices), voxelVertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	CHECK_GL_ERRORS;
@@ -166,25 +159,25 @@ void TerrainRenderer::setupVoxelEdgesVertexBuffer() {
 	};
 
 	// Upload Index Data:
-	glGenBuffers(1, &ibo_voxelEdges);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_voxelEdges);
+	glGenBuffers(1, &ibo_blockEdges);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_blockEdges);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	CHECK_GL_ERRORS;
 }
 
 //----------------------------------------------------------------------------------------
-void TerrainRenderer::setupVoxelEdgesVao() {
-	glGenVertexArrays(1, &vao_voxelEdges);
-	glBindVertexArray(vao_voxelEdges);
+void TerrainRenderer::setupBlockEdgesVao() {
+	glGenVertexArrays(1, &vao_blockEdges);
+	glBindVertexArray(vao_blockEdges);
 
 	// Set index buffer binding for VAO.
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_voxelEdges);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_blockEdges);
 
 	GLuint position_attrib_index = 0;
 
 	// Map position buffer data into vertex attribute index.
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelEdges);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_blockEdges);
 	glEnableVertexAttribArray(position_attrib_index);
 	glVertexAttribPointer(position_attrib_index, 3, GL_FLOAT, GL_FALSE, 0,
 			reinterpret_cast<void *>(0));
@@ -236,11 +229,11 @@ void TerrainRenderer::disableVisualizeNormals() {
 }
 
 //----------------------------------------------------------------------------------------
-void TerrainRenderer::enableRenderVoxelEdges() {
-	visualizeVoxelEdges = true;
+void TerrainRenderer::enableVisualizeBlocks() {
+	visualizeBlocks = true;
 }
 
 //----------------------------------------------------------------------------------------
-void TerrainRenderer::disableRendVoxelEdges() {
-	visualizeVoxelEdges = false;
+void TerrainRenderer::disableVisualizeBlocks() {
+	visualizeBlocks = false;
 }

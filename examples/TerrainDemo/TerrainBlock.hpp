@@ -28,6 +28,7 @@ public:
 	GLuint getNormalVertexBuffer() const;
 	GLuint getTransformFeedbackObj() const;
 	GLuint getBytesPerVertexBuffer() const;
+	glm::vec3 getMinVertexPos() const;
 
 	const Synergy::Texture3D & getDensityTexture() const;
 	const Synergy::Texture3D & getNormalAmboTexture() const;

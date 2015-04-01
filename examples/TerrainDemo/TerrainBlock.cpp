@@ -68,3 +68,8 @@ const Synergy::Texture3D & TerrainBlock::getNormalAmboTexture() const {
 GLuint TerrainBlock::getBytesPerVertexBuffer() const {
 	return bytesPerVertexBuffer;
 }
+
+//---------------------------------------------------------------------------------------
+glm::vec3 TerrainBlock::getMinVertexPos() const {
+	return wsMinVertexPos;
+}

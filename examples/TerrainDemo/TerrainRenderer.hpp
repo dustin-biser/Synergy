@@ -20,32 +20,32 @@ public:
 	void enableVisualizeNormals();
 	void disableVisualizeNormals();
 
-	void enableRenderVoxelEdges();
-	void disableRendVoxelEdges();
+	void enableVisualizeBlocks();
+	void disableVisualizeBlocks();
 
 private:
 	bool visualizeNormals;
-	bool visualizeVoxelEdges;
+	bool visualizeBlocks;
 
 	//-- Vertex Array Attribute Indices:
 	const GLuint position_attrib_index = 0;
 	const GLuint normal_attrib_index = 1;
 
 	Synergy::ShaderProgram shader_terrainSurface;
-	Synergy::ShaderProgram shader_voxelEdges;
+	Synergy::ShaderProgram shader_blockEdges;
 
-	//-- For Voxel Rendering:
-	GLuint vao_voxelEdges;
-	GLuint vbo_voxelEdges; // vertex buffer object
-	GLuint ibo_voxelEdges; // index buffer object
+	//-- For Block Edge Rendering:
+	GLuint vao_blockEdges;
+	GLuint vbo_blockEdges; // vertex buffer object
+	GLuint ibo_blockEdges; // index buffer object
 
 	GLuint vao_terrainSurface;
 
 	Synergy::uint32 numVoxelsPerBlock;
 
 	void setupShaderPrograms(const glm::uvec3 & densityGridDimensions);
-	void setupVoxelEdgesVertexBuffer();
-	void setupVoxelEdgesVao();
+	void setupBlockEdgesVertexBuffer();
+	void setupBlockEdgesVao();
 	void setVertexAttributeMappings(const TerrainBlock & block);
 
 	void updateShaderUniforms(const Synergy::Camera & camera);
@@ -54,8 +54,8 @@ private:
 			const TerrainBlock & block
 	);
 
-	void renderVoxelEdges (
-			const TerrainBlock & block
+	void renderBlockEdges(
+			const TerrainBlock &block
 	);
 
 };

@@ -430,7 +430,9 @@
 		EF669BFCBF24622500C9356B /* Math.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Math.hpp; sourceTree = "<group>"; };
 		EF669C0C78EBD6AB027B6598 /* VboMemoryPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VboMemoryPool.cpp; sourceTree = "<group>"; };
 		EF669C5EF5F5DF6800C1454B /* Skybox.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Skybox.hpp; sourceTree = "<group>"; };
+		EF669CE3FDC3921F09BB4931 /* BlockEdges.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = BlockEdges.fs; sourceTree = "<group>"; };
 		EF669D679963CA051AA098A1 /* TropicalSunnyDayFront512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TropicalSunnyDayFront512.png; sourceTree = "<group>"; };
+		EF669DA0DB3A5FCB080CC89F /* BlockEdges.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = BlockEdges.vs; sourceTree = "<group>"; };
 		EF669DAC4F440CB1664A6F06 /* BuildRockDensity.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = BuildRockDensity.fs; sourceTree = "<group>"; };
 		EF669DE23AC154467C825FCD /* MarchingCubes.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = MarchingCubes.vs; sourceTree = "<group>"; };
 		EF669E415A2B7928F89B01E4 /* MarchingCubes.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = MarchingCubes.gs; sourceTree = "<group>"; };
@@ -1053,6 +1055,8 @@
 				EF6693C74946B72A856A12BC /* ScreenQuad.vs */,
 				EF669FF1E1104A854AEDED83 /* GammaCorrection.fs */,
 				EF6693F1F5C04DC3D6DE06EF /* ComputeRockDensity.fs */,
+				EF669DA0DB3A5FCB080CC89F /* BlockEdges.vs */,
+				EF669CE3FDC3921F09BB4931 /* BlockEdges.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
