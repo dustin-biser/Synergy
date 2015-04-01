@@ -10,6 +10,7 @@
 
 using std::shared_ptr;
 using namespace glm;
+using namespace Synergy;
 
 //----------------------------------------------------------------------------------------
 int main() {
@@ -35,17 +36,23 @@ void TerrainDemo::init() {
 	{
 		uvec3 densityGridDimensions(kGridWidth, kGridHeight, kGridDepth);
 
+		terrainBlockGenerator =
+				new TerrainBlockGenerator(densityGridDimensions);
+
 		rockDensityGenerator = new RockDensityGenerator();
+		rockDensityGenerator->setTextureRenderTarget(
+			terrainBlockGenerator->getSharedDensityTexture()
+		);
 
 		lightingOven = new LightingOven(densityGridDimensions);
+		lightingOven->setTextureRenderTarget(
+				terrainBlockGenerator->getSharedNormalAmboTexture()
+		);
 
 		terrainRenderer = new TerrainRenderer(densityGridDimensions);
 
 		surfacePolygonizer =
 				new MarchingCubesSurfacePolygonizer(densityGridDimensions);
-
-		terrainBlockGenerator =
-				new TerrainBlockGenerator(densityGridDimensions);
 
 		skybox = new Skybox();
 
@@ -96,12 +103,13 @@ void TerrainDemo::setupGl() {
 //---------------------------------------------------------------------------------------
 void TerrainDemo::setupCamera() {
     camera.setNearZDistance(0.1f);
-    camera.setPosition(vec3(1.8,1.2,1.2));
-    camera.lookAt(vec3(0.5,0.5,-0.5));
+	camera.setFarZDistance(100.0f);
+    camera.setPosition(vec3(0.8,1.0,1.0));
+    camera.lookAt(vec3(0.5,0.6,-0.5));
 
-    cameraController.setForwardScaleFactor(0.05f/kGridWidth);
-    cameraController.setSideStrafeScaleFactor(0.05f/kGridWidth);
-    cameraController.setUpScaleFactor(0.05f/kGridWidth);
+    cameraController.setForwardScaleFactor(0.05f);
+    cameraController.setSideStrafeScaleFactor(0.05f);
+    cameraController.setUpScaleFactor(0.02f);
 }
 
 //---------------------------------------------------------------------------------------
@@ -200,12 +208,16 @@ void TerrainDemo::logic() {
 
 		terrainRenderer->render(camera, block, renderTarget);
 	}
+
+	#ifdef DEBUG
+		inspectTextureData(terrainBlockGenerator->getSharedDensityTexture());
+	#endif
 }
 
 //---------------------------------------------------------------------------------------
 void TerrainDemo::draw() {
 	if(gammaCorrection) {
-		postProcessRenderer->applyGammaCorrection(*renderTarget, 1.2f);
+		postProcessRenderer->applyGammaCorrection(*renderTarget, 1.4f);
 	} else {
 		postProcessRenderer->render(*renderTarget);
 	}
@@ -214,4 +226,24 @@ void TerrainDemo::draw() {
 //---------------------------------------------------------------------------------------
 void TerrainDemo::cleanup() {
 
+}
+
+//---------------------------------------------------------------------------------------
+void TerrainDemo::inspectTextureData(
+		const Texture3D & texture
+) {
+	uint32 width = texture.width();
+	uint32 height = texture.height();
+	uint32 depth = texture.depth();
+	uint32 numColorComponents = 4;
+	float * data = new float[width * height * depth * numColorComponents];
+
+	texture.bind();
+	glGetTexImage(texture.type, 0, texture.format(),
+			texture.dataType(), data);
+	texture.unbind();
+
+
+	delete [] data;
+	CHECK_GL_ERRORS;
 }

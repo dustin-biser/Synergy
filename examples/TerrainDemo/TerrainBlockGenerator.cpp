@@ -20,6 +20,7 @@ TerrainBlockGenerator::TerrainBlockGenerator (
 	{
 		TerrainBlock * block =
 				new TerrainBlock(densityTexture, normalAmboTexture, bytesPerVertexBuffer);
+		block->wsMinVertexPos = vec3(0);
 
 		vboMemoryPool.requestVertexBuffer(block->vbo_positions);
 		vboMemoryPool.requestVertexBuffer(block->vbo_normals);
@@ -122,4 +123,14 @@ void TerrainBlockGenerator::createTextureStorage (
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		normalAmboTexture.unbind();
 	}
+}
+
+//---------------------------------------------------------------------------------------
+const Synergy::Texture3D &TerrainBlockGenerator::getSharedNormalAmboTexture() {
+	return normalAmboTexture;
+}
+
+//---------------------------------------------------------------------------------------
+const Synergy::Texture3D &TerrainBlockGenerator::getSharedDensityTexture() {
+	return densityTexture;
 }

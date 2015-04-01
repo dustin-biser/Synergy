@@ -10,7 +10,12 @@ public:
 	~LightingOven();
 
 	void bakeNormals(TerrainBlock & block);
+
 	void bakeAmbientOcclusion(TerrainBlock & block);
+
+	void setTextureRenderTarget(
+			const Synergy::Texture3D & texture
+	);
 
 private:
 	// Junk vao for processing normalAmbo_texture3d within
@@ -22,17 +27,6 @@ private:
 	Synergy::ShaderProgram shader_computeNormals;
 
 	void setupShaderProgram();
+
 	void setShaderUniforms(const glm::uvec3 & densityGridDimensions);
-
-	void computeNormals(TerrainBlock & block);
-
-	void computeAmbientOcclusion(TerrainBlock & block);
-
-	void setFramebufferColorAttachment(const Synergy::Texture3D & texture);
-
-
-
-	// TODO Dustin - Remove after testing:
-	void inspectTextureData(const TerrainBlock & block);
-
 };

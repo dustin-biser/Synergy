@@ -641,41 +641,6 @@ void MarchingCubesSurfacePolygonizer::setTransformFeedbackStreamBuffers(
 		CHECK_GL_ERRORS;
 	}
 }
-//----------------------------------------------------------------------------------------
-template<typename T>
-static void zeroOutArray(T * data, uint32 numElements) {
-	for(uint32 i = 0; i < numElements; ++i) {
-		data[i] = T(0);
-	}
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesSurfacePolygonizer::inspectTransformFeedbackBuffer (
-		const TerrainBlock & block
-) {
-	// Empty out GL pipeline so that stream buffers have data.
-	glFlush();
-	glFinish();
-
-    GLsizei numElements =  block.getBytesPerVertexBuffer() / sizeof(GLfloat);
-    GLfloat * stream0Data = new GLfloat[numElements];
-	GLfloat * stream1Data = new GLfloat[numElements];
-
-	zeroOutArray<GLfloat>(stream0Data, numElements);
-	zeroOutArray<GLfloat>(stream1Data, numElements);
-
-	glBindBuffer(GL_ARRAY_BUFFER, block.getPositionVertexBuffer());
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, block.getBytesPerVertexBuffer(), stream0Data);
-
-	glBindBuffer(GL_ARRAY_BUFFER, block.getNormalVertexBuffer());
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, block.getBytesPerVertexBuffer(), stream1Data);
-
-	delete [] stream0Data;
-	delete [] stream1Data;
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-    CHECK_GL_ERRORS;
-}
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesSurfacePolygonizer::generateSurfaceVertices(
@@ -722,3 +687,44 @@ void MarchingCubesSurfacePolygonizer::generateSurfaceVertices(
 
 
 
+
+
+//----------------------------------------------------------------------------------------
+// FOR TESTING
+// TODO Dustin - Remove after testing:
+template<typename T>
+static void zeroOutArray(T * data, uint32 numElements) {
+	for(uint32 i = 0; i < numElements; ++i) {
+		data[i] = T(0);
+	}
+}
+
+//----------------------------------------------------------------------------------------
+// FOR TESTING
+// TODO Dustin - Remove after testing:
+void MarchingCubesSurfacePolygonizer::inspectTransformFeedbackBuffer (
+		const TerrainBlock & block
+) {
+	// Empty out GL pipeline so that stream buffers have data.
+	glFlush();
+	glFinish();
+
+	GLsizei numElements =  block.getBytesPerVertexBuffer() / sizeof(GLfloat);
+	GLfloat * stream0Data = new GLfloat[numElements];
+	GLfloat * stream1Data = new GLfloat[numElements];
+
+	zeroOutArray<GLfloat>(stream0Data, numElements);
+	zeroOutArray<GLfloat>(stream1Data, numElements);
+
+	glBindBuffer(GL_ARRAY_BUFFER, block.getPositionVertexBuffer());
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, block.getBytesPerVertexBuffer(), stream0Data);
+
+	glBindBuffer(GL_ARRAY_BUFFER, block.getNormalVertexBuffer());
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, block.getBytesPerVertexBuffer(), stream1Data);
+
+	delete [] stream0Data;
+	delete [] stream1Data;
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	CHECK_GL_ERRORS;
+}

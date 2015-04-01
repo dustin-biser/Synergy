@@ -11,12 +11,16 @@ LightingOven::LightingOven (
 
 	glGenVertexArrays(1, &junkVao);
 	glGenFramebuffers(1, &framebuffer);
+
+	CHECK_GL_ERRORS;
 }
 
 //---------------------------------------------------------------------------------------
 LightingOven::~LightingOven() {
 	glDeleteVertexArrays(1, &junkVao);
 	glDeleteFramebuffers(1, &framebuffer);
+
+	CHECK_GL_ERRORS;
 }
 
 //---------------------------------------------------------------------------------------
@@ -46,46 +50,8 @@ void LightingOven::setShaderUniforms (
 }
 
 //---------------------------------------------------------------------------------------
-void LightingOven::bakeNormals(TerrainBlock & block) {
-	setFramebufferColorAttachment(*block.normalAmboTexture);
-	computeNormals(block);
-
-//	#ifdef DEBUG
-//		inspectTextureData(block);
-//	#endif
-}
-
-//---------------------------------------------------------------------------------------
-void LightingOven::bakeAmbientOcclusion(TerrainBlock & block) {
-	setFramebufferColorAttachment(*block.normalAmboTexture);
-	computeAmbientOcclusion(block);
-
-//	#ifdef DEBUG
-//		inspectTextureData(block);
-//	#endif
-}
-
-//----------------------------------------------------------------------------------------
-// Attach common normalAmboTexture for all TerrainBlocks as framebuffer's
-// color attachment. Do this only once, and keep it bound as color attachment.
-void LightingOven::setFramebufferColorAttachment(
-		const Synergy::Texture3D & texture
-) {
-	static bool doOnce = true;
-	if (doOnce) {
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.name(), 0);
-
-		CHECK_FRAMEBUFFER_COMPLETENESS;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		doOnce = false;
-	}
-}
-
-//----------------------------------------------------------------------------------------
 // Renders normals into normalAmboTexture member of TerrainBlock
-void LightingOven::computeNormals( TerrainBlock & block ) {
+void LightingOven::bakeNormals(TerrainBlock & block) {
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	//-- Disable depth testing and writing to depth buffer:
@@ -109,7 +75,7 @@ void LightingOven::computeNormals( TerrainBlock & block ) {
 	GLsizei numInstances = densityTexture.depth();
 
 	shader_computeNormals.enable();
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
 	shader_computeNormals.disable();
 
 	//-- Restore defaults:
@@ -122,30 +88,20 @@ void LightingOven::computeNormals( TerrainBlock & block ) {
 	CHECK_GL_ERRORS;
 }
 
-//----------------------------------------------------------------------------------------
-void LightingOven::computeAmbientOcclusion(TerrainBlock &block) {
+//---------------------------------------------------------------------------------------
+void LightingOven::bakeAmbientOcclusion(TerrainBlock & block) {
 
 	// TODO Dustin - Implement this...
 
 }
 
 //---------------------------------------------------------------------------------------
-void LightingOven::inspectTextureData(const TerrainBlock & block) {
-	const Texture3D & texture = block.getNormalAmboTexture();
+void LightingOven::setTextureRenderTarget(
+		const Synergy::Texture3D &texture
+) {
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.name(), 0);
 
-	uint32 width = texture.width();
-	uint32 height = texture.height();
-	uint32 depth = texture.depth();
-	uint32 numColorComponents = 4;
-	float * data = new float[width * height * depth * numColorComponents];
-
-	texture.bind();
-	glGetTexImage(texture.type, 0, texture.format(),
-			texture.dataType(), data);
-	texture.unbind();
-
-
-	delete [] data;
-	CHECK_GL_ERRORS;
+	CHECK_FRAMEBUFFER_COMPLETENESS;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-

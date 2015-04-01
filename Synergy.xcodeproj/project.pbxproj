@@ -393,6 +393,7 @@
 		EF6693718186C6D6BC3263E9 /* Texture.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.inl; path = Texture.inl; sourceTree = "<group>"; };
 		EF6693C74946B72A856A12BC /* ScreenQuad.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = ScreenQuad.vs; sourceTree = "<group>"; };
 		EF6693E525D96BCC0C2616D8 /* TerrainRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TerrainRenderer.hpp; sourceTree = "<group>"; };
+		EF6693F1F5C04DC3D6DE06EF /* ComputeRockDensity.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = ComputeRockDensity.fs; sourceTree = "<group>"; };
 		EF66942504C42B6C74568BD3 /* Skybox.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = Skybox.vs; sourceTree = "<group>"; };
 		EF66944617254E84CE2186AA /* DemoException.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DemoException.hpp; sourceTree = "<group>"; };
 		EF66945C56A12A7253E56CC0 /* VoxelEdges.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = VoxelEdges.vs; sourceTree = "<group>"; };
@@ -1051,6 +1052,7 @@
 				EF669B81D1D99DC9E53E0561 /* RenderTexture.fs */,
 				EF6693C74946B72A856A12BC /* ScreenQuad.vs */,
 				EF669FF1E1104A854AEDED83 /* GammaCorrection.fs */,
+				EF6693F1F5C04DC3D6DE06EF /* ComputeRockDensity.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";

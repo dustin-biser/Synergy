@@ -24,10 +24,9 @@ const int kScreenWidth = 1024;
 const int kScreenHeight = 768;
 
 // Terrain Block density texture dimenions:
-const int kGridWidth = 4;
-const int kGridHeight = 4;
-const int kGridDepth = 4;
-
+const int kGridWidth = 32;
+const int kGridHeight = 32;
+const int kGridDepth = 32;
 
 
 class TerrainDemo : public GlfwOpenGlWindow {
@@ -65,4 +64,8 @@ private:
     void setupCamera();
 	void setupGl();
 	void initSkyboxTextures();
+
+
+	// TODO -- Dustin Remove after testing:
+	void inspectTextureData(const Synergy::Texture3D & texture );
 };
