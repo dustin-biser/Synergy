@@ -390,7 +390,7 @@
 		EF66958E727582F897AAE0CC /* ComputeNormals.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = ComputeNormals.fs; sourceTree = "<group>"; };
 		EF66962DD4535E7C15A4F4F1 /* PerlinNoiseDemo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoiseDemo.hpp; sourceTree = "<group>"; };
 		EF6696530D32795484A1912E /* Texture.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Texture.hpp; sourceTree = "<group>"; };
-		EF6696671BB1CDFE3AE3D31B /* RenderIsoSurface.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = RenderIsoSurface.vs; sourceTree = "<group>"; };
+		EF6696671BB1CDFE3AE3D31B /* RenderTerrainSurface.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = RenderTerrainSurface.vs; sourceTree = "<group>"; };
 		EF669691F241EEF0CC7435EE /* CameraController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CameraController.hpp; sourceTree = "<group>"; };
 		EF6696B5A584EAE8198595E9 /* TerrainBlock.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TerrainBlock.hpp; sourceTree = "<group>"; };
 		EF6697241EB4FC8B54F134C4 /* CameraController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraController.cpp; sourceTree = "<group>"; };
@@ -416,7 +416,7 @@
 		EF669EDFBA236278EF1B35E1 /* VboMemoryPool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VboMemoryPool.hpp; sourceTree = "<group>"; };
 		EF669EE2F2BB6E649D879479 /* VoxelEdges.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = VoxelEdges.fs; sourceTree = "<group>"; };
 		EF669EFFA7E466C17BC0B8BF /* VolumeFillingTriangles.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = VolumeFillingTriangles.gs; sourceTree = "<group>"; };
-		EF669F04997DD6EF5212A83E /* RenderIsoSurface.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = RenderIsoSurface.fs; sourceTree = "<group>"; };
+		EF669F04997DD6EF5212A83E /* RenderTerrainSurface.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = RenderTerrainSurface.fs; sourceTree = "<group>"; };
 		EF669F2C2DEDCDE5242EAB18 /* PerlinNoiseDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerlinNoiseDemo.cpp; sourceTree = "<group>"; };
 		EF669F3BA056120B12ED87BD /* ScreenQuad.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = ScreenQuad.vs; sourceTree = "<group>"; };
 		EF669F65A59A31828F9107C1 /* PerlinNoise.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = PerlinNoise.fs; sourceTree = "<group>"; };
@@ -971,8 +971,8 @@
 				EF66945C56A12A7253E56CC0 /* VoxelEdges.vs */,
 				EF669E415A2B7928F89B01E4 /* MarchingCubes.gs */,
 				EF669DE23AC154467C825FCD /* MarchingCubes.vs */,
-				EF669F04997DD6EF5212A83E /* RenderIsoSurface.fs */,
-				EF6696671BB1CDFE3AE3D31B /* RenderIsoSurface.vs */,
+				EF669F04997DD6EF5212A83E /* RenderTerrainSurface.fs */,
+				EF6696671BB1CDFE3AE3D31B /* RenderTerrainSurface.vs */,
 				EF66958E727582F897AAE0CC /* ComputeNormals.fs */,
 				EF669EFFA7E466C17BC0B8BF /* VolumeFillingTriangles.gs */,
 				EF6697540B8CDD280FE760AD /* VolumeFillingTriangles.vs */,

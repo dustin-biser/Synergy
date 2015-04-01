@@ -37,8 +37,8 @@ void TerrainRenderer::setupShaderPrograms (
 	//-- shader_terrainSurface:
 	{
 		shader_terrainSurface.generateProgramObject();
-		shader_terrainSurface.attachVertexShader ("shaders/RenderIsoSurface.vs");
-		shader_terrainSurface.attachFragmentShader ("shaders/RenderIsoSurface.fs");
+		shader_terrainSurface.attachVertexShader ("shaders/RenderTerrainSurface.vs");
+		shader_terrainSurface.attachFragmentShader ("shaders/RenderTerrainSurface.fs");
 		shader_terrainSurface.link();
 	}
 

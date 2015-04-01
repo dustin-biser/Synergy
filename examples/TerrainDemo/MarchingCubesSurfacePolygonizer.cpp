@@ -613,9 +613,9 @@ void MarchingCubesSurfacePolygonizer::generateSurface (
 	setTransformFeedbackStreamBuffers(block);
 	generateSurfaceVertices(block);
 
-//	#ifdef DEBUG
-//		inspectTransformFeedbackBuffer(block);
-//	#endif
+	#ifdef DEBUG
+		inspectTransformFeedbackBuffer(block);
+	#endif
 }
 
 //----------------------------------------------------------------------------------------

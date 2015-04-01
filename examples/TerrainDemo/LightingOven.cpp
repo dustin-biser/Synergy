@@ -42,6 +42,7 @@ void LightingOven::setShaderUniforms (
 
 	GLint density_textureUnitOffset = 0;
 	shader_computeNormals.setUniform("densityGrid", density_textureUnitOffset);
+	shader_computeNormals.setUniform("textureDepth", dim.z);
 }
 
 //---------------------------------------------------------------------------------------

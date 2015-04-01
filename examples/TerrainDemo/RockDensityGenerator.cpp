@@ -28,7 +28,7 @@ void RockDensityGenerator::generateRockDensity(
 		}
 	}
 
-	data[(0 * height * width) + (0 * width) + 0] = isoValue + 1;  // Vertex 0
+//	data[(0 * height * width) + (0 * width) + 0] = isoValue + 1;  // Vertex 0
 //    data[(0 * height * width) + (0 * width) + 1] = isoValue + 1;  // Vertex 1
 //    data[(0 * height * width) + (0 * width) + 2] = isoValue + 1;  // Vertex 2
 
@@ -45,7 +45,7 @@ void RockDensityGenerator::generateRockDensity(
 //    data[(1 * height * width) + (0 * width) + 2] = isoValue + 1; //Vertex 11
 
 //    data[(1 * height * width) + (1 * width) + 0] = isoValue + 1; //Vertex 12
-//    data[(1 * height * width) + (1 * width) + 1] = isoValue + 1; //Vertex 13
+    data[(1 * height * width) + (1 * width) + 1] = isoValue + 1; //Vertex 13
 //    data[(1 * height * width) + (1 * width) + 2] = isoValue + 1; //Vertex 14
 
 //    data[(1 * height * width) + (2 * width) + 0] = isoValue + 1; //Vertex 15
