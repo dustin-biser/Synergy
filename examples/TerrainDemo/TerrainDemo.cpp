@@ -5,6 +5,7 @@
 #include "RockDensityGenerator.hpp"
 #include "LightingOven.hpp"
 #include "TerrainRenderer.hpp"
+#include "Skybox.hpp"
 
 using std::shared_ptr;
 using namespace glm;
@@ -44,10 +45,13 @@ void TerrainDemo::init() {
 
 		terrainBlockGenerator =
 				new TerrainBlockGenerator(densityGridDimensions);
+
+		skybox = new Skybox();
 	}
 
     setupCamera();
 	setupGl();
+	initSkyboxTextures();
 }
 
 //---------------------------------------------------------------------------------------
@@ -57,6 +61,7 @@ TerrainDemo::~TerrainDemo() {
 	delete terrainRenderer;
 	delete surfacePolygonizer;
 	delete terrainBlockGenerator;
+	delete skybox;
 }
 
 //---------------------------------------------------------------------------------------
@@ -101,6 +106,10 @@ void TerrainDemo::keyInput(int key, int action, int mods) {
 				toggleVoxelEdgeVisualization();
 		        break;
 
+			case GLFW_KEY_3:
+				renderSkybox = !renderSkybox;
+				break;
+
 			default:
 				break;
 		}
@@ -133,7 +142,30 @@ void TerrainDemo::toggleVoxelEdgeVisualization() {
 }
 
 //---------------------------------------------------------------------------------------
+void TerrainDemo::initSkyboxTextures() {
+	const char * front =
+			"textures/cube_maps/TropicalSunnyDay/TropicalSunnyDayFront512.png";
+	const char * back =
+			"textures/cube_maps/TropicalSunnyDay/TropicalSunnyDayBack512.png";
+	const char * left =
+			"textures/cube_maps/TropicalSunnyDay/TropicalSunnyDayLeft512.png";
+	const char * right =
+			"textures/cube_maps/TropicalSunnyDay/TropicalSunnyDayRight512.png";
+	const char * up =
+			"textures/cube_maps/TropicalSunnyDay/TropicalSunnyDayUp512.png";
+	const char * down =
+			"textures/cube_maps/TropicalSunnyDay/TropicalSunnyDayDown512.png";
+
+	skybox->loadCubeMap(front, back, left, right, up, down);
+}
+
+
+//---------------------------------------------------------------------------------------
 void TerrainDemo::logic() {
+	if(renderSkybox) {
+		skybox->render(camera);
+	}
+
 	terrainBlockGenerator->queryVisibleBlocks(camera, blockMap);
 
 	for(auto pair : blockMap) {

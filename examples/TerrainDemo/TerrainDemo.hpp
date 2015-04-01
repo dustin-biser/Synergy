@@ -13,6 +13,7 @@ class MarchingCubesSurfacePolygonizer;
 class RockDensityGenerator;
 class LightingOven;
 class TerrainRenderer;
+class Skybox;
 
 
 const int kScreenWidth = 1024;
@@ -39,8 +40,11 @@ private:
 	RockDensityGenerator * rockDensityGenerator;
 	LightingOven * lightingOven;
 	TerrainRenderer * terrainRenderer;
+	Skybox * skybox;
 
 	std::map<WorldSpaceIndex, TerrainBlock *> blockMap;
+
+	bool renderSkybox = true;
 
     virtual void init();
     virtual void logic();
@@ -52,4 +56,5 @@ private:
 	void toggleVoxelEdgeVisualization();
     void setupCamera();
 	void setupGl();
+	void initSkyboxTextures();
 };
