@@ -18,16 +18,20 @@ TerrainBlockGenerator::TerrainBlockGenerator (
 	// TODO Dustin - Refactor block creation so that all MaxTerrainBlocks are allocated
 	// at once and reused during lifetime of TerrainBlockGenerator
 	{
-		TerrainBlock * block =
-				new TerrainBlock(densityTexture, normalAmboTexture, bytesPerVertexBuffer);
-		block->wsMinVertexPos = vec3(0);
+		for(int j(0); j < 2; ++j) {
+			for(int i(0); i < 2; ++i) {
+				TerrainBlock * block =
+						new TerrainBlock(densityTexture, normalAmboTexture, bytesPerVertexBuffer);
+				block->wsMinVertexPos = vec3(i,0,-j);
 
-		vboMemoryPool.requestVertexBuffer(block->vbo_positions);
-		vboMemoryPool.requestVertexBuffer(block->vbo_normals);
+				vboMemoryPool.requestVertexBuffer(block->vbo_positions);
+				vboMemoryPool.requestVertexBuffer(block->vbo_normals);
 
-		// Insert into blockMap:
-		WorldSpaceIndex wsIndex = 0;
-		blockMap[wsIndex] = block;
+				// Insert into blockMap:
+				WorldSpaceIndex wsIndex = i + j*10;
+				blockMap[wsIndex] = block;
+			}
+		}
 	}
 }
 

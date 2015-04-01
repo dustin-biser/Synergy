@@ -31,7 +31,7 @@ void TerrainRenderer::render(
 		renderTarget->bind();
 	}
 
-	updateShaderUniforms(camera);
+	updateShaderUniforms(camera, block);
 	setVertexAttributeMappings(block);
 	renderIsoSurface(block);
 
@@ -70,13 +70,17 @@ void TerrainRenderer::setupShaderPrograms (
 
 //----------------------------------------------------------------------------------------
 void TerrainRenderer::updateShaderUniforms (
-		const Synergy::Camera & camera
-){
+		const Synergy::Camera & camera,
+		const TerrainBlock & block
+) {
 	mat4 projMatrix = camera.getProjectionMatrix();
 	mat4 viewMatrix = camera.getViewMatrix();
 	mat4 vpMatrix = projMatrix * viewMatrix;
 
-	shader_terrainSurface.setUniform("MVP_Matrix", vpMatrix);
+	mat4 modelMatrix;
+	modelMatrix[3] = vec4(block.getMinVertexPos(), 1.0);
+
+	shader_terrainSurface.setUniform("MVP_Matrix", vpMatrix * modelMatrix);
 	shader_terrainSurface.setUniform("NormalMatrix", glm::transpose(glm::inverse(viewMatrix)));
 
 	shader_blockEdges.setUniform("ViewProjMatrix", vpMatrix);

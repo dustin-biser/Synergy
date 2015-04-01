@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Synergy/Synergy.hpp>
+#include "TerrainBlock.hpp"
 
 // Forward Declaration
 class TerrainBlock;
@@ -48,7 +49,10 @@ private:
 	void setupBlockEdgesVao();
 	void setVertexAttributeMappings(const TerrainBlock & block);
 
-	void updateShaderUniforms(const Synergy::Camera & camera);
+	void updateShaderUniforms (
+			const Synergy::Camera & camera,
+			const TerrainBlock & block
+	);
 
 	void renderIsoSurface(
 			const TerrainBlock & block
