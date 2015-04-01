@@ -1,28 +1,27 @@
-/**
-* @brief MarchineCubesExample
-*
-*/
+/// TerrainDemo
 
 #pragma once
 
 #include <Synergy/Synergy.hpp>
-using namespace Synergy;
 
 #include "GlfwOpenGlWindow.hpp"
+#include "TerrainBlockGenerator.hpp"
 
-// Forward Declaration:
-class MarchingCubesRenderer;
+// Forward Declarations:
+class TerrainBlockGenerator;
+class MarchingCubesSurfacePolygonizer;
+class RockDensityGenerator;
+class LightingOven;
+class TerrainRenderer;
 
 
 const int kScreenWidth = 1024;
 const int kScreenHeight = 768;
 
-// Density grid dimensions
-const int kGridWidth = 3;
-const int kGridHeight = 3;
-const int kGridDepth = 3;
-
-const float kIsoSurfaceValue = 0.0f;
+// Terrain Block density texture dimenions:
+const int kGridWidth = 4;
+const int kGridHeight = 4;
+const int kGridDepth = 4;
 
 
 class TerrainDemo : public GlfwOpenGlWindow {
@@ -35,16 +34,19 @@ public:
 private:
     TerrainDemo() = default; // Singleton. Prevent direct construction.
 
-    MarchingCubesRenderer * marchingCubesRenderer;
+	TerrainBlockGenerator * terrainBlockGenerator;
+    MarchingCubesSurfacePolygonizer * surfacePolygonizer;
+	RockDensityGenerator * rockDensityGenerator;
+	LightingOven * lightingOven;
+	TerrainRenderer * terrainRenderer;
 
-    Synergy::Texture3D densityGrid;
+	std::map<WorldSpaceIndex, TerrainBlock *> blockMap;
 
     virtual void init();
     virtual void logic();
     virtual void draw();
     virtual void cleanup();
 
-    void createTextureStorage();
-    void fillVolumeDensityTexture();
     void setupCamera();
+	void setupGl();
 };
