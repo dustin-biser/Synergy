@@ -2,6 +2,8 @@
 #include "TerrainBlock.hpp"
 #include "PerlinNoiseGenerator.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 using namespace Synergy;
 using namespace glm;
 
@@ -46,6 +48,9 @@ void RockDensityGenerator::setupShaderProgram() {
 
 	GLint texUnitOffset = 0;
 	shader_computeRockDensity.setUniform("noiseTexture", texUnitOffset);
+
+	mat3 rotMat = mat3(glm::rotate(mat4(), 0.02f, vec3(0.1,0.1,-0.1)));
+	shader_computeRockDensity.setUniform("rotMat", rotMat);
 }
 
 //---------------------------------------------------------------------------------------
