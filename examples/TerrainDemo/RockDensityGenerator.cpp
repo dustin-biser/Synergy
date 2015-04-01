@@ -30,35 +30,35 @@ void RockDensityGenerator::generateRockDensity(
 
 //	data[(0 * height * width) + (0 * width) + 0] = isoValue + 1;  // Vertex 0
 //    data[(0 * height * width) + (0 * width) + 1] = isoValue + 1;  // Vertex 1
-//    data[(0 * height * width) + (0 * width) + 2] = isoValue + 1;  // Vertex 2
+    data[(0 * height * width) + (0 * width) + 2] = isoValue + 1;  // Vertex 2
 
-//    data[(0 * height * width) + (1 * width) + 0] = isoValue + 1;  // Vertex 3
-//    data[(0 * height * width) + (1 * width) + 1] = isoValue + 1;  // Vertex 4
-//    data[(0 * height * width) + (1 * width) + 2] = isoValue + 1;  // Vertex 5
+    data[(0 * height * width) + (1 * width) + 0] = isoValue + 1;  // Vertex 3
+    data[(0 * height * width) + (1 * width) + 1] = isoValue + 1;  // Vertex 4
+    data[(0 * height * width) + (1 * width) + 2] = isoValue + 1;  // Vertex 5
 
 //    data[(0 * height * width) + (2 * width) + 0] = isoValue + 1;  // Vertex 6
-//    data[(0 * height * width) + (2 * width) + 1] = isoValue + 1;  // Vertex 7
-//	  data[(0 * height * width) + (2 * width) + 2] = isoValue + 1;  // Vertex 8
+    data[(0 * height * width) + (2 * width) + 1] = isoValue + 1;  // Vertex 7
+	  data[(0 * height * width) + (2 * width) + 2] = isoValue + 1;  // Vertex 8
 
 //    data[(1 * height * width) + (0 * width) + 0] = isoValue + 1; //Vertex 9
 //    data[(1 * height * width) + (0 * width) + 1] = isoValue + 1; //Vertex 10
-//    data[(1 * height * width) + (0 * width) + 2] = isoValue + 1; //Vertex 11
+    data[(1 * height * width) + (0 * width) + 2] = isoValue + 1; //Vertex 11
 
 //    data[(1 * height * width) + (1 * width) + 0] = isoValue + 1; //Vertex 12
     data[(1 * height * width) + (1 * width) + 1] = isoValue + 1; //Vertex 13
 //    data[(1 * height * width) + (1 * width) + 2] = isoValue + 1; //Vertex 14
 
 //    data[(1 * height * width) + (2 * width) + 0] = isoValue + 1; //Vertex 15
-//    data[(1 * height * width) + (2 * width) + 1] = isoValue + 1; //Vertex 16
+    data[(1 * height * width) + (2 * width) + 1] = isoValue + 1; //Vertex 16
 //    data[(1 * height * width) + (2 * width) + 2] = isoValue + 1; //Vertex 17
 
-//    data[(2 * height * width) + (0 * width) + 0] = isoValue + 1; //Vertex 18
+    data[(2 * height * width) + (0 * width) + 0] = isoValue + 1; //Vertex 18
 //    data[(2 * height * width) + (0 * width) + 1] = isoValue + 1; //Vertex 19
 //    data[(2 * height * width) + (0 * width) + 2] = isoValue + 1; //Vertex 20
 
-//    data[(2 * height * width) + (1 * width) + 0] = isoValue + 1; //Vertex 21
+    data[(2 * height * width) + (1 * width) + 0] = isoValue + 1; //Vertex 21
 //    data[(2 * height * width) + (1 * width) + 1] = isoValue + 1; //Vertex 22
-//    data[(2 * height * width) + (1 * width) + 2] = isoValue + 1; //Vertex 23
+    data[(2 * height * width) + (1 * width) + 2] = isoValue + 1; //Vertex 23
 
 //    data[(2 * height * width) + (2 * width) + 0] = isoValue + 1; //Vertex 24
 //    data[(2 * height * width) + (2 * width) + 1] = isoValue + 1; //Vertex 25

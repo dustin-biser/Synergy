@@ -1,11 +1,11 @@
 #include "TerrainDemo.hpp"
 
 #include "MarchingCubesSurfacePolygonizer.hpp"
-#include "TerrainBlock.hpp"
 #include "RockDensityGenerator.hpp"
 #include "LightingOven.hpp"
 #include "TerrainRenderer.hpp"
 #include "Skybox.hpp"
+#include "RenderTarget.hpp"
 
 using std::shared_ptr;
 using namespace glm;
@@ -47,6 +47,11 @@ void TerrainDemo::init() {
 				new TerrainBlockGenerator(densityGridDimensions);
 
 		skybox = new Skybox();
+
+		renderTarget = new RenderTarget(
+				defaultFramebufferWidth(),
+				defaultFramebufferHeight()
+		);
 	}
 
     setupCamera();
@@ -62,6 +67,7 @@ TerrainDemo::~TerrainDemo() {
 	delete surfacePolygonizer;
 	delete terrainBlockGenerator;
 	delete skybox;
+	delete renderTarget;
 }
 
 //---------------------------------------------------------------------------------------
@@ -163,7 +169,7 @@ void TerrainDemo::initSkyboxTextures() {
 //---------------------------------------------------------------------------------------
 void TerrainDemo::logic() {
 	if(renderSkybox) {
-		skybox->render(camera);
+		skybox->render(camera, renderTarget);
 	}
 
 	terrainBlockGenerator->queryVisibleBlocks(camera, blockMap);
@@ -182,7 +188,7 @@ void TerrainDemo::logic() {
 			block.processed = true;
 		}
 
-		terrainRenderer->render(camera, block);
+		terrainRenderer->render(camera, block, renderTarget);
 	}
 }
 

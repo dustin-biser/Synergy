@@ -4,7 +4,7 @@
 
 // Forward Declaration
 class TerrainBlock;
-
+class RenderTarget;
 
 
 class TerrainRenderer {
@@ -13,7 +13,8 @@ public:
 
 	void render(
 			const Synergy::Camera & camera,
-			const TerrainBlock & block
+			const TerrainBlock & block,
+			const RenderTarget * renderTarget = nullptr
 	);
 
 	void enableVisualizeNormals();

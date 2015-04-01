@@ -63,6 +63,7 @@
 		EF669BF48433D9F88DDD581E /* Texture.inl in Sources */ = {isa = PBXBuildFile; fileRef = EF6693718186C6D6BC3263E9 /* Texture.inl */; };
 		EF669C618FCCE84C0F52CFDB /* TerrainBlockGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669884D5404DD5B2BAC274 /* TerrainBlockGenerator.cpp */; };
 		EF669D30A231CDF758872447 /* TerrainDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6699AC6EEF855337783C66 /* TerrainDemo.cpp */; };
+		EF669D744DA0C4BA2D9658A5 /* RenderTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF66908D2169D693E8473ECD /* RenderTarget.cpp */; };
 		EF669F833E62B487FD56B1B9 /* Skybox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669FA1DA745A62E06CA84A /* Skybox.cpp */; };
 		EF669FC6106C99573306B0BC /* Texture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = EF6696530D32795484A1912E /* Texture.hpp */; };
 /* End PBXBuildFile section */
@@ -379,6 +380,7 @@
 		0CFA8F191A918EE5006295B9 /* ShaderProgram.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ShaderProgram.cpp; sourceTree = "<group>"; };
 		0CFA8F1A1A918EE5006295B9 /* ShaderProgram.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ShaderProgram.hpp; sourceTree = "<group>"; };
 		0CFA8F1B1A918F0B006295B9 /* Synergy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Synergy.hpp; sourceTree = "<group>"; };
+		EF66908D2169D693E8473ECD /* RenderTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderTarget.cpp; sourceTree = "<group>"; };
 		EF66915520F64B21B98166E2 /* TerrainBlockGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TerrainBlockGenerator.hpp; sourceTree = "<group>"; };
 		EF6691F332CD4658066F9D9D /* MarchingCubesSurfacePolygonizer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarchingCubesSurfacePolygonizer.hpp; sourceTree = "<group>"; };
 		EF6691F560CF81B62AF9E888 /* VolumeFillingTriangles.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VolumeFillingTriangles.hpp; sourceTree = "<group>"; };
@@ -418,6 +420,7 @@
 		EF669A7284C1B4412BDAA2FB /* PerlinNoise.gs */ = {isa = PBXFileReference; lastKnownFileType = file.gs; path = PerlinNoise.gs; sourceTree = "<group>"; };
 		EF669A93A88681857873007C /* TerrainDemo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TerrainDemo.hpp; sourceTree = "<group>"; };
 		EF669AFE176516D8911CE6A6 /* TerrainBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TerrainBlock.cpp; sourceTree = "<group>"; };
+		EF669BD084F159FD876BF37F /* RenderTarget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RenderTarget.hpp; sourceTree = "<group>"; };
 		EF669BFCBF24622500C9356B /* Math.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Math.hpp; sourceTree = "<group>"; };
 		EF669C0C78EBD6AB027B6598 /* VboMemoryPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VboMemoryPool.cpp; sourceTree = "<group>"; };
 		EF669C5EF5F5DF6800C1454B /* Skybox.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Skybox.hpp; sourceTree = "<group>"; };
@@ -963,6 +966,8 @@
 				EF66901F096BB6124BDDD617 /* textures */,
 				EF669C5EF5F5DF6800C1454B /* Skybox.hpp */,
 				EF669FA1DA745A62E06CA84A /* Skybox.cpp */,
+				EF669BD084F159FD876BF37F /* RenderTarget.hpp */,
+				EF66908D2169D693E8473ECD /* RenderTarget.cpp */,
 			);
 			path = TerrainDemo;
 			sourceTree = "<group>";
@@ -1216,6 +1221,7 @@
 				EF669485660BF73472BB3CC0 /* LightingOven.cpp in Sources */,
 				EF669F833E62B487FD56B1B9 /* Skybox.cpp in Sources */,
 				0C985AE91ACBA9830094B855 /* lodepng.cpp in Sources */,
+				EF669D744DA0C4BA2D9658A5 /* RenderTarget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

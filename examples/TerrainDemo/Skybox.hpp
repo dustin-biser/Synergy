@@ -4,6 +4,9 @@
 
 #include <Synergy/Synergy.hpp>
 
+// Forward Declaration
+class RenderTarget;
+
 class Skybox {
 public:
 	Skybox();
@@ -19,7 +22,10 @@ public:
 		const char * down
 	);
 
-	void render(const Synergy::Camera & camera);
+	void render(
+			const Synergy::Camera & camera,
+			const RenderTarget * renderTarget = nullptr
+	);
 
 private:
 	GLuint vao_skybox;

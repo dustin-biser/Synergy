@@ -6,6 +6,8 @@ using namespace Synergy;
 #include <sstream>
 using namespace std;
 
+#include "RenderTarget.hpp"
+
 //---------------------------------------------------------------------------------------
 Skybox::Skybox() {
 	glGenTextures(1, &cubeMapTexture);
@@ -175,7 +177,14 @@ void Skybox::updateShaderUniforms(const Synergy::Camera & camera) {
 }
 
 //---------------------------------------------------------------------------------------
-void Skybox::render(const Synergy::Camera & camera) {
+void Skybox::render(
+		const Synergy::Camera & camera,
+		const RenderTarget * renderTarget
+) {
+	if (renderTarget) {
+		renderTarget->bind();
+	}
+
 	updateShaderUniforms(camera);
 
 	// Disable writing to depth buffer
@@ -193,5 +202,6 @@ void Skybox::render(const Synergy::Camera & camera) {
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	glDepthMask(GL_TRUE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	CHECK_GL_ERRORS;
 }

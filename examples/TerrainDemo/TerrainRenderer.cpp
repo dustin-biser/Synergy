@@ -1,5 +1,6 @@
 #include "TerrainRenderer.hpp"
 #include "TerrainBlock.hpp"
+#include "RenderTarget.hpp"
 
 using namespace glm;
 
@@ -23,8 +24,13 @@ TerrainRenderer::TerrainRenderer (
 //----------------------------------------------------------------------------------------
 void TerrainRenderer::render(
 		const Synergy::Camera & camera,
-		const TerrainBlock & block
+		const TerrainBlock & block,
+		const RenderTarget * renderTarget
 ) {
+	if(renderTarget) {
+		renderTarget->bind();
+	}
+
 	updateShaderUniforms(camera);
 	setVertexAttributeMappings(block);
 	renderIsoSurface(block);
@@ -32,6 +38,9 @@ void TerrainRenderer::render(
 	if (visualizeVoxelEdges) {
 		renderVoxelEdges(block);
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	CHECK_GL_ERRORS;
 }
 
 //----------------------------------------------------------------------------------------

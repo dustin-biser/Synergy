@@ -14,15 +14,16 @@ class RockDensityGenerator;
 class LightingOven;
 class TerrainRenderer;
 class Skybox;
+class RenderTarget;
 
 
 const int kScreenWidth = 1024;
 const int kScreenHeight = 768;
 
 // Terrain Block density texture dimenions:
-const int kGridWidth = 3;
-const int kGridHeight = 3;
-const int kGridDepth = 3;
+const int kGridWidth = 4;
+const int kGridHeight = 4;
+const int kGridDepth = 4;
 
 
 class TerrainDemo : public GlfwOpenGlWindow {
@@ -41,6 +42,7 @@ private:
 	LightingOven * lightingOven;
 	TerrainRenderer * terrainRenderer;
 	Skybox * skybox;
+	RenderTarget * renderTarget;
 
 	std::map<WorldSpaceIndex, TerrainBlock *> blockMap;
 
