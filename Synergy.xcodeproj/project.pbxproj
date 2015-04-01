@@ -59,6 +59,7 @@
 		EF6695EA91F020A63771B89C /* MarchingCubesSurfacePolygonizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669292477E6CE6C22017B8 /* MarchingCubesSurfacePolygonizer.cpp */; };
 		EF6695EE1EC859AFDAD9030B /* VboMemoryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669C0C78EBD6AB027B6598 /* VboMemoryPool.cpp */; };
 		EF6697958BD6536060323043 /* TerrainBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669AFE176516D8911CE6A6 /* TerrainBlock.cpp */; };
+		EF6698399CD7211ADB00546C /* PerlinNoiseGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF66915EE518911143C64095 /* PerlinNoiseGenerator.cpp */; };
 		EF669877665BB13D9C3B54AB /* TerrainRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6699CC20C4D757D6B5F978 /* TerrainRenderer.cpp */; };
 		EF669BF48433D9F88DDD581E /* Texture.inl in Sources */ = {isa = PBXBuildFile; fileRef = EF6693718186C6D6BC3263E9 /* Texture.inl */; };
 		EF669C618FCCE84C0F52CFDB /* TerrainBlockGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669884D5404DD5B2BAC274 /* TerrainBlockGenerator.cpp */; };
@@ -384,10 +385,12 @@
 		EF6690005DB8262C19FD8278 /* PostProcessRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PostProcessRenderer.cpp; sourceTree = "<group>"; };
 		EF66908D2169D693E8473ECD /* RenderTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderTarget.cpp; sourceTree = "<group>"; };
 		EF66915520F64B21B98166E2 /* TerrainBlockGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TerrainBlockGenerator.hpp; sourceTree = "<group>"; };
+		EF66915EE518911143C64095 /* PerlinNoiseGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerlinNoiseGenerator.cpp; sourceTree = "<group>"; };
 		EF6691F332CD4658066F9D9D /* MarchingCubesSurfacePolygonizer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarchingCubesSurfacePolygonizer.hpp; sourceTree = "<group>"; };
 		EF6691F560CF81B62AF9E888 /* VolumeFillingTriangles.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VolumeFillingTriangles.hpp; sourceTree = "<group>"; };
 		EF66924105CCFEFD4A3B974E /* TropicalSunnyDayDown512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TropicalSunnyDayDown512.png; sourceTree = "<group>"; };
 		EF669292477E6CE6C22017B8 /* MarchingCubesSurfacePolygonizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarchingCubesSurfacePolygonizer.cpp; sourceTree = "<group>"; };
+		EF669304BEC80DFF1EB3E7C8 /* PerlinNoiseGenerator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoiseGenerator.hpp; sourceTree = "<group>"; };
 		EF6693491ECCC62A4A46AC58 /* PerlinNoise.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = PerlinNoise.vs; sourceTree = "<group>"; };
 		EF66934CE8D07E3A4893C263 /* TropicalSunnyDayUp512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TropicalSunnyDayUp512.png; sourceTree = "<group>"; };
 		EF6693718186C6D6BC3263E9 /* Texture.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.inl; path = Texture.inl; sourceTree = "<group>"; };
@@ -989,6 +992,8 @@
 				EF66948D4DC1D3A809C935BB /* shaders */,
 				EF669F2C2DEDCDE5242EAB18 /* PerlinNoiseDemo.cpp */,
 				EF66962DD4535E7C15A4F4F1 /* PerlinNoiseDemo.hpp */,
+				EF669304BEC80DFF1EB3E7C8 /* PerlinNoiseGenerator.hpp */,
+				EF66915EE518911143C64095 /* PerlinNoiseGenerator.cpp */,
 			);
 			path = PerlinNoiseDemo;
 			sourceTree = "<group>";
@@ -1263,6 +1268,7 @@
 				0C8CA28C1AB6243700E162CE /* GlfwOpenGlWindow.cpp in Sources */,
 				0C8CA28E1AB624A600E162CE /* CameraController.cpp in Sources */,
 				EF6690A85202670E58E64BDC /* PerlinNoiseDemo.cpp in Sources */,
+				EF6698399CD7211ADB00546C /* PerlinNoiseGenerator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
