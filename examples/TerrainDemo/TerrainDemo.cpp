@@ -12,7 +12,7 @@ using namespace glm;
 //----------------------------------------------------------------------------------------
 int main() {
     shared_ptr<GlfwOpenGlWindow> demo =  TerrainDemo::getInstance();
-    demo->create(kScreenWidth, kScreenHeight, "Marching Cubes Demo", 1/60.0f);
+    demo->create(kScreenWidth, kScreenHeight, "Terrain Rendering Demo", 1/60.0f);
 
     return 0;
 }

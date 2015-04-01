@@ -10,6 +10,7 @@
 using namespace Synergy;
 using namespace glm;
 
+
 //----------------------------------------------------------------------------------------
 CameraController::CameraController()
     : camera(nullptr),
@@ -116,23 +117,8 @@ void CameraController::mouseButton(int button, int actions, int mods){
  * @param yOffSet
  */
 void CameraController::mouseScroll(double xOffSet, double yOffSet) {
-
-    // TODO Dustin - Use the Camera's fieldOfViewY as starting value, don't hardcode!
-    static float fieldOfViewY = 70.0f;
-    static const float delta = 5.0f;
-
-    if (yOffSet < 0) {
-       fieldOfViewY += delta;
-    } else if (yOffSet > 0) {
-       fieldOfViewY -= delta;
-    }
-
-    // Camp fieldOfViewY to [0, 180]
-    if (fieldOfViewY < 0.0f) {
-        fieldOfViewY = 0.0f;
-    } else if (fieldOfViewY > 180.0f) {
-        fieldOfViewY = 180.0f;
-    }
+    float fieldOfViewY = camera->getFieldOfViewY();
+	fieldOfViewY -= yOffSet * 0.01f;
 
     camera->setFieldOfViewY(fieldOfViewY);
 }

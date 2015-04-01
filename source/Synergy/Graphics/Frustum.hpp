@@ -46,8 +46,6 @@ namespace Synergy {
         mutable bool recalcPerspectiveMatrix;
 
         mutable mat4 projectionMatrix;
-
-        const static unsigned short floatTolerance = 5;
     };
 
 }
