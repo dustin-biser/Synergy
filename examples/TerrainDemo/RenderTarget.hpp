@@ -13,28 +13,25 @@ public:
 
 	void unbind() const;
 
-	Synergy::Texture2D getColorAttachment();
+	const Synergy::Texture2D & getColorAttachment() const;
+
+	void clear(GLbitfield mask);
+
+	GLuint getWidth() const;
+
+	GLuint getHeight() const;
 
 private:
 	GLuint framebuffer;
 	GLuint depthRenderBuffer;
+	GLuint width;
+	GLuint height;
 
 	Synergy::Texture2D colorTexture;
 
-	void createTextureStorage(
-			Synergy::uint32 width,
-			Synergy::uint32 height
-	);
+	void createTextureStorage();
 
-	void createDepthBufferStorage(
-			Synergy::uint32 width,
-			Synergy::uint32 height
-	);
+	void createDepthBufferStorage();
 
 	void initFramebuffer();
-
-	void clearColorDepthAttachments(
-			Synergy::uint32 width,
-			Synergy::uint32 height
-	);
 };

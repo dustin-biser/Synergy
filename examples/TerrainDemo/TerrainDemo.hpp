@@ -6,8 +6,10 @@
 
 #include "GlfwOpenGlWindow.hpp"
 #include "TerrainBlockGenerator.hpp"
+#include "PostProcessRenderer.hpp"
 
-// Forward Declarations:
+
+//-- Forward Declarations:
 class TerrainBlockGenerator;
 class MarchingCubesSurfacePolygonizer;
 class RockDensityGenerator;
@@ -15,6 +17,7 @@ class LightingOven;
 class TerrainRenderer;
 class Skybox;
 class RenderTarget;
+class PostProcessRenderer;
 
 
 const int kScreenWidth = 1024;
@@ -24,6 +27,7 @@ const int kScreenHeight = 768;
 const int kGridWidth = 4;
 const int kGridHeight = 4;
 const int kGridDepth = 4;
+
 
 
 class TerrainDemo : public GlfwOpenGlWindow {
@@ -43,10 +47,12 @@ private:
 	TerrainRenderer * terrainRenderer;
 	Skybox * skybox;
 	RenderTarget * renderTarget;
+	PostProcessRenderer * postProcessRenderer;
 
 	std::map<WorldSpaceIndex, TerrainBlock *> blockMap;
 
 	bool renderSkybox = true;
+	bool gammaCorrection = false;
 
     virtual void init();
     virtual void logic();

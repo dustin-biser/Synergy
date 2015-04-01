@@ -6,6 +6,7 @@
 #include "TerrainRenderer.hpp"
 #include "Skybox.hpp"
 #include "RenderTarget.hpp"
+#include "PostProcessRenderer.hpp"
 
 using std::shared_ptr;
 using namespace glm;
@@ -52,6 +53,8 @@ void TerrainDemo::init() {
 				defaultFramebufferWidth(),
 				defaultFramebufferHeight()
 		);
+
+		postProcessRenderer = new PostProcessRenderer();
 	}
 
     setupCamera();
@@ -68,6 +71,7 @@ TerrainDemo::~TerrainDemo() {
 	delete terrainBlockGenerator;
 	delete skybox;
 	delete renderTarget;
+	delete postProcessRenderer;
 }
 
 //---------------------------------------------------------------------------------------
@@ -115,6 +119,10 @@ void TerrainDemo::keyInput(int key, int action, int mods) {
 			case GLFW_KEY_3:
 				renderSkybox = !renderSkybox;
 				break;
+
+			case GLFW_KEY_4:
+				gammaCorrection = !gammaCorrection;
+		        break;
 
 			default:
 				break;
@@ -168,6 +176,8 @@ void TerrainDemo::initSkyboxTextures() {
 
 //---------------------------------------------------------------------------------------
 void TerrainDemo::logic() {
+	renderTarget->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	if(renderSkybox) {
 		skybox->render(camera, renderTarget);
 	}
@@ -194,7 +204,11 @@ void TerrainDemo::logic() {
 
 //---------------------------------------------------------------------------------------
 void TerrainDemo::draw() {
-
+	if(gammaCorrection) {
+		postProcessRenderer->applyGammaCorrection(*renderTarget, 1.2f);
+	} else {
+		postProcessRenderer->render(*renderTarget);
+	}
 }
 
 //---------------------------------------------------------------------------------------

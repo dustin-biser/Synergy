@@ -6,32 +6,19 @@ using namespace Synergy;
 RenderTarget::RenderTarget(
 		uint32 width,
 		uint32 height
-) {
-	createTextureStorage(width, height);
+)
+	: width(width),
+	  height(height)
+{
 
-	createDepthBufferStorage(width, height);
+	createTextureStorage();
+
+	createDepthBufferStorage();
 
 	initFramebuffer();
 
-	clearColorDepthAttachments(width, height);
+	clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-
-//---------------------------------------------------------------------------------------
-void RenderTarget::clearColorDepthAttachments (
-		Synergy::uint32 width,
-		Synergy::uint32 height
-) {
-
-	bind();
-	GLint prevViewportData[4];
-	glGetIntegerv(GL_VIEWPORT, prevViewportData);
-	glViewport(0, 0, width, height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(prevViewportData[0], prevViewportData[1], prevViewportData[2],
-			prevViewportData[3]);
-	unbind();
-}
-
 
 //---------------------------------------------------------------------------------------
 RenderTarget::~RenderTarget() {
@@ -52,10 +39,7 @@ void RenderTarget::unbind() const {
 
 
 //---------------------------------------------------------------------------------------
-void RenderTarget::createTextureStorage(
-		Synergy::uint32 width,
-		Synergy::uint32 height
-) {
+void RenderTarget::createTextureStorage() {
 
 	TextureSpec textureSpec;
 	textureSpec.width = width;
@@ -77,10 +61,7 @@ void RenderTarget::createTextureStorage(
 }
 
 //---------------------------------------------------------------------------------------
-void RenderTarget::createDepthBufferStorage (
-	uint32 width,
-	uint32 height
-) {
+void RenderTarget::createDepthBufferStorage() {
 	glGenRenderbuffers(1, &depthRenderBuffer);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
@@ -108,6 +89,28 @@ void RenderTarget::initFramebuffer() {
 }
 
 //---------------------------------------------------------------------------------------
-Synergy::Texture2D RenderTarget::getColorAttachment() {
+const Synergy::Texture2D & RenderTarget::getColorAttachment() const {
 	return colorTexture;
+}
+
+//---------------------------------------------------------------------------------------
+void RenderTarget::clear(GLbitfield mask) {
+	bind();
+	GLint prevViewportData[4];
+	glGetIntegerv(GL_VIEWPORT, prevViewportData);
+	glViewport(0, 0, width, height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(prevViewportData[0], prevViewportData[1], prevViewportData[2],
+			prevViewportData[3]);
+	unbind();
+}
+
+//---------------------------------------------------------------------------------------
+GLuint RenderTarget::getWidth() const {
+	return width;
+}
+
+//---------------------------------------------------------------------------------------
+GLuint RenderTarget::getHeight() const {
+	return height;
 }
