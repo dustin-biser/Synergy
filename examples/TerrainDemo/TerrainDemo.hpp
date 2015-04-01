@@ -46,7 +46,10 @@ private:
     virtual void logic();
     virtual void draw();
     virtual void cleanup();
+	virtual void keyInput(int key, int action, int mods);
 
+	void toggleTerrainNormalVisualization();
+	void toggleVoxelEdgeVisualization();
     void setupCamera();
 	void setupGl();
 };

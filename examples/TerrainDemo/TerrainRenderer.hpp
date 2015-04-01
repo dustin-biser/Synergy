@@ -16,7 +16,16 @@ public:
 			const TerrainBlock & block
 	);
 
+	void enableVisualizeNormals();
+	void disableVisualizeNormals();
+
+	void enableRenderVoxelEdges();
+	void disableRendVoxelEdges();
+
 private:
+	bool visualizeNormals;
+	bool visualizeVoxelEdges;
+
 	//-- Vertex Array Attribute Indices:
 	const GLuint position_attrib_index = 0;
 	const GLuint normal_attrib_index = 1;

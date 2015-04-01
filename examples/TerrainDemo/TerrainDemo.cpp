@@ -90,6 +90,49 @@ void TerrainDemo::setupCamera() {
 }
 
 //---------------------------------------------------------------------------------------
+void TerrainDemo::keyInput(int key, int action, int mods) {
+	if (action == GLFW_PRESS) {
+		switch (key) {
+			case GLFW_KEY_1:
+				toggleTerrainNormalVisualization();
+				break;
+
+			case GLFW_KEY_2:
+				toggleVoxelEdgeVisualization();
+		        break;
+
+			default:
+				break;
+		}
+	}
+
+}
+
+//---------------------------------------------------------------------------------------
+void TerrainDemo::toggleTerrainNormalVisualization() {
+	static bool visualizeNormals = true;
+	if (visualizeNormals) {
+		terrainRenderer->enableVisualizeNormals();
+	} else {
+		terrainRenderer->disableVisualizeNormals();
+	}
+
+	visualizeNormals = !visualizeNormals;
+}
+
+//---------------------------------------------------------------------------------------
+void TerrainDemo::toggleVoxelEdgeVisualization() {
+	static bool visualizeVoxelEdges = false;
+	if (visualizeVoxelEdges) {
+		terrainRenderer->enableRenderVoxelEdges();
+	} else {
+		terrainRenderer->disableRendVoxelEdges();
+	}
+
+	visualizeVoxelEdges = !visualizeVoxelEdges;
+}
+
+//---------------------------------------------------------------------------------------
 void TerrainDemo::logic() {
 	terrainBlockGenerator->queryVisibleBlocks(camera, blockMap);
 

@@ -6,7 +6,10 @@ using namespace glm;
 //----------------------------------------------------------------------------------------
 TerrainRenderer::TerrainRenderer (
 		const uvec3 & densityGridDimensions
-) {
+)
+	: visualizeNormals(false),
+	  visualizeVoxelEdges(true)
+{
 	glGenVertexArrays(1, &vao_terrainSurface);
 
 	uvec3 dim = densityGridDimensions - uvec3(1);
@@ -26,7 +29,9 @@ void TerrainRenderer::render(
 	setVertexAttributeMappings(block);
 	renderIsoSurface(block);
 
-	renderVoxelEdges(block);
+	if (visualizeVoxelEdges) {
+		renderVoxelEdges(block);
+	}
 }
 
 //----------------------------------------------------------------------------------------
@@ -185,7 +190,7 @@ void TerrainRenderer::setupVoxelEdgesVao() {
 
 //----------------------------------------------------------------------------------------
 void TerrainRenderer::setVertexAttributeMappings(
-		const TerrainBlock &block
+		const TerrainBlock & block
 ) {
 	glBindVertexArray(vao_terrainSurface);
 	glEnableVertexAttribArray(position_attrib_index);
@@ -207,4 +212,26 @@ void TerrainRenderer::setVertexAttributeMappings(
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	CHECK_GL_ERRORS;
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::enableVisualizeNormals() {
+	visualizeNormals = true;
+	shader_terrainSurface.setUniform("visualizeNormals", visualizeNormals);
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::disableVisualizeNormals() {
+	visualizeNormals = false;
+	shader_terrainSurface.setUniform("visualizeNormals", visualizeNormals);
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::enableRenderVoxelEdges() {
+	visualizeVoxelEdges = true;
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::disableRendVoxelEdges() {
+	visualizeVoxelEdges = false;
 }
