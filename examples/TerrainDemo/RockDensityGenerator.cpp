@@ -1,8 +1,9 @@
 #include "RockDensityGenerator.hpp"
 #include "TerrainBlock.hpp"
+#include "PerlinNoiseGenerator.hpp"
 
 using namespace Synergy;
-
+using namespace glm;
 
 
 //---------------------------------------------------------------------------------------
@@ -11,6 +12,10 @@ RockDensityGenerator::RockDensityGenerator() {
 	glGenFramebuffers(1, &framebuffer);
 
 	setupShaderProgram();
+
+	uvec3 noiseTextureDimensions(16,16,16);
+	perlinNoiseGenerator = new PerlinNoiseGenerator(noiseTextureDimensions);
+	perlinNoiseGenerator->getNoiseTexture(noiseTexture);
 
 	CHECK_GL_ERRORS;
 }
@@ -38,6 +43,9 @@ void RockDensityGenerator::setupShaderProgram() {
 	shader_computeRockDensity.attachGeometryShader("shaders/VolumeFillingTriangles.gs");
 	shader_computeRockDensity.attachFragmentShader("shaders/ComputeRockDensity.fs");
 	shader_computeRockDensity.link();
+
+	GLint texUnitOffset = 0;
+	shader_computeRockDensity.setUniform("noiseTexture", texUnitOffset);
 }
 
 //---------------------------------------------------------------------------------------
@@ -53,17 +61,22 @@ void RockDensityGenerator::computeRockDensity() {
 	glGetIntegerv(GL_VIEWPORT, prevViewportData);
 	glViewport(0, 0, densityTexture.width(), densityTexture.height());
 
-	GLsizei numInstances = densityTexture.depth();
+
+	glActiveTexture(GL_TEXTURE0);
+	noiseTexture.bind();
+
 
 	// Bind a junk VAO so driver doesn't complain.
 	glBindVertexArray(junkVao);
+
+	GLsizei numInstances = densityTexture.depth();
 
 	shader_computeRockDensity.enable();
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
 	shader_computeRockDensity.disable();
 
 	//-- Restore defaults:
-	densityTexture.unbind();
+	noiseTexture.unbind();
 	glViewport(prevViewportData[0],prevViewportData[1],
 			prevViewportData[2],prevViewportData[3]);
 	glEnable(GL_DEPTH_TEST);

@@ -23,9 +23,9 @@ const int kScreenWidth = 1024;
 const int kScreenHeight = 768;
 
 // Terrain Block density texture dimenions:
-const int kGridWidth = 32;
-const int kGridHeight = 32;
-const int kGridDepth = 32;
+const int kGridWidth = 33;
+const int kGridHeight = 33;
+const int kGridDepth = 33;
 
 
 class TerrainDemo : public GlfwOpenGlWindow {

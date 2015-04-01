@@ -29,9 +29,9 @@ PerlinNoiseGenerator::~PerlinNoiseGenerator() {
 //---------------------------------------------------------------------------------------
 void PerlinNoiseGenerator::setupShaderProgram() {
 	shader_perlinNoise.generateProgramObject();
-	shader_perlinNoise.attachVertexShader("shaders/PerlinNoise.vs");
-	shader_perlinNoise.attachGeometryShader("shaders/PerlinNoise.gs");
-	shader_perlinNoise.attachFragmentShader("shaders/PerlinNoise.fs");
+	shader_perlinNoise.attachVertexShader("../Utils/shaders/PerlinNoise.vs");
+	shader_perlinNoise.attachGeometryShader("../Utils/shaders/PerlinNoise.gs");
+	shader_perlinNoise.attachFragmentShader("../Utils/shaders/PerlinNoise.fs");
 	shader_perlinNoise.link();
 
 	shader_perlinNoise.setUniform("hashTable", 0);
@@ -97,7 +97,7 @@ void PerlinNoiseGenerator::createTextureStorage (
 	textureSpec.width = noiseTextureDimensions.x;
 	textureSpec.height = noiseTextureDimensions.y;
 	textureSpec.depth = noiseTextureDimensions.z;
-	textureSpec.internalFormat = GL_R16F;
+	textureSpec.internalFormat = GL_R32F;
 	textureSpec.format = GL_RED;
 	textureSpec.dataType = GL_FLOAT,
 

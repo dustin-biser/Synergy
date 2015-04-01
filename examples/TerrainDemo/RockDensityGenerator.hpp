@@ -8,6 +8,7 @@
 
 // Forward Declaration
 class TerrainBlock;
+class PerlinNoiseGenerator;
 
 
 
@@ -27,6 +28,8 @@ private:
 	// Target density texture to render to
 	Synergy::Texture3D densityTexture;
 
+	Synergy::Texture3D noiseTexture;
+
 	Synergy::ShaderProgram shader_computeRockDensity;
 
 	// Needed to make certain drivers happy when doing screen quad
@@ -34,10 +37,14 @@ private:
 	GLuint junkVao;
 
 
+	PerlinNoiseGenerator * perlinNoiseGenerator;
+
 	void setupShaderProgram();
 
 	void computeRockDensity();
 
-	void generateBasicRock(TerrainBlock & block);
 
+
+	// TODO Dustin - Remove after testing:
+	void generateBasicRock(TerrainBlock & block);
 };
