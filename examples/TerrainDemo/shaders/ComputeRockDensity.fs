@@ -37,6 +37,19 @@ void main() {
 	density += texture(noiseTexture, wsPos*7.88).r * 0.0125;
 
 
+	float flat_spot_height = 0.3;
+	vec2 flat_spot_xz_coord = vec2(1,-1);
+	float outer_radius = 0.8;
+	float inner_radius = 0.5;
+
+	float distance_from_flat_spot = distance(wsPos.xz, flat_spot_xz_coord);
+
+	float ratio = (outer_radius - distance_from_flat_spot) /
+		(outer_radius - inner_radius);
+
+	float flatten_amount = clamp(ratio, 0.0, 1.0) * 0.9;
+
+	density = mix(density, (-wsPos.y + flat_spot_height), flatten_amount);
 
 
 	// TODO Dustin - Use the following to display holes in terrain due to marching cubes
