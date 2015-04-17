@@ -44,6 +44,8 @@
 		0C8CA2921AB624C400E162CE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DF01A7ED3930078F3FE /* IOKit.framework */; };
 		0C8CA2931AB624DE00E162CE /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C6E6DEC1A7ED3580078F3FE /* libglfw3.a */; };
 		0C8CA2941AB8898000E162CE /* PerlinNoiseDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF66994B00A605169878D82C /* PerlinNoiseDemo.cpp */; };
+		EF66925408038F92F693CFAE /* Resources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF66939FCD0831C33631A6A0 /* Resources.cpp */; };
+		EF66937C3FFAF64294F90B24 /* Resources.hpp in Headers */ = {isa = PBXBuildFile; fileRef = EF6699EC80D81BCFE7683428 /* Resources.hpp */; };
 		EF6695EA91F020A63771B89C /* MarchingCubesRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF669292477E6CE6C22017B8 /* MarchingCubesRenderer.cpp */; };
 		EF669BF48433D9F88DDD581E /* Texture.inl in Sources */ = {isa = PBXBuildFile; fileRef = EF6693718186C6D6BC3263E9 /* Texture.inl */; };
 		EF669D30A231CDF758872447 /* MarchingCubesExample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF6699AC6EEF855337783C66 /* MarchingCubesExample.cpp */; };
@@ -354,6 +356,7 @@
 		EF6691F332CD4658066F9D9D /* MarchingCubesRenderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarchingCubesRenderer.hpp; sourceTree = "<group>"; };
 		EF669292477E6CE6C22017B8 /* MarchingCubesRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarchingCubesRenderer.cpp; sourceTree = "<group>"; };
 		EF6693718186C6D6BC3263E9 /* Texture.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.inl; path = Texture.inl; sourceTree = "<group>"; };
+		EF66939FCD0831C33631A6A0 /* Resources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Resources.cpp; sourceTree = "<group>"; };
 		EF66944617254E84CE2186AA /* DemoException.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DemoException.hpp; sourceTree = "<group>"; };
 		EF66945C56A12A7253E56CC0 /* VoxelEdges.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = VoxelEdges.vs; sourceTree = "<group>"; };
 		EF66947CD453FAD224549442 /* Exception.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Exception.hpp; sourceTree = "<group>"; };
@@ -366,6 +369,7 @@
 		EF66986A9F4D190CEE6BE9DE /* ScreenQuad.fs */ = {isa = PBXFileReference; lastKnownFileType = file.fs; path = ScreenQuad.fs; sourceTree = "<group>"; };
 		EF66994B00A605169878D82C /* PerlinNoiseDemo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerlinNoiseDemo.cpp; sourceTree = "<group>"; };
 		EF6699AC6EEF855337783C66 /* MarchingCubesExample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MarchingCubesExample.cpp; sourceTree = "<group>"; };
+		EF6699EC80D81BCFE7683428 /* Resources.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Resources.hpp; sourceTree = "<group>"; };
 		EF669A93A88681857873007C /* MarchingCubesExample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MarchingCubesExample.hpp; sourceTree = "<group>"; };
 		EF669BFCBF24622500C9356B /* Math.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Math.hpp; sourceTree = "<group>"; };
 		EF669C5BF79A475D0B3353FD /* ScreenQuad.vs */ = {isa = PBXFileReference; lastKnownFileType = file.vs; path = ScreenQuad.vs; sourceTree = "<group>"; };
@@ -804,6 +808,8 @@
 				0CFA8F0C1A918EE5006295B9 /* ObjFileLoader.hpp */,
 				EF66947CD453FAD224549442 /* Exception.hpp */,
 				EF669BFCBF24622500C9356B /* Math.hpp */,
+				EF6699EC80D81BCFE7683428 /* Resources.hpp */,
+				EF66939FCD0831C33631A6A0 /* Resources.cpp */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -889,6 +895,7 @@
 				0C8CA2701AB3E51C00E162CE /* Frustum.hpp in Headers */,
 				0C8CA2731AB3E51C00E162CE /* ShaderException.hpp in Headers */,
 				EF669FC6106C99573306B0BC /* Texture.hpp in Headers */,
+				EF66937C3FFAF64294F90B24 /* Resources.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1036,6 +1043,7 @@
 				0C8CA26C1AB3E50E00E162CE /* ObjFileLoader.cpp in Sources */,
 				0C8CA26E1AB3E51700E162CE /* Frustum.cpp in Sources */,
 				EF669BF48433D9F88DDD581E /* Texture.inl in Sources */,
+				EF66925408038F92F693CFAE /* Resources.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
