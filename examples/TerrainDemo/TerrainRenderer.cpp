@@ -7,10 +7,7 @@ using namespace glm;
 //----------------------------------------------------------------------------------------
 TerrainRenderer::TerrainRenderer (
 		const uvec3 & densityGridDimensions
-)
-	: visualizeNormals(false),
-	  visualizeBlocks(true)
-{
+) {
 	glGenVertexArrays(1, &vao_terrainSurface);
 
 	uvec3 dim = densityGridDimensions - uvec3(1);
@@ -35,8 +32,12 @@ void TerrainRenderer::render(
 	setVertexAttributeMappings(block);
 	renderIsoSurface(block);
 
-	if (visualizeBlocks) {
+	if (visualizeBlockEdges) {
 		renderBlockEdges(block);
+	}
+
+	if (visualizeVoxelEdges) {
+		renderVoxelEdges();
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -63,9 +64,26 @@ void TerrainRenderer::setupShaderPrograms (
 		shader_blockEdges.attachVertexShader("shaders/BlockEdges.vs");
 		shader_blockEdges.attachFragmentShader("shaders/BlockEdges.fs");
 		shader_blockEdges.link();
+
+		shader_blockEdges.setUniform("lineColor", vec3(0.7f, 0.7f, 0.7f));
 	}
 
-	shader_blockEdges.setUniform("lineColor", vec3(0.7f, 0.7f, 0.7f));
+	//-- shader_voxelEdges:
+	{
+		shader_voxelEdges.generateProgramObject();
+		shader_voxelEdges.attachVertexShader("shaders/VoxelEdges.vs");
+		shader_voxelEdges.attachFragmentShader("shaders/VoxelEdges.fs");
+		shader_voxelEdges.link();
+
+		float numVoxelCols = densityGridDimensions.x - 1.0f;
+		float numVoxelRows = densityGridDimensions.y - 1.0f;
+		float numVoxelLayers = densityGridDimensions.z - 1.0f;
+
+		shader_voxelEdges.setUniform("numVoxelCols", numVoxelCols);
+		shader_voxelEdges.setUniform("numVoxelRows", numVoxelRows);
+		shader_voxelEdges.setUniform("numVoxelLayers", numVoxelLayers);
+		shader_voxelEdges.setUniform("lineColor", vec3(0.5f, 0.5f, 0.5f));
+	}
 }
 
 //----------------------------------------------------------------------------------------
@@ -84,6 +102,9 @@ void TerrainRenderer::updateShaderUniforms (
 	shader_terrainSurface.setUniform("NormalMatrix", glm::transpose(glm::inverse(viewMatrix)));
 
 	shader_blockEdges.setUniform("ViewProjMatrix", vpMatrix);
+
+	shader_voxelEdges.setUniform("ViewProjMatrix", vpMatrix);
+	shader_voxelEdges.setUniform("wsBlockMinVertexPos", block.getMinVertexPos());
 }
 
 //----------------------------------------------------------------------------------------
@@ -120,6 +141,19 @@ void TerrainRenderer::renderBlockEdges(
 
 	glBindVertexArray(0);
 	CHECK_GL_ERRORS;
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::renderVoxelEdges() {
+	glBindVertexArray(vao_blockEdges);
+
+	shader_voxelEdges.enable();
+	  glDrawElementsInstanced(GL_LINES, 24, GL_UNSIGNED_SHORT, nullptr, numVoxelsPerBlock);
+	shader_voxelEdges.disable();
+
+	glBindVertexArray(0);
+	CHECK_GL_ERRORS;
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -234,10 +268,10 @@ void TerrainRenderer::disableVisualizeNormals() {
 
 //----------------------------------------------------------------------------------------
 void TerrainRenderer::enableVisualizeBlocks() {
-	visualizeBlocks = true;
+	visualizeBlockEdges = true;
 }
 
 //----------------------------------------------------------------------------------------
 void TerrainRenderer::disableVisualizeBlocks() {
-	visualizeBlocks = false;
+	visualizeBlockEdges = false;
 }

@@ -25,8 +25,9 @@ public:
 	void disableVisualizeBlocks();
 
 private:
-	bool visualizeNormals;
-	bool visualizeBlocks;
+	bool visualizeNormals = false;
+	bool visualizeBlockEdges = false;
+	bool visualizeVoxelEdges = false;
 
 	//-- Vertex Array Attribute Indices:
 	const GLuint position_attrib_index = 0;
@@ -34,6 +35,7 @@ private:
 
 	Synergy::ShaderProgram shader_terrainSurface;
 	Synergy::ShaderProgram shader_blockEdges;
+	Synergy::ShaderProgram shader_voxelEdges;
 
 	//-- For Block Edge Rendering:
 	GLuint vao_blockEdges;
@@ -61,5 +63,7 @@ private:
 	void renderBlockEdges(
 			const TerrainBlock &block
 	);
+
+	void renderVoxelEdges();
 
 };

@@ -117,52 +117,81 @@ void RockDensityGenerator::generateBasicRock(TerrainBlock &block) {
 
 	float32 * data = new float32[depth * height * width];
 
-	float isoValue = 0;
-
+	int index;
+	float value;
 	for(int k(0); k < depth; ++k) {
 		for(int j(0); j < height; ++j) {
 			for(int i(0); i < width; ++i) {
-				// Set all values below isosurface isoValue
-				data[k * (height * width) + (j * width) + i] = isoValue - 1.0f;
+
+				index = k * (height * width) + (j * width) + i;
+
+				value = -k;
+				value += j*0.98f;   // Slope below 1 creates a plane through voxel.
+//				value += j;  // Slope of 1 or great causes plane to distort.
+
+				data[index] = value;
 			}
 		}
 	}
 
-//	data[(0 * height * width) + (0 * width) + 0] = isoValue + 1;  // Vertex 0
-//    data[(0 * height * width) + (0 * width) + 1] = isoValue + 1;  // Vertex 1
-	data[(0 * height * width) + (0 * width) + 2] = isoValue + 1;  // Vertex 2
+	//////////////////////////
+	// Diagonal slope in x-dir
+	// Correct
+	data[0] = 0.0f;
+	data[1] = 1.0f;
+	data[2] = 0.0f;
+	data[3] = 1.0f;
 
-	data[(0 * height * width) + (1 * width) + 0] = isoValue + 1;  // Vertex 3
-	data[(0 * height * width) + (1 * width) + 1] = isoValue + 1;  // Vertex 4
-	data[(0 * height * width) + (1 * width) + 2] = isoValue + 1;  // Vertex 5
+	data[4] = -1.0f;
+	data[5] = 0.0f;
+	data[6] = -1.0f;
+	data[7] = 0.0f;
+	//////////////////////////
 
-//    data[(0 * height * width) + (2 * width) + 0] = isoValue + 1;  // Vertex 6
-	data[(0 * height * width) + (2 * width) + 1] = isoValue + 1;  // Vertex 7
-	data[(0 * height * width) + (2 * width) + 2] = isoValue + 1;  // Vertex 8
 
-//    data[(1 * height * width) + (0 * width) + 0] = isoValue + 1; //Vertex 9
-//    data[(1 * height * width) + (0 * width) + 1] = isoValue + 1; //Vertex 10
-	data[(1 * height * width) + (0 * width) + 2] = isoValue + 1; //Vertex 11
+	//////////////////////////
+	// Diagonal slope in y-dir, Slope == 1
+	// Incorrect triangles
+	data[0] = 0.0f;
+	data[1] = 0.0f;
+	data[2] = 1.0f;
+	data[3] = 1.0f;
 
-//    data[(1 * height * width) + (1 * width) + 0] = isoValue + 1; //Vertex 12
-	data[(1 * height * width) + (1 * width) + 1] = isoValue + 1; //Vertex 13
-//    data[(1 * height * width) + (1 * width) + 2] = isoValue + 1; //Vertex 14
+	data[4] = -1.0f;
+	data[5] = -1.0f;
+	data[6] = 0.0f;
+	data[7] = 0.0f;
+	//////////////////////////
 
-//    data[(1 * height * width) + (2 * width) + 0] = isoValue + 1; //Vertex 15
-	data[(1 * height * width) + (2 * width) + 1] = isoValue + 1; //Vertex 16
-//    data[(1 * height * width) + (2 * width) + 2] = isoValue + 1; //Vertex 17
+	//////////////////////////
+	// Diagonal slope in y-dir.  Slope < 1
+	// Correct
+	data[0] = 0.0f;
+	data[1] = 0.0f;
+	data[2] = 1.0f;
+	data[3] = 1.0f;
 
-	data[(2 * height * width) + (0 * width) + 0] = isoValue + 1; //Vertex 18
-//    data[(2 * height * width) + (0 * width) + 1] = isoValue + 1; //Vertex 19
-//    data[(2 * height * width) + (0 * width) + 2] = isoValue + 1; //Vertex 20
+	data[4] = -1.0f;
+	data[5] = -1.0f;
+	data[6] = -0.01f;
+	data[7] = -0.01f;
+	//////////////////////////
 
-	data[(2 * height * width) + (1 * width) + 0] = isoValue + 1; //Vertex 21
-//    data[(2 * height * width) + (1 * width) + 1] = isoValue + 1; //Vertex 22
-	data[(2 * height * width) + (1 * width) + 2] = isoValue + 1; //Vertex 23
 
-//    data[(2 * height * width) + (2 * width) + 0] = isoValue + 1; //Vertex 24
-//    data[(2 * height * width) + (2 * width) + 1] = isoValue + 1; //Vertex 25
-//    data[(2 * height * width) + (2 * width) + 2] = isoValue + 1; //Vertex 26
+	//////////////////////////
+	// Diagonal slope in y-dir.  Slope > 1
+	// Incorrect Triangles
+	data[0] = 0.0f;
+	data[1] = 0.0f;
+	data[2] = 1.0f;
+	data[3] = 1.0f;
+
+	data[4] = -1.0f;
+	data[5] = -1.0f;
+	data[6] = 0.3f;
+	data[7] = 0.3f;
+	//////////////////////////
+
 
 	densityTexture.bind();
 	// Copy texture into data's memory:

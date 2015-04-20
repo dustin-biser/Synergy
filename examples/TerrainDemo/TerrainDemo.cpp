@@ -31,6 +31,14 @@ shared_ptr<GlfwOpenGlWindow> TerrainDemo::getInstance() {
 }
 
 //---------------------------------------------------------------------------------------
+TerrainDemo::TerrainDemo()
+	: renderSkybox(false),
+	  gammaCorrection(false)
+{
+
+}
+
+//---------------------------------------------------------------------------------------
 void TerrainDemo::init() {
 	//-- Initialize subsystems:
 	{
@@ -198,7 +206,9 @@ void TerrainDemo::logic() {
 		TerrainBlock & block = *(pair.second);
 
 		if(block.processed == false) {
+
 			rockDensityGenerator->generateRockDensity(block);
+
 			if(block.isEmpty) continue; // Skip rendering and goto next block.
 
 			lightingOven->bakeNormals(block);
@@ -237,7 +247,7 @@ void TerrainDemo::inspectTextureData(
 	uint32 width = texture.width();
 	uint32 height = texture.height();
 	uint32 depth = texture.depth();
-	uint32 numColorComponents = 4;
+	uint32 numColorComponents = 1;
 	float * data = new float[width * height * depth * numColorComponents];
 
 	texture.bind();

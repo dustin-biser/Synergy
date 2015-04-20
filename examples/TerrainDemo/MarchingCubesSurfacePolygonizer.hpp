@@ -68,5 +68,8 @@ private:
 
 
     // TODO Dustin - remove after testing:
-    void inspectTransformFeedbackBuffer(const TerrainBlock &block);
+    GLuint vbo_debugStream;
+	GLsizei vbo_debugStream_bytes;
+    void inspectTransformFeedbackBuffer(const TerrainBlock & block);
+	void allocateVboDebugStreamStorage();
 };

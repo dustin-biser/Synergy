@@ -469,11 +469,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C8CA27B1AB3E86B00E162CE /* OpenGL.framework in Frameworks */,
 				0C8CA27F1AB3E8AD00E162CE /* libglfw3.a in Frameworks */,
 				0C8CA27E1AB3E87B00E162CE /* IOKit.framework in Frameworks */,
 				0C8CA27D1AB3E87600E162CE /* Cocoa.framework in Frameworks */,
 				0C8CA27C1AB3E87100E162CE /* CoreVideo.framework in Frameworks */,
-				0C8CA27B1AB3E86B00E162CE /* OpenGL.framework in Frameworks */,
 				0C8CA27A1AB3E5AA00E162CE /* libSynergy.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

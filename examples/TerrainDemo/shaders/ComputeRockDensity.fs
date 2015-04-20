@@ -52,9 +52,8 @@ void main() {
 	density = mix(density, (-wsPos.y + flat_spot_height), flatten_amount);
 
 
-	// TODO Dustin - Use the following to display holes in terrain due to marching cubes
-	// Holes seem to show up when sampling sin() in the z direction.
-//	{
+	// TODO Dustin - Uncomment to render sine wave
+	{
 //		vec3 wsPos = wsBlockMinVertPos + textureToWorldSpace(uvw);
 //
 //			vec3 garbage = texture(noiseTexture, wsPos).rgb;
@@ -62,6 +61,6 @@ void main() {
 //
 //		density = -wsPos.y + 0.5;
 //		density += sin(wsPos.z*3.145*6.01)*0.05; // Here's where holes show up
-//	}
+	}
 
 }

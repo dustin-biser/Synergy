@@ -26,6 +26,10 @@ MarchingCubesSurfacePolygonizer::MarchingCubesSurfacePolygonizer (
 	setupVoxelDataVao();
 
     setupSamplerObject();
+
+	#ifdef DEBUG
+		allocateVboDebugStreamStorage();
+	#endif
 }
 
 //---------------------------------------------------------------------------------------
@@ -44,6 +48,13 @@ void MarchingCubesSurfacePolygonizer::setupShaders() {
 	const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
 	glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 2,
 			feedbackVaryings, GL_SEPARATE_ATTRIBS);
+
+	/////////////////////////////////////////
+	// TODO Dustin - Remove after testing:
+//	const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal", "debugStream"};
+//	glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 3,
+//			feedbackVaryings, GL_SEPARATE_ATTRIBS);
+	/////////////////////////////////////////
 
 	shader_genIsoSurface.link();
 }
@@ -153,7 +164,7 @@ void MarchingCubesSurfacePolygonizer::uploadShaderUniformArrays() {
 			1, 0, 0, 0,     // edge 0, starts at vertex 0
 			0, 1, 0, 0,     // edge 1, starts at vertex 1
 			0, 0, 1, 0,     // edge 2, starts at vertex 2
-			1, 0, 0, 0,     // edge 3, starts at vertex 0
+			0, 0, 0, 1,     // edge 3, starts at vertex 3
 
 			0, 0, 0, 0,     // edge 4, starts at vertex 4
 			0, 0, 0, 0,     // edge 5, starts at vertex 5
@@ -184,7 +195,7 @@ void MarchingCubesSurfacePolygonizer::uploadShaderUniformArrays() {
 			1, 0, 0, 0,     // edge 4, starts at vertex 4
 			0, 1, 0, 0,     // edge 5, starts at vertex 5
 			0, 0, 1, 0,     // edge 6, starts at vertex 6
-			1, 0, 0, 0,     // edge 7, starts at vertex 4
+			0, 0, 0, 1,     // edge 7, starts at vertex 7
 
 			0, 0, 0, 0,     // edge 8, starts at vertex 0
 			0, 0, 0, 0,     // edge 9, starts at vertex 1
@@ -206,12 +217,12 @@ void MarchingCubesSurfacePolygonizer::uploadShaderUniformArrays() {
 			0, 1, 0, 0,     // edge 0, ends at vertex 1
 			0, 0, 1, 0,     // edge 1, ends at vertex 2
 			0, 0, 0, 1,     // edge 2, ends at vertex 3
-			0, 0, 0, 1,     // edge 3, ends at vertex 3
+			1, 0, 0, 0,     // edge 3, ends at vertex 0
 
 			0, 0, 0, 0,     // edge 4, ends at vertex 5
 			0, 0, 0, 0,     // edge 5, ends at vertex 6
 			0, 0, 0, 0,     // edge 6, ends at vertex 7
-			0, 0, 0, 0,     // edge 7, ends at vertex 7
+			0, 0, 0, 0,     // edge 7, ends at vertex 4
 
 			0, 0, 0, 0,     // edge 8, ends at vertex 4
 			0, 0, 0, 0,     // edge 9, ends at vertex 5
@@ -238,7 +249,7 @@ void MarchingCubesSurfacePolygonizer::uploadShaderUniformArrays() {
 			0, 1, 0, 0,     // edge 4, ends at vertex 5
 			0, 0, 1, 0,     // edge 5, ends at vertex 6
 			0, 0, 0, 1,     // edge 6, ends at vertex 7
-			0, 0, 0, 1,     // edge 7, ends at vertex 7
+			1, 0, 0, 0,     // edge 7, ends at vertex 4
 
 			1, 0, 0, 0,     // edge 8, ends at vertex 4
 			0, 1, 0, 0,     // edge 9, ends at vertex 5
@@ -637,9 +648,17 @@ void MarchingCubesSurfacePolygonizer::setTransformFeedbackStreamBuffers(
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,
 				streamIndex_wsNormals, block.getNormalVertexBuffer());
 
+		//////////////////////////////////////////////////////
+		// TODO Dustin - Remove after testing:
+		#ifdef DEBUG
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, vbo_debugStream);
+		#endif
+		//////////////////////////////////////////////////////
+
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 		CHECK_GL_ERRORS;
 	}
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -691,7 +710,6 @@ void MarchingCubesSurfacePolygonizer::generateSurfaceVertices(
 
 //----------------------------------------------------------------------------------------
 // FOR TESTING
-// TODO Dustin - Remove after testing:
 template<typename T>
 static void zeroOutArray(T * data, uint32 numElements) {
 	for(uint32 i = 0; i < numElements; ++i) {
@@ -701,7 +719,6 @@ static void zeroOutArray(T * data, uint32 numElements) {
 
 //----------------------------------------------------------------------------------------
 // FOR TESTING
-// TODO Dustin - Remove after testing:
 void MarchingCubesSurfacePolygonizer::inspectTransformFeedbackBuffer (
 		const TerrainBlock & block
 ) {
@@ -712,6 +729,16 @@ void MarchingCubesSurfacePolygonizer::inspectTransformFeedbackBuffer (
 	GLsizei numElements =  block.getBytesPerVertexBuffer() / sizeof(GLfloat);
 	GLfloat * stream0Data = new GLfloat[numElements];
 	GLfloat * stream1Data = new GLfloat[numElements];
+
+	//////////////////////////////////////////////////////
+	// TODO Dustin - Remove after testing:
+	GLfloat * stream2Data = new GLfloat[vbo_debugStream_bytes / sizeof(float)];
+
+	zeroOutArray<GLfloat>(stream2Data, numElements);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_debugStream);
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, vbo_debugStream_bytes, stream2Data);
+	//////////////////////////////////////////////////////
 
 	zeroOutArray<GLfloat>(stream0Data, numElements);
 	zeroOutArray<GLfloat>(stream1Data, numElements);
@@ -724,6 +751,21 @@ void MarchingCubesSurfacePolygonizer::inspectTransformFeedbackBuffer (
 
 	delete [] stream0Data;
 	delete [] stream1Data;
+	delete [] stream2Data;
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	CHECK_GL_ERRORS;
+}
+
+//---------------------------------------------------------------------------------------
+void MarchingCubesSurfacePolygonizer::allocateVboDebugStreamStorage() {
+	glGenBuffers(1, &vbo_debugStream);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_debugStream);
+
+	GLsizei numVoxels = (gridWidth-1.0f) * (gridHeight-1.0f) * (gridDepth-1.0f);
+	vbo_debugStream_bytes = sizeof(float) * (15*3*3) * numVoxels;
+	glBufferData(GL_ARRAY_BUFFER, vbo_debugStream_bytes, nullptr, GL_DYNAMIC_READ);
+
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	CHECK_GL_ERRORS;

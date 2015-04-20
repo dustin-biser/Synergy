@@ -36,7 +36,7 @@ public:
     static std::shared_ptr<GlfwOpenGlWindow> getInstance();
 
 private:
-    TerrainDemo() = default; // Singleton. Prevent direct construction.
+	TerrainDemo();
 
 	TerrainBlockGenerator * terrainBlockGenerator;
     MarchingCubesSurfacePolygonizer * surfacePolygonizer;
@@ -49,8 +49,8 @@ private:
 
 	std::map<WorldSpaceIndex, TerrainBlock *> blockMap;
 
-	bool renderSkybox = true;
-	bool gammaCorrection = false;
+	bool renderSkybox;
+	bool gammaCorrection;
 
     virtual void init();
     virtual void logic();

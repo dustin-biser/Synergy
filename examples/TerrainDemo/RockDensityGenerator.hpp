@@ -22,6 +22,10 @@ public:
 
 	void setTextureRenderTarget(const Synergy::Texture3D & texture);
 
+
+	// TODO Dustin - Remove after testing:
+	void generateBasicRock(TerrainBlock & block);
+
 private:
 	GLuint framebuffer;
 
@@ -42,9 +46,4 @@ private:
 	void setupShaderProgram();
 
 	void computeRockDensity();
-
-
-
-	// TODO Dustin - Remove after testing:
-	void generateBasicRock(TerrainBlock & block);
 };

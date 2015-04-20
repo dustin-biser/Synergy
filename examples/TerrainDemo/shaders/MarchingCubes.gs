@@ -18,8 +18,8 @@ in vsOutGsIn {
 	vec3 voxelIndex; // Voxel's index within parent Block.
 	vec3 uvw; // Texture coordinate for voxel's min vertex.
 	vec3 texStep; // uvw step size in texture space.
-	vec4 f0123; // Density values at all
-	vec4 f4567; // ... 8 voxel corners.
+	vec4 f0123; // Density values of bottom 4 voxel vertices
+	vec4 f4567; // Density values of top 4 voxel vertices
 	uint mc_case; // 0-255, triTable case.
 	float isoValue; // iso-surface value.
 } gs_in[];
@@ -60,6 +60,12 @@ uniform vec4 cornerBmask4567[numEdges]; // .xyzw corresponds to vertex 4,5,6,7.
 layout (stream = 0) out vec3 outWsPosition;
 layout (stream = 1) out vec3 outWsNormal;
 
+/////////////////////////////////////////////
+// TODO Dustin - Remove after testing:
+//layout (stream = 2) out vec3 debugStream;
+/////////////////////////////////////////////
+
+
 // Converts texture coordinates 'ts' to world space coordinates
 vec3 textureSpaceToWorldSpace(vec3 ts) {
 	return vec3(ts.x, ts.z, -ts.y);
@@ -86,6 +92,7 @@ void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 
 	vertexPosition = wsMinVertexPos + pos_within_cell * voxelDim;
 
+
 	//-- Output stream vertex position:
 	outWsPosition = vertexPosition;
 	EmitStreamVertex(0);
@@ -105,6 +112,7 @@ void placeVertOnEdge(in int edgeNum, out vec3 vertexPosition) {
 		vec3 uvw = gs_in[0].uvw + offset * gs_in[0].texStep;
 		outWsNormal = texture(normalAmbo, uvw).rgb;
 
+		//-- Output stream vertex normal:
 		EmitStreamVertex(1);
 		EndStreamPrimitive(1);
 	}
