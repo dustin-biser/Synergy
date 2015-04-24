@@ -24,9 +24,12 @@ public:
 	void enableVisualizeBlocks();
 	void disableVisualizeBlocks();
 
+	void enableVisualizeVoxels();
+	void disableVisualizVoxels();
+
 private:
 	bool visualizeNormals = false;
-	bool visualizeBlockEdges = false;
+	bool visualizeBlockEdges = true;
 	bool visualizeVoxelEdges = false;
 
 	//-- Vertex Array Attribute Indices:
@@ -50,6 +53,7 @@ private:
 	void setupBlockEdgesVertexBuffer();
 	void setupBlockEdgesVao();
 	void setVertexAttributeMappings(const TerrainBlock & block);
+	void initVertexArrayObj();
 
 	void updateShaderUniforms (
 			const Synergy::Camera & camera,

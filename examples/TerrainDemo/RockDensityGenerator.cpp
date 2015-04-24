@@ -33,9 +33,15 @@ void RockDensityGenerator::generateRockDensity(
 		TerrainBlock & block
 ) {
 	shader_computeRockDensity.setUniform("wsBlockMinVertPos", block.wsMinVertexPos);
+
+	vec3 inv_dimensions(
+			1.0f / float(block.densityTexture->width()),
+			1.0f / float(block.densityTexture->height()),
+			1.0f / float(block.densityTexture->depth())
+	);
+	shader_computeRockDensity.setUniform( "inv_densityTextureDimensions", inv_dimensions);
+
 	computeRockDensity();
-
-
 }
 
 //---------------------------------------------------------------------------------------
@@ -77,7 +83,7 @@ void RockDensityGenerator::computeRockDensity() {
 	GLsizei numInstances = densityTexture.depth();
 
 	shader_computeRockDensity.enable();
-	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
 	shader_computeRockDensity.disable();
 
 	//-- Restore defaults:
@@ -134,63 +140,16 @@ void RockDensityGenerator::generateBasicRock(TerrainBlock &block) {
 		}
 	}
 
-	//////////////////////////
-	// Diagonal slope in x-dir
-	// Correct
-	data[0] = 0.0f;
-	data[1] = 1.0f;
-	data[2] = 0.0f;
-	data[3] = 1.0f;
+	data[0] = 1;
+	data[1] = 1;
+	data[2] = 1;
+	data[3] = 1;
 
-	data[4] = -1.0f;
-	data[5] = 0.0f;
-	data[6] = -1.0f;
-	data[7] = 0.0f;
-	//////////////////////////
+	data[4] = -1;
+	data[5] = -1;
+	data[6] = -1;
+	data[7] = -1;
 
-
-	//////////////////////////
-	// Diagonal slope in y-dir, Slope == 1
-	// Incorrect triangles
-	data[0] = 0.0f;
-	data[1] = 0.0f;
-	data[2] = 1.0f;
-	data[3] = 1.0f;
-
-	data[4] = -1.0f;
-	data[5] = -1.0f;
-	data[6] = 0.0f;
-	data[7] = 0.0f;
-	//////////////////////////
-
-	//////////////////////////
-	// Diagonal slope in y-dir.  Slope < 1
-	// Correct
-	data[0] = 0.0f;
-	data[1] = 0.0f;
-	data[2] = 1.0f;
-	data[3] = 1.0f;
-
-	data[4] = -1.0f;
-	data[5] = -1.0f;
-	data[6] = -0.01f;
-	data[7] = -0.01f;
-	//////////////////////////
-
-
-	//////////////////////////
-	// Diagonal slope in y-dir.  Slope > 1
-	// Incorrect Triangles
-	data[0] = 0.0f;
-	data[1] = 0.0f;
-	data[2] = 1.0f;
-	data[3] = 1.0f;
-
-	data[4] = -1.0f;
-	data[5] = -1.0f;
-	data[6] = 0.3f;
-	data[7] = 0.3f;
-	//////////////////////////
 
 
 	densityTexture.bind();

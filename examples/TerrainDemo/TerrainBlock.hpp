@@ -14,8 +14,6 @@ class LightingOven;
 
 class TerrainBlock {
 public:
-	TerrainBlock();
-
 	~TerrainBlock();
 
 	TerrainBlock(
@@ -25,12 +23,21 @@ public:
 	);
 
 	GLuint getPositionVertexBuffer() const;
+
 	GLuint getNormalVertexBuffer() const;
+
 	GLuint getTransformFeedbackObj() const;
+
+	GLuint getFeedbackPrimitivesWrittenQuery() const;
+
 	GLuint getBytesPerVertexBuffer() const;
+
+	GLsizei getNumVertices() const;
+
 	glm::vec3 getMinVertexPos() const;
 
 	const Synergy::Texture3D & getDensityTexture() const;
+
 	const Synergy::Texture3D & getNormalAmboTexture() const;
 
 	bool processed;
@@ -48,7 +55,10 @@ private:
 	const Synergy::Texture3D * normalAmboTexture;
 
 	GLuint transformFeedbackObj;
+	GLuint query_feedbackPrimitivesWritten;
 	GLuint vbo_positions;
 	GLuint vbo_normals;
 	Synergy::uint32 bytesPerVertexBuffer;
+
+	mutable GLsizei numVertices;
 };

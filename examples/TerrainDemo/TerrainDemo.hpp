@@ -60,11 +60,12 @@ private:
 
 	void toggleTerrainNormalVisualization();
 	void toggleBlockEdgeVisualization();
+	void toggleShowVoxels();
     void setupCamera();
 	void setupGl();
 	void initSkyboxTextures();
 
-
 	// TODO -- Dustin Remove after testing:
 	void inspectTextureData(const Synergy::Texture3D & texture );
+	void inspectVboData(const TerrainBlock &block);
 };

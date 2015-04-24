@@ -14,15 +14,14 @@ TerrainBlockGenerator::TerrainBlockGenerator (
 	createTextureStorage(densityGridDimensions);
 	initVboMemoryPool(densityGridDimensions);
 
-
 	// TODO Dustin - Refactor block creation so that all MaxTerrainBlocks are allocated
 	// at once and reused during lifetime of TerrainBlockGenerator
 	{
-		for(int j(0); j < 2; ++j) {
-			for(int i(0); i < 2; ++i) {
+		for(int j(0); j < 10; ++j) {
+		for(int i(0); i < 10; ++i) {
 				TerrainBlock * block =
 						new TerrainBlock(densityTexture, normalAmboTexture, bytesPerVertexBuffer);
-				block->wsMinVertexPos = vec3(i,0,-j);
+				block->wsMinVertexPos = vec3(j,0,-i);
 
 				vboMemoryPool.requestVertexBuffer(block->vbo_positions);
 				vboMemoryPool.requestVertexBuffer(block->vbo_normals);

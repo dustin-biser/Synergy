@@ -9,6 +9,12 @@ using namespace Synergy;
 using namespace glm;
 
 
+/////////////////////////////////////////////////////
+// TODO Dustin - Remove after testing
+#include <iostream>
+/////////////////////////////////////////////////////
+
+
 //---------------------------------------------------------------------------------------
 MarchingCubesSurfacePolygonizer::MarchingCubesSurfacePolygonizer (
 		const uvec3 & densityGridDimensions
@@ -623,18 +629,14 @@ void MarchingCubesSurfacePolygonizer::generateSurface (
 ){
 	setTransformFeedbackStreamBuffers(block);
 	generateSurfaceVertices(block);
-
-	#ifdef DEBUG
-		inspectTransformFeedbackBuffer(block);
-	#endif
 }
 
 //----------------------------------------------------------------------------------------
 void MarchingCubesSurfacePolygonizer::setTransformFeedbackStreamBuffers(
 		const TerrainBlock & block
 ) {
-	const GLuint streamIndex_wsPositions = 0;
-	const GLuint streamIndex_wsNormals = 1;
+	const GLuint streamIndex_positions = 0;
+	const GLuint streamIndex_normals = 1;
 
 	//-- Setup transform feedback stream index binding points:
 	{
@@ -642,17 +644,18 @@ void MarchingCubesSurfacePolygonizer::setTransformFeedbackStreamBuffers(
 
 		// vertex positions:
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,
-				streamIndex_wsPositions, block.getPositionVertexBuffer());
+				streamIndex_positions, block.getPositionVertexBuffer());
+
 
 		// vertex normals:
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,
-				streamIndex_wsNormals, block.getNormalVertexBuffer());
+				streamIndex_normals, block.getNormalVertexBuffer());
 
 		//////////////////////////////////////////////////////
 		// TODO Dustin - Remove after testing:
-		#ifdef DEBUG
-			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, vbo_debugStream);
-		#endif
+//		#ifdef DEBUG
+//			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, vbo_debugStream);
+//		#endif
 		//////////////////////////////////////////////////////
 
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
@@ -680,19 +683,26 @@ void MarchingCubesSurfacePolygonizer::generateSurfaceVertices(
 	glActiveTexture(GL_TEXTURE0 + triTable_texUnitOffset);
 	glBindTexture(GL_TEXTURE_2D, triTable_texture2d);
 
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, block.getTransformFeedbackObj());
 
 	GLsizei numVoxelsPerLayer = (gridWidth - 1.0f) * (gridHeight - 1.0f);
 	GLsizei numInstances = gridDepth - 1.0f;
 
-	shader_genIsoSurface.enable();
+
+	glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
+			block.getFeedbackPrimitivesWrittenQuery());
+	{
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, block.getTransformFeedbackObj());
+
+		shader_genIsoSurface.enable();
 		glBeginTransformFeedback(GL_POINTS);
 
 		// Each instance is a 2D grid of points.
 		glDrawArraysInstanced(GL_POINTS, 0, numVoxelsPerLayer, numInstances);
 
 		glEndTransformFeedback();
-	shader_genIsoSurface.disable();
+		shader_genIsoSurface.disable();
+	}
+	glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
 
 	//-- Restore defaults:
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);

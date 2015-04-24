@@ -15,7 +15,7 @@ using namespace Synergy;
 //----------------------------------------------------------------------------------------
 int main() {
     shared_ptr<GlfwOpenGlWindow> demo =  TerrainDemo::getInstance();
-    demo->create(kScreenWidth, kScreenHeight, "Terrain Rendering Demo", 1/60.0f);
+    demo->create(kScreenWidth, kScreenHeight, "Terrain Rendering Demo", 1.0f/60.0f);
 
     return 0;
 }
@@ -114,8 +114,8 @@ void TerrainDemo::setupGl() {
 void TerrainDemo::setupCamera() {
     camera.setNearZDistance(0.1f);
 	camera.setFarZDistance(100.0f);
-    camera.setPosition(vec3(0.8,1.0,1.0));
-    camera.lookAt(vec3(0.5,0.6,-0.5));
+    camera.setPosition(vec3(-1.0,1.0,1.0));
+    camera.lookAt(vec3(0.5,0.5,-1.5));
 
     cameraController.setForwardScaleFactor(0.05f);
     cameraController.setSideStrafeScaleFactor(0.05f);
@@ -135,10 +135,14 @@ void TerrainDemo::keyInput(int key, int action, int mods) {
 		        break;
 
 			case GLFW_KEY_3:
+				toggleShowVoxels();
+		        break;
+
+			case GLFW_KEY_4:
 				renderSkybox = !renderSkybox;
 				break;
 
-			case GLFW_KEY_4:
+			case GLFW_KEY_5:
 				gammaCorrection = !gammaCorrection;
 		        break;
 
@@ -159,6 +163,19 @@ void TerrainDemo::toggleTerrainNormalVisualization() {
 	}
 
 	visualizeNormals = !visualizeNormals;
+}
+
+//---------------------------------------------------------------------------------------
+void TerrainDemo::toggleShowVoxels() {
+	static bool visualizeVoxels = true;
+	if (visualizeVoxels) {
+		terrainRenderer->enableVisualizeVoxels();
+	} else {
+		terrainRenderer->disableVisualizVoxels();
+	}
+
+	visualizeVoxels = !visualizeVoxels;
+
 }
 
 //---------------------------------------------------------------------------------------
@@ -202,14 +219,14 @@ void TerrainDemo::logic() {
 
 	terrainBlockGenerator->queryVisibleBlocks(camera, blockMap);
 
-	for(auto pair : blockMap) {
+	for(auto & pair : blockMap) {
 		TerrainBlock & block = *(pair.second);
 
 		if(block.processed == false) {
 
 			rockDensityGenerator->generateRockDensity(block);
 
-			if(block.isEmpty) continue; // Skip rendering and goto next block.
+			if (block.isEmpty) continue; // Skip rendering and goto next block.
 
 			lightingOven->bakeNormals(block);
 			lightingOven->bakeAmbientOcclusion(block);
@@ -217,13 +234,14 @@ void TerrainDemo::logic() {
 
 			block.processed = true;
 		}
+	}
+
+
+	for(auto & pair : blockMap) {
+		TerrainBlock &block = *(pair.second);
 
 		terrainRenderer->render(camera, block, renderTarget);
 	}
-
-	#ifdef DEBUG
-		inspectTextureData(terrainBlockGenerator->getSharedDensityTexture());
-	#endif
 }
 
 //---------------------------------------------------------------------------------------
@@ -257,5 +275,21 @@ void TerrainDemo::inspectTextureData(
 
 
 	delete [] data;
+	CHECK_GL_ERRORS;
+}
+
+//---------------------------------------------------------------------------------------
+void TerrainDemo::inspectVboData(const TerrainBlock &block) {
+
+	const GLsizei numBytes = block.getBytesPerVertexBuffer();
+	float * data = new float[numBytes/sizeof(float)];
+
+	glBindBuffer(GL_ARRAY_BUFFER, block.getPositionVertexBuffer());
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, numBytes, data);
+
+
+	delete [] data;
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	CHECK_GL_ERRORS;
 }

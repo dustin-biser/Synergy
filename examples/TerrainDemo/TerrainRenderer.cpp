@@ -8,7 +8,7 @@ using namespace glm;
 TerrainRenderer::TerrainRenderer (
 		const uvec3 & densityGridDimensions
 ) {
-	glGenVertexArrays(1, &vao_terrainSurface);
+	initVertexArrayObj();
 
 	uvec3 dim = densityGridDimensions - uvec3(1);
 	numVoxelsPerBlock = dim.x * dim.y * dim.z;
@@ -16,6 +16,18 @@ TerrainRenderer::TerrainRenderer (
 	setupShaderPrograms(densityGridDimensions);
 	setupBlockEdgesVertexBuffer();
 	setupBlockEdgesVao();
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::initVertexArrayObj() {
+	glGenVertexArrays(1, &vao_terrainSurface);
+	glBindVertexArray(vao_terrainSurface);
+	glEnableVertexAttribArray(position_attrib_index);
+	glEnableVertexAttribArray(normal_attrib_index);
+
+
+	glBindVertexArray(0);
+	CHECK_GL_ERRORS;
 }
 
 //----------------------------------------------------------------------------------------
@@ -113,16 +125,10 @@ void TerrainRenderer::renderIsoSurface(
 ) {
 	glBindVertexArray(vao_terrainSurface);
 
-	GLuint transformFeedbackObj = block.getTransformFeedbackObj();
-
-	// Contains transform feedback primitive count needed for draw call.
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedbackObj);
-
 	shader_terrainSurface.enable();
-		glDrawTransformFeedback(GL_TRIANGLES, transformFeedbackObj);
+		glDrawArrays(GL_TRIANGLES, 0, block.getNumVertices());
 	shader_terrainSurface.disable();
 
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 	glBindVertexArray(0);
 	CHECK_GL_ERRORS;
 }
@@ -233,8 +239,6 @@ void TerrainRenderer::setVertexAttributeMappings(
 		const TerrainBlock & block
 ) {
 	glBindVertexArray(vao_terrainSurface);
-	glEnableVertexAttribArray(position_attrib_index);
-	glEnableVertexAttribArray(normal_attrib_index);
 
 	//-- Map vertex buffers to vertex attribute array indices:
 	{
@@ -274,4 +278,14 @@ void TerrainRenderer::enableVisualizeBlocks() {
 //----------------------------------------------------------------------------------------
 void TerrainRenderer::disableVisualizeBlocks() {
 	visualizeBlockEdges = false;
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::enableVisualizeVoxels() {
+	visualizeVoxelEdges = true;
+}
+
+//----------------------------------------------------------------------------------------
+void TerrainRenderer::disableVisualizVoxels() {
+	visualizeVoxelEdges = false;
 }

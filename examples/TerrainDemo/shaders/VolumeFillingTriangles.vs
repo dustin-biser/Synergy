@@ -9,7 +9,7 @@
  *  if (gl_VertexID == 2) -> (x,y) = (-1, 3)
  *
  *  After clipping, a viewport filling quad will be formed with
- *  bottom left corner at (-1,-1), and side length 2.
+ *  bottom left corner at (-1,-1), and top right corner at (1,1).
  */
 
 #version 410

@@ -3,22 +3,6 @@
 using namespace glm;
 
 
-
-//---------------------------------------------------------------------------------------
-TerrainBlock::TerrainBlock()
-	: wsMinVertexPos(vec3(0)),
-	  wsExtents(vec3(0)),
-	  densityTexture(nullptr),
-	  normalAmboTexture(nullptr),
-	  transformFeedbackObj(0),
-	  vbo_positions(0),
-	  vbo_normals(0),
-	  isEmpty(false),
-      processed(false)
-{
-
-}
-
 //---------------------------------------------------------------------------------------
 TerrainBlock::TerrainBlock(
 		const Synergy::Texture3D & densityTexture,
@@ -29,9 +13,16 @@ TerrainBlock::TerrainBlock(
 	  normalAmboTexture(&normalAmboTexture),
 	  bytesPerVertexBuffer(bytesPerVertexBuffer),
 	  wsMinVertexPos(vec3(0.0f)),
-	  wsExtents(vec3(1.0f))
+	  wsExtents(vec3(1.0f)),
+	  transformFeedbackObj(0),
+	  vbo_positions(0),
+	  vbo_normals(0),
+	  isEmpty(false),
+	  processed(false),
+	  numVertices(-1)
 {
 	glGenTransformFeedbacks(1, &transformFeedbackObj);
+	glGenQueries(1, &query_feedbackPrimitivesWritten);
 }
 
 //---------------------------------------------------------------------------------------
@@ -72,4 +63,25 @@ GLuint TerrainBlock::getBytesPerVertexBuffer() const {
 //---------------------------------------------------------------------------------------
 glm::vec3 TerrainBlock::getMinVertexPos() const {
 	return wsMinVertexPos;
+}
+
+//---------------------------------------------------------------------------------------
+GLuint TerrainBlock::getFeedbackPrimitivesWrittenQuery() const {
+	return query_feedbackPrimitivesWritten;
+}
+
+//---------------------------------------------------------------------------------------
+GLsizei TerrainBlock::getNumVertices() const {
+	if (numVertices == -1) {
+		GLuint vertexCount;
+
+		// TODO Dustin - Caution, this causes a CPU stall until query result is ready on GPU.
+		glGetQueryObjectuiv(query_feedbackPrimitivesWritten,
+				GL_QUERY_RESULT, &vertexCount);
+		glDeleteQueries(1, &query_feedbackPrimitivesWritten);
+
+		numVertices = GLsizei(vertexCount);
+	}
+
+	return numVertices;
 }

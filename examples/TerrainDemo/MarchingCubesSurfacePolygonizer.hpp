@@ -72,4 +72,5 @@ private:
 	GLsizei vbo_debugStream_bytes;
     void inspectTransformFeedbackBuffer(const TerrainBlock & block);
 	void allocateVboDebugStreamStorage();
+	GLuint query;
 };

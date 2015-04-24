@@ -1,7 +1,6 @@
 // ComputeRockDensity.fs
 #version 410
 
-// 3D texture coordinates
 in vec3 uvw;
 
 // World-space position of parent Block's min vetex
@@ -10,15 +9,28 @@ uniform vec3 wsBlockMinVertPos;
 uniform sampler3D noiseTexture;
 uniform mat3 rotMat;
 
+// Inverse density texture dimenions
+uniform vec3 inv_densityTextureDimensions;
+
 out float density;
+
 
 // Converts texture coordinates to world space coordinates
 vec3 textureToWorldSpace(vec3 texCoord) {
 	return vec3(texCoord.x, texCoord.z, -texCoord.y);
 }
 
+// Maps texture coordinates to relative position within Block.
+// The relative position at Block's minVertex is (0,0,0) and
+// the relative position at Block's maxVertex is (1,1,1).
+vec3 relativePosWithinBlock(vec3 texCoord) {
+	vec3 scaledCoord = texCoord - 0.5*inv_densityTextureDimensions;
+	scaledCoord *= 1.0 / (vec3(1.0) - vec3(inv_densityTextureDimensions));
+	return textureToWorldSpace(scaledCoord);
+}
+
 void main() {
-	vec3 wsPos = wsBlockMinVertPos + textureToWorldSpace(uvw);
+	vec3 wsPos = wsBlockMinVertPos + relativePosWithinBlock(uvw);
 
 	density = -wsPos.y + 0.5;
 
@@ -52,15 +64,28 @@ void main() {
 	density = mix(density, (-wsPos.y + flat_spot_height), flatten_amount);
 
 
-	// TODO Dustin - Uncomment to render sine wave
-	{
-//		vec3 wsPos = wsBlockMinVertPos + textureToWorldSpace(uvw);
+//	// TODO Dustin - This causes gap in origin voxel for Blocks of dim 33x33x33
+//	{
+//		vec3 wsPos = wsBlockMinVertPos + relativePosWithinBlock(uvw);
 //
 //			vec3 garbage = texture(noiseTexture, wsPos).rgb;
 //			garbage = rotMat * garbage;
 //
 //		density = -wsPos.y + 0.5;
-//		density += sin(wsPos.z*3.145*6.01)*0.05; // Here's where holes show up
-	}
+//		density += sin(wsPos.z*3.145*2.02)*0.06;
+//	}
+
+
+//	{
+//		vec3 wsPos = wsBlockMinVertPos + relativePosWithinBlock(uvw);
+//
+//			vec3 garbage = texture(noiseTexture, wsPos).rgb;
+//			garbage = rotMat * garbage;
+//
+//		density = -wsPos.y;
+//
+//		// Primatives written per voxel: 24, 36, 24
+//		density += -wsPos.z * 1.0/3.0;
+//	}
 
 }
