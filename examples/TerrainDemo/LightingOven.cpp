@@ -3,11 +3,12 @@
 using namespace Synergy;
 
 //---------------------------------------------------------------------------------------
-LightingOven::LightingOven (
-		const glm::uvec3 & densityGridDimensions
+LightingOven::LightingOven(
+		const glm::uvec3 & densityTextureDimensions,
+		const glm::uvec3 & normalAmboTextureDimensions
 ) {
 	setupShaderProgram();
-	setShaderUniforms(densityGridDimensions);
+	setShaderUniforms(densityTextureDimensions, normalAmboTextureDimensions);
 
 	glGenVertexArrays(1, &junkVao);
 	glGenFramebuffers(1, &framebuffer);
@@ -33,19 +34,21 @@ void LightingOven::setupShaderProgram() {
 }
 //---------------------------------------------------------------------------------------
 void LightingOven::setShaderUniforms (
-		const glm::uvec3 & densityGridDimensions
-) {
+		const glm::uvec3 & densityTextureDimensions,
+		const glm::uvec3 & normalAmboTextureDimensions
+ ) {
 	vec3 dim;
-	dim.x = densityGridDimensions.x;
-	dim.y = densityGridDimensions.y;
-	dim.z = densityGridDimensions.z;
+	dim.x = densityTextureDimensions.x;
+	dim.y = densityTextureDimensions.y;
+	dim.z = densityTextureDimensions.z;
+	shader_computeNormals.setUniform("inv_densityWidth", 1.0f / dim.x);
+	shader_computeNormals.setUniform("inv_densityHeight", 1.0f / dim.y);
+	shader_computeNormals.setUniform("inv_densityDepth", 1.0f / dim.z);
 
-	shader_computeNormals.setUniform("inv_gridWidth", 1.0f / dim.x);
-	shader_computeNormals.setUniform("inv_gridHeight", 1.0f / dim.y);
-	shader_computeNormals.setUniform("inv_gridDepth", 1.0f / dim.z);
+	shader_computeNormals.setUniform("normalAmboDim", vec3(normalAmboTextureDimensions));
 
-	GLint density_textureUnitOffset = 0;
-	shader_computeNormals.setUniform("densityGrid", density_textureUnitOffset);
+	GLint textureUnitOffset = 0;
+	shader_computeNormals.setUniform("densityTexture", textureUnitOffset);
 	shader_computeNormals.setUniform("textureDepth", dim.z);
 }
 
@@ -62,17 +65,18 @@ void LightingOven::bakeNormals(TerrainBlock & block) {
 	glBindVertexArray(junkVao);
 
 	const Texture3D & densityTexture = *(block.densityTexture);
-	const Texture3D & normalTexture = *(block.normalAmboTexture);
+	const Texture3D & normalAmboTexture = *(block.normalAmboTexture);
 
 	glActiveTexture(GL_TEXTURE0);
 	densityTexture.bind();
 
-	// Set viewport size to match destination texture, the texture to be written to.
 	GLint prevViewportData[4];
 	glGetIntegerv(GL_VIEWPORT, prevViewportData);
-	glViewport(0, 0, normalTexture.width(), normalTexture.height());
 
-	GLsizei numInstances = densityTexture.depth();
+	// Set viewport size to match normalAmboTexture--the texture to be written to.
+	glViewport(0, 0, normalAmboTexture.width(), normalAmboTexture.height());
+
+	GLsizei numInstances = normalAmboTexture.depth();
 
 	shader_computeNormals.enable();
 	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);

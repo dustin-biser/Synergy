@@ -5,7 +5,10 @@
 
 class LightingOven {
 public:
-	LightingOven(const glm::uvec3 & densityGridDimensions);
+	LightingOven(
+			const glm::uvec3 &densityTextureDimensions,
+			const glm::uvec3 &normalAmboTextureDimensions
+	);
 
 	~LightingOven();
 
@@ -28,5 +31,8 @@ private:
 
 	void setupShaderProgram();
 
-	void setShaderUniforms(const glm::uvec3 & densityGridDimensions);
+	void setShaderUniforms(
+			const glm::uvec3 & densityTextureDimensions,
+			const glm::uvec3 & normalAmboTextureDimensions
+	);
 };

@@ -9,16 +9,18 @@ using namespace glm;
 
 //---------------------------------------------------------------------------------------
 TerrainBlockGenerator::TerrainBlockGenerator (
-		const uvec3 & densityGridDimensions
+		const glm::uvec3 & densityTextureDimensions,
+		const glm::uvec3 & normalAmboTextureDimensions
 ) {
-	createTextureStorage(densityGridDimensions);
-	initVboMemoryPool(densityGridDimensions);
+	createTextureStorage(densityTextureDimensions, normalAmboTextureDimensions);
+
+	initVboMemoryPool(normalAmboTextureDimensions);
 
 	// TODO Dustin - Refactor block creation so that all MaxTerrainBlocks are allocated
 	// at once and reused during lifetime of TerrainBlockGenerator
 	{
-		for(int j(0); j < 10; ++j) {
-		for(int i(0); i < 10; ++i) {
+		for(int j(0); j < 1; ++j) {
+		for(int i(0); i < 3; ++i) {
 				TerrainBlock * block =
 						new TerrainBlock(densityTexture, normalAmboTexture, bytesPerVertexBuffer);
 				block->wsMinVertexPos = vec3(j,0,-i);
@@ -45,9 +47,9 @@ TerrainBlockGenerator::~TerrainBlockGenerator() {
 
 //---------------------------------------------------------------------------------------
 uint32 TerrainBlockGenerator::computeVertexBufferBytes(
-		const uvec3 & densityGridDimensions
+		const uvec3 & gridDimensions
 ) {
-	uvec3 dim = densityGridDimensions - uvec3(1.0f);
+	uvec3 dim = gridDimensions;
 	uint32 numVoxelsPerBlock = dim.x * dim.y * dim.z;
 	uint32 maxTrianglesPerVoxel = 5;
 	uint32 numVerticesPerTriangle = 3;
@@ -65,9 +67,9 @@ uint32 TerrainBlockGenerator::computeVertexBufferBytes(
 
 //---------------------------------------------------------------------------------------
 void TerrainBlockGenerator::initVboMemoryPool (
-		const uvec3 & densityGridDimension
+		const uvec3 & gridDimension
 ) {
-	bytesPerVertexBuffer = computeVertexBufferBytes(densityGridDimension);
+	bytesPerVertexBuffer = computeVertexBufferBytes(gridDimension);
 	uint32 numVertexBuffers = 300;
 	vboMemoryPool.allocateStorage(numVertexBuffers, bytesPerVertexBuffer);
 }
@@ -81,15 +83,22 @@ void TerrainBlockGenerator::queryVisibleBlocks (
 }
 
 //---------------------------------------------------------------------------------------
-void TerrainBlockGenerator::createTextureStorage (
-		const glm::uvec3 & densityGridDimensions
+void TerrainBlockGenerator::createTextureStorage(
+		const glm::uvec3 & densityTextureDimensions,
+		const glm::uvec3 & normalAmboTextureDimensions
 ) {
 	//-- Allocate storage for densityTexture:
 	{
 		Synergy::TextureSpec textureSpec;
-		textureSpec.width = densityGridDimensions.x;
-		textureSpec.height = densityGridDimensions.y;
-		textureSpec.depth = densityGridDimensions.z;
+
+		// Make density texture dimension larger by 2 texels in each dimension so that
+		// when computing normals by taking the gradient of the density texture, each
+		// normal can be computed using central differences without having to clamp
+		// density samples to edge values.
+		textureSpec.width = densityTextureDimensions.x;
+		textureSpec.height = densityTextureDimensions.y;
+		textureSpec.depth = densityTextureDimensions.z;
+
 		textureSpec.internalFormat = GL_R32F;
 		textureSpec.format = GL_RED;
 		textureSpec.dataType = GL_FLOAT;
@@ -107,11 +116,12 @@ void TerrainBlockGenerator::createTextureStorage (
 
 	//-- Allocate storage for normalAmboTexture:
 	{
-
 		Synergy::TextureSpec textureSpec;
-		textureSpec.width = densityGridDimensions.x;
-		textureSpec.height = densityGridDimensions.y;
-		textureSpec.depth = densityGridDimensions.z;
+
+		textureSpec.width = normalAmboTextureDimensions.x;
+		textureSpec.height = normalAmboTextureDimensions.y;
+		textureSpec.depth = normalAmboTextureDimensions.z;
+
 		textureSpec.internalFormat = GL_RGBA16F;
 		textureSpec.format = GL_RGBA;
 		textureSpec.dataType = GL_FLOAT;

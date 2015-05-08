@@ -19,7 +19,10 @@ typedef long WorldSpaceIndex;
 class TerrainBlockGenerator {
 
 public:
-	TerrainBlockGenerator(const glm::uvec3 & densityGridDimensions);
+	TerrainBlockGenerator(
+			const glm::uvec3 & densityTextureDimensions,
+			const glm::uvec3 & normalAmboTextureDimensions
+	);
 
 	~TerrainBlockGenerator();
 
@@ -46,10 +49,13 @@ private:
 
 	Synergy::uint32 bytesPerVertexBuffer;
 
-	void createTextureStorage(const glm::uvec3 & densityGridDimensions);
+	void createTextureStorage(
+			const glm::uvec3 & densityTextureDimensions,
+			const glm::uvec3 & normalAmboTextureDimensions
+	);
 
-	void initVboMemoryPool(const glm::uvec3 & densityGridDimensions);
+	void initVboMemoryPool(const glm::uvec3 & gridDimension);
 
-	glm::uint32 computeVertexBufferBytes(const glm::uvec3 & densityGridDimensions);
+	glm::uint32 computeVertexBufferBytes(const glm::uvec3 & gridDimensions);
 
 };

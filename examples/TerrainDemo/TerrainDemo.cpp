@@ -42,25 +42,30 @@ TerrainDemo::TerrainDemo()
 void TerrainDemo::init() {
 	//-- Initialize subsystems:
 	{
-		uvec3 densityGridDimensions(kGridWidth, kGridHeight, kGridDepth);
+		uvec3 densityTextureDimensions(kGridWidth + 2, kGridHeight + 2, kGridDepth + 2);
+		uvec3 normalAmboTextureDimensions(kGridWidth, kGridHeight, kGridDepth);
 
-		terrainBlockGenerator =
-				new TerrainBlockGenerator(densityGridDimensions);
+		terrainBlockGenerator = new TerrainBlockGenerator(
+				densityTextureDimensions, normalAmboTextureDimensions
+		);
 
 		rockDensityGenerator = new RockDensityGenerator();
 		rockDensityGenerator->setTextureRenderTarget(
 			terrainBlockGenerator->getSharedDensityTexture()
 		);
 
-		lightingOven = new LightingOven(densityGridDimensions);
+		lightingOven = new LightingOven(
+				densityTextureDimensions, normalAmboTextureDimensions
+		);
+
 		lightingOven->setTextureRenderTarget(
 				terrainBlockGenerator->getSharedNormalAmboTexture()
 		);
 
-		terrainRenderer = new TerrainRenderer(densityGridDimensions);
+		terrainRenderer = new TerrainRenderer(normalAmboTextureDimensions);
 
 		surfacePolygonizer =
-				new MarchingCubesSurfacePolygonizer(densityGridDimensions);
+				new MarchingCubesSurfacePolygonizer(normalAmboTextureDimensions);
 
 		skybox = new Skybox();
 
@@ -233,6 +238,8 @@ void TerrainDemo::logic() {
 			surfacePolygonizer->generateSurface(block);
 
 			block.processed = true;
+
+//			inspectTextureData(block.getNormalAmboTexture(), 4);
 		}
 	}
 
@@ -260,13 +267,13 @@ void TerrainDemo::cleanup() {
 
 //---------------------------------------------------------------------------------------
 void TerrainDemo::inspectTextureData(
-		const Texture3D & texture
+		const Synergy::Texture3D &texture,
+		Synergy::uint32 numComponents
 ) {
 	uint32 width = texture.width();
 	uint32 height = texture.height();
 	uint32 depth = texture.depth();
-	uint32 numColorComponents = 1;
-	float * data = new float[width * height * depth * numColorComponents];
+	float * data = new float[width * height * depth * numComponents];
 
 	texture.bind();
 	glGetTexImage(texture.type, 0, texture.format(),
