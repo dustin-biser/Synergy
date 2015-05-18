@@ -85,7 +85,7 @@ void main() {
 		density = -wsPos.y;
 
 		// Primatives written per voxel: 24, 36, 24
-		density += -wsPos.z * 1.0/3.0;
+		density += -wsPos.z * 1.0/2.0;
 	}
 
 }

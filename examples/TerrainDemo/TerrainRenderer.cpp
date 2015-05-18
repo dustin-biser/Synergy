@@ -6,14 +6,14 @@ using namespace glm;
 
 //----------------------------------------------------------------------------------------
 TerrainRenderer::TerrainRenderer (
-		const uvec3 & densityGridDimensions
+		const uvec3 & gridDimensions
 ) {
 	initVertexArrayObj();
 
-	uvec3 dim = densityGridDimensions - uvec3(1);
+	uvec3 dim = gridDimensions - uvec3(1);
 	numVoxelsPerBlock = dim.x * dim.y * dim.z;
 
-	setupShaderPrograms(densityGridDimensions);
+	setupShaderPrograms(gridDimensions);
 	setupBlockEdgesVertexBuffer();
 	setupBlockEdgesVao();
 }
@@ -58,7 +58,7 @@ void TerrainRenderer::render(
 
 //----------------------------------------------------------------------------------------
 void TerrainRenderer::setupShaderPrograms (
-		const uvec3 & densityGridDimensions
+		const uvec3 & gridDimensions
 ) {
 
 	//-- shader_terrainSurface:
@@ -87,9 +87,9 @@ void TerrainRenderer::setupShaderPrograms (
 		shader_voxelEdges.attachFragmentShader("shaders/VoxelEdges.fs");
 		shader_voxelEdges.link();
 
-		float numVoxelCols = densityGridDimensions.x - 1.0f;
-		float numVoxelRows = densityGridDimensions.y - 1.0f;
-		float numVoxelLayers = densityGridDimensions.z - 1.0f;
+		float numVoxelCols = gridDimensions.x - 1.0f;
+		float numVoxelRows = gridDimensions.y - 1.0f;
+		float numVoxelLayers = gridDimensions.z - 1.0f;
 
 		shader_voxelEdges.setUniform("numVoxelCols", numVoxelCols);
 		shader_voxelEdges.setUniform("numVoxelRows", numVoxelRows);

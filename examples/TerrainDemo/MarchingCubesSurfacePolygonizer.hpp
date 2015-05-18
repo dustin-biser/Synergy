@@ -14,14 +14,13 @@ class TerrainBlock;
 
 
 /**
-* Given a 3D density texture density of dimension (gridWidth, gridHeight, gridDepth), this
+* Given a 3D density texture of dimension (gridWidth, gridHeight, gridDepth), this
 * class will run the Marching Cubes algorithm which will generate
 * (gridWidth-1)*(gridHeight-1)*(gridDepth-1) voxels with density values at the corner of
 * each voxel.  From there triangles will be generated from voxel edge crossing of the
 * iso-surface.
 */
 class MarchingCubesSurfacePolygonizer {
-    
 
 public:
     MarchingCubesSurfacePolygonizer(
@@ -31,6 +30,7 @@ public:
     ~MarchingCubesSurfacePolygonizer();
 
     void generateSurface(TerrainBlock & block);
+
 
 private:
 	//-- Texture Units:

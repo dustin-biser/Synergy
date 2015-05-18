@@ -10,7 +10,7 @@ class RenderTarget;
 
 class TerrainRenderer {
 public:
-	TerrainRenderer(const glm::uvec3 & densityGridDimensions);
+	TerrainRenderer(const glm::uvec3 & gridDimensions);
 
 	void render(
 			const Synergy::Camera & camera,
@@ -49,7 +49,7 @@ private:
 
 	Synergy::uint32 numVoxelsPerBlock;
 
-	void setupShaderPrograms(const glm::uvec3 & densityGridDimensions);
+	void setupShaderPrograms(const glm::uvec3 & gridDimensions);
 	void setupBlockEdgesVertexBuffer();
 	void setupBlockEdgesVao();
 	void setVertexAttributeMappings(const TerrainBlock & block);
