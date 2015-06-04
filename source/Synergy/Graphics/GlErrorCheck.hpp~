@@ -27,6 +27,10 @@ namespace Synergy {
 
 	void checkGLErrors(const std::string & currentFileName, int currentLineNumber);
 
+#ifdef _APPLE_
     void checkFramebufferCompleteness();
+#elif defined __linux
+	void checkFramebufferCompleteness(GLuint framebuffer);
+#endif
 
 }

@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11    CMakeFiles//home/filipecn/ClionProjects/Synergy/examples/GlfwExample.dir/examples/GlfwExample.cpp.o  -o bin/Linux//home/filipecn/ClionProjects/Synergy/examples/GlfwExample -rdynamic 

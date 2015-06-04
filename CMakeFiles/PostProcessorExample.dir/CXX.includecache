@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/filipecn/ClionProjects/Synergy/examples/PostProcessorExample.cpp
+GLFW/glfw3.h
+-
+OpenGL/gl3.h
+-
+GL/gl.h
+-
+
