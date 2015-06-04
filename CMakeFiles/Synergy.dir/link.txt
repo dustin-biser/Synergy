@@ -1,0 +1,2 @@
+/usr/bin/ar cr libSynergy.a  CMakeFiles/Synergy.dir/source/Synergy/Core/ObjFileLoader.cpp.o CMakeFiles/Synergy.dir/source/Synergy/Core/Resources.cpp.o CMakeFiles/Synergy.dir/source/Synergy/Graphics/Camera.cpp.o CMakeFiles/Synergy.dir/source/Synergy/Graphics/Frustum.cpp.o CMakeFiles/Synergy.dir/source/Synergy/Graphics/GlErrorCheck.cpp.o CMakeFiles/Synergy.dir/source/Synergy/Graphics/PostProcessor.cpp.o CMakeFiles/Synergy.dir/source/Synergy/Graphics/RenderTarget.cpp.o CMakeFiles/Synergy.dir/source/Synergy/Graphics/ShaderProgram.cpp.o
+/usr/bin/ranlib libSynergy.a

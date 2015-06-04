@@ -12,7 +12,6 @@
 
 #version 410
 
-flat out int instanceID;
 out vec2 texCoord;
 
 void main() {
@@ -21,8 +20,6 @@ void main() {
 
     texCoord.x = (x + 1.0) * 0.5;
     texCoord.y = (y + 1.0) * 0.5;
-
-    instanceID  = gl_InstanceID;
 
     gl_Position = vec4(x, y, 0, 1);
 }

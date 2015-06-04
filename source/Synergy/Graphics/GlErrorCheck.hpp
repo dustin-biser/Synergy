@@ -4,6 +4,15 @@
 
 #pragma once
 
+//-- OpenGL:
+#ifdef _APPLE_
+	#include <OpenGL/gl3.h>
+#elif defined __linux
+	#define GL_GLEXT_PROTOTYPES
+  	#include <GL/gl.h>
+	#include <GL/glcorearb.h>
+#endif
+
 #include <string>
 
 #if(DEBUG)
@@ -16,7 +25,7 @@
 
 namespace Synergy {
 
-    void checkGLErrors(const std::string & currentFileName, int currentLineNumber);
+	void checkGLErrors(const std::string & currentFileName, int currentLineNumber);
 
     void checkFramebufferCompleteness();
 

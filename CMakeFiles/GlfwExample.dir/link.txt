@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11    CMakeFiles/GlfwExample.dir/examples/GlfwExample.cpp.o  -o bin/Linux/GlfwExample -rdynamic lib/Linux/libglfw3.a -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lm -lXext -lGL -lGLEW 

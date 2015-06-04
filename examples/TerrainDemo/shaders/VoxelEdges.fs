@@ -1,4 +1,4 @@
-// LineRender.fs
+// VoxelEdges.fs
 #version 410
 
 out vec4 outColor;

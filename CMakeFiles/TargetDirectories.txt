@@ -1,0 +1,2 @@
+/home/filipecn/ClionProjects/Synergy/CMakeFiles/GlfwExample.dir
+/home/filipecn/ClionProjects/Synergy/CMakeFiles/Synergy.dir
