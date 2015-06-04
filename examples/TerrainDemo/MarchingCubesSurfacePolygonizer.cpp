@@ -1,158 +1,99 @@
-#include "MarchingCubesRenderer.hpp"
+#include "MarchingCubesSurfacePolygonizer.hpp"
+#include "TerrainBlock.hpp"
 #include <glm/gtx/transform.hpp>
 
 #include <vector>
 using std::vector;
 
 using namespace Synergy;
+using namespace glm;
+
+
+/////////////////////////////////////////////////////
+// TODO Dustin - Remove after testing
+#include <iostream>
+/////////////////////////////////////////////////////
 
 
 //---------------------------------------------------------------------------------------
-MarchingCubesRenderer::MarchingCubesRenderer(
-    uint32 gridWidth,
-    uint32 gridHeight,
-    uint32 gridDepth)
-    : gridWidth(gridWidth),
-      gridHeight(gridHeight),
-      gridDepth(gridDepth),
-      numVoxelsPerLayer(0),
-	  transformFeedbackBufferSize(0)
+MarchingCubesSurfacePolygonizer::MarchingCubesSurfacePolygonizer (
+		const uvec3 & densityGridDimensions
+)
+    : gridWidth(densityGridDimensions.x),
+      gridHeight(densityGridDimensions.y),
+      gridDepth(densityGridDimensions.z)
 {
-	numVoxels = (gridWidth - 1.0f) * (gridHeight - 1.0f) * (gridDepth - 1.0f);
-	glGenVertexArrays(1, &vao_junk);
-
     setupShaders();
 	generateTriTableTexture();
     setShaderUniforms();
+	uploadShaderUniformArrays();
 
 	setupVoxelVboPositionData();
 	setupVoxelDataVao();
 
     setupSamplerObject();
 
-	setupTransformFeedback();
-	setupVaoForIsoSurfaceTriangles();
-
-	setupVoxelEdgesVertexBuffer();
-	setupVoxelEdgesVao();
-
-	createLightingTexture();
+	#ifdef DEBUG
+		allocateVboDebugStreamStorage();
+	#endif
 }
 
 //---------------------------------------------------------------------------------------
-MarchingCubesRenderer::~MarchingCubesRenderer() {
+MarchingCubesSurfacePolygonizer::~MarchingCubesSurfacePolygonizer() {
 
 }
 
 //---------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupShaders() {
+void MarchingCubesSurfacePolygonizer::setupShaders() {
+	shader_genIsoSurface.generateProgramObject();
+	shader_genIsoSurface.attachVertexShader("shaders/MarchingCubes.vs");
+	shader_genIsoSurface.attachGeometryShader("shaders/MarchingCubes.gs");
 
-	//-- shader_genIsoSurface:
-	{
-		shader_genIsoSurface.generateProgramObject();
-		shader_genIsoSurface.attachVertexShader("shaders/MarchingCubes.vs");
+	// Link outWsPosition to stream index 0.
+	// Link outWsNormal to stream index 1.
+	const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
+	glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 2,
+			feedbackVaryings, GL_SEPARATE_ATTRIBS);
 
-		shader_genIsoSurface.attachGeometryShader("shaders/MarchingCubes.gs");
+	/////////////////////////////////////////
+	// TODO Dustin - Remove after testing:
+//	const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal", "debugStream"};
+//	glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 3,
+//			feedbackVaryings, GL_SEPARATE_ATTRIBS);
+	/////////////////////////////////////////
 
-		// Link outWsPosition to stream index 0.
-		// Link outWsNormal to stream index 1.
-
-		////////////////////////////////////////////////////
-		// TODO Dustin - Remove after testing:
-		const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal",
-				"debugOut"};
-		glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 3,
-				feedbackVaryings, GL_SEPARATE_ATTRIBS);
-		////////////////////////////////////////////////////
-
-		// TODO Dustin - Uncomment:
-//		const GLchar * feedbackVaryings[] = {"outWsPosition", "outWsNormal"};
-//		glTransformFeedbackVaryings(shader_genIsoSurface.getProgramObject(), 2,
-//				feedbackVaryings, GL_SEPARATE_ATTRIBS);
-
-		shader_genIsoSurface.link();
-	}
-
-
-	//-- shader_renderIsoSurface:
-	{
-		shader_renderIsoSurface.generateProgramObject();
-		shader_renderIsoSurface.attachVertexShader
-				("shaders/RenderIsoSurface.vs");
-		shader_renderIsoSurface.attachFragmentShader
-				("shaders/RenderIsoSurface.fs");
-		shader_renderIsoSurface.link();
-	}
-
-
-	//-- shader_voxelEdges:
-	{
-		shader_voxelEdges.generateProgramObject();
-		shader_voxelEdges.attachVertexShader("shaders/VoxelEdges.vs");
-		shader_voxelEdges.attachFragmentShader("shaders/VoxelEdges.fs");
-		shader_voxelEdges.link();
-	}
-
-	//-- shader_computeLighting:
-	{
-		shader_computeLighting.generateProgramObject();
-		shader_computeLighting.attachVertexShader("shaders/ScreenQuad.vs");
-		shader_computeLighting.attachFragmentShader("shaders/ComputeNormalAmbo.fs");
-		shader_computeLighting.link();
-	}
+	shader_genIsoSurface.link();
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setShaderUniforms() {
+void MarchingCubesSurfacePolygonizer::setShaderUniforms() {
+	shader_genIsoSurface.setUniform("isoSurfaceValue", 0.0f);
 
-    shader_genIsoSurface.setUniform("densityGrid", densityGrid_texUnitOffset);
+	float inv_gridWidth = 1.0f / gridWidth;
+	float inv_gridHeight = 1.0f / gridHeight;
+	float inv_gridDepth = 1.0f / gridDepth;
+
+    shader_genIsoSurface.setUniform("densityGrid", density_texUnitOffset);
+	shader_genIsoSurface.setUniform("normalAmbo", normalAmbo_texUnitOffset);
 	shader_genIsoSurface.setUniform("triTable", triTable_texUnitOffset);
-    shader_genIsoSurface.setUniform("inv_gridWidth", 1.0f/gridWidth);
-    shader_genIsoSurface.setUniform("inv_gridHeight", 1.0f/gridHeight);
-    shader_genIsoSurface.setUniform("inv_gridDepth", 1.0f/gridDepth);
+    shader_genIsoSurface.setUniform("inv_gridWidth", inv_gridWidth);
+    shader_genIsoSurface.setUniform("inv_gridHeight", inv_gridHeight);
+    shader_genIsoSurface.setUniform("inv_gridDepth", inv_gridDepth);
 	shader_genIsoSurface.setUniform("wsParentBlockPos", vec3(0.0f));
 
-	// World-space voxel dimensions
+	// Voxel dimensions
 	// Convert from grid-space to world-space:
-	vec3 wsVoxelDim = vec3(1.0f/(gridWidth-1.0f),
-	                       1.0f/(gridDepth - 1.0f),
-	                       1.0f/(gridHeight - 1.0f));
+	vec3 voxelDim = vec3(1.0f / (gridWidth - 1.0f),
+	                       1.0f / (gridDepth - 1.0f),
+	                       1.0f / (gridHeight - 1.0f));
 
-	shader_genIsoSurface.setUniform("wsVoxelDim", wsVoxelDim);
+	shader_genIsoSurface.setUniform("voxelDim", voxelDim);
 	shader_genIsoSurface.setUniform("inv_gridDepth", 1.0f/gridDepth);
-	uploadShaderUniformArrays();
-
-	shader_renderIsoSurface.setUniform("color", vec3(0.1f,0.2f,0.8f));
-
-	shader_voxelEdges.setUniform("lineColor", vec3(0.7f, 0.7f, 0.7f));
-	shader_voxelEdges.setUniform("wsBlockMinVertexPos", vec3(0));
-	shader_voxelEdges.setUniform("numVoxelCols", gridWidth - 1.0f);
-	shader_voxelEdges.setUniform("numVoxelRows", gridHeight - 1.0f);
-	shader_voxelEdges.setUniform("numVoxelLayers", gridDepth - 1.0f);
 }
 
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::createLightingTexture() {
-	Synergy::TextureSpec textureSpec;
-	textureSpec.width = uint32(gridWidth);
-	textureSpec.height = uint32(gridWidth);
-	textureSpec.depth = uint32(gridWidth);
-	textureSpec.internalFormat = GL_RGBA16F;
-	textureSpec.format = GL_RGBA;
-	textureSpec.dataType = GL_FLOAT;
-
-	normalAmbo_texture3d.allocateStorage(textureSpec);
-	normalAmbo_texture3d.bind();
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	normalAmbo_texture3d.unbind();
-}
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::uploadShaderUniformArrays() {
+void MarchingCubesSurfacePolygonizer::uploadShaderUniformArrays() {
 	uint32 case_to_numTriangles[256] = {
 			0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 2, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3,
 			3, 4, 3, 4, 4, 3, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 3, 2, 3, 3, 2,
@@ -229,7 +170,7 @@ void MarchingCubesRenderer::uploadShaderUniformArrays() {
 			1, 0, 0, 0,     // edge 0, starts at vertex 0
 			0, 1, 0, 0,     // edge 1, starts at vertex 1
 			0, 0, 1, 0,     // edge 2, starts at vertex 2
-			1, 0, 0, 0,     // edge 3, starts at vertex 0
+			0, 0, 0, 1,     // edge 3, starts at vertex 3
 
 			0, 0, 0, 0,     // edge 4, starts at vertex 4
 			0, 0, 0, 0,     // edge 5, starts at vertex 5
@@ -260,7 +201,7 @@ void MarchingCubesRenderer::uploadShaderUniformArrays() {
 			1, 0, 0, 0,     // edge 4, starts at vertex 4
 			0, 1, 0, 0,     // edge 5, starts at vertex 5
 			0, 0, 1, 0,     // edge 6, starts at vertex 6
-			1, 0, 0, 0,     // edge 7, starts at vertex 4
+			0, 0, 0, 1,     // edge 7, starts at vertex 7
 
 			0, 0, 0, 0,     // edge 8, starts at vertex 0
 			0, 0, 0, 0,     // edge 9, starts at vertex 1
@@ -282,12 +223,12 @@ void MarchingCubesRenderer::uploadShaderUniformArrays() {
 			0, 1, 0, 0,     // edge 0, ends at vertex 1
 			0, 0, 1, 0,     // edge 1, ends at vertex 2
 			0, 0, 0, 1,     // edge 2, ends at vertex 3
-			0, 0, 0, 1,     // edge 3, ends at vertex 3
+			1, 0, 0, 0,     // edge 3, ends at vertex 0
 
 			0, 0, 0, 0,     // edge 4, ends at vertex 5
 			0, 0, 0, 0,     // edge 5, ends at vertex 6
 			0, 0, 0, 0,     // edge 6, ends at vertex 7
-			0, 0, 0, 0,     // edge 7, ends at vertex 7
+			0, 0, 0, 0,     // edge 7, ends at vertex 4
 
 			0, 0, 0, 0,     // edge 8, ends at vertex 4
 			0, 0, 0, 0,     // edge 9, ends at vertex 5
@@ -314,7 +255,7 @@ void MarchingCubesRenderer::uploadShaderUniformArrays() {
 			0, 1, 0, 0,     // edge 4, ends at vertex 5
 			0, 0, 1, 0,     // edge 5, ends at vertex 6
 			0, 0, 0, 1,     // edge 6, ends at vertex 7
-			0, 0, 0, 1,     // edge 7, ends at vertex 7
+			1, 0, 0, 0,     // edge 7, ends at vertex 4
 
 			1, 0, 0, 0,     // edge 8, ends at vertex 4
 			0, 1, 0, 0,     // edge 9, ends at vertex 5
@@ -328,13 +269,12 @@ void MarchingCubesRenderer::uploadShaderUniformArrays() {
 	CHECK_GL_ERRORS;
 
 
-
     glUseProgram(0);
     CHECK_GL_ERRORS;
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::generateTriTableTexture() {
+void MarchingCubesSurfacePolygonizer::generateTriTableTexture() {
 	// Maps mc_case to sets of 3 cut edges.
 	int triTable[256 * 15] = {
 			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -613,77 +553,7 @@ void MarchingCubesRenderer::generateTriTableTexture() {
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupVoxelEdgesVao() {
-	glGenVertexArrays(1, &vao_voxelEdgeLines);
-	glBindVertexArray(vao_voxelEdgeLines);
-
-	// Set index buffer binding for VAO.
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, voxelEdges_indexBuffer);
-
-	// Map position buffer data into vertex attribute index.
-	glBindBuffer(GL_ARRAY_BUFFER, voxelEdges_vertexBuffer);
-	glEnableVertexAttribArray(position_attrib_index);
-	glVertexAttribPointer(position_attrib_index, 3, GL_FLOAT, GL_FALSE, 0,
-			reinterpret_cast<void *>(0));
-
-
-	//-- Restore defaults:
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	CHECK_GL_ERRORS;
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupVoxelEdgesVertexBuffer() {
-
-	//   World-Space Axes
-	//      y
-	//      |
-	//      |   / -z
-	//      |  /
-	//      | /
-	//      O -------- x
-
-	//  Voxel vertex offsets in world-space
-	float32 voxelVertices[] = {
-			0,0,0,  // 0 left bottom front
-			1,0,0,  // 1 right bottom front
-			1,0,-1, // 2 right bottom back
-			0,0,-1, // 3 left bottom back
-
-			0,1,0,  // 4 left top front
-			1,1,0,  // 5 right top front
-			1,1,-1, // 6 right top back
-			0,1,-1, // 7 left top back
-	};
-	// Upload Vertex Position Data:
-	glGenBuffers(1, &voxelEdges_vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, voxelEdges_vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(voxelVertices), voxelVertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	CHECK_GL_ERRORS;
-
-
-	// Voxel corner indices for constructing GL_LINES.
-	// Every two indices is a new line.
-	GLushort indices [] = {
-			0,1, 1,2, 2,3, 3,0,
-			4,5, 5,6, 6,7, 7,4,
-			0,4, 1,5, 2,6, 3,7
-
-	};
-
-	// Upload Index Data:
-	glGenBuffers(1, &voxelEdges_indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, voxelEdges_indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	CHECK_GL_ERRORS;
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupVoxelVboPositionData() {
+void MarchingCubesSurfacePolygonizer::setupVoxelVboPositionData() {
     glGenBuffers(1, &vbo_voxelIndices);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_voxelIndices);
 
@@ -716,9 +586,12 @@ void MarchingCubesRenderer::setupVoxelVboPositionData() {
 
 //----------------------------------------------------------------------------------------
 // Set Vao Data Bindings
-void MarchingCubesRenderer::setupVoxelDataVao() {
+void MarchingCubesSurfacePolygonizer::setupVoxelDataVao() {
     glGenVertexArrays(1, &vao_voxelData);
     glBindVertexArray(vao_voxelData);
+
+	const GLuint position_attrib_index = 0;
+
     glEnableVertexAttribArray(position_attrib_index);
 
     //-- voxel minimum vertex positions:
@@ -740,35 +613,9 @@ void MarchingCubesRenderer::setupVoxelDataVao() {
     CHECK_GL_ERRORS;
 }
 
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupVaoForIsoSurfaceTriangles() {
-	glGenVertexArrays(1, &vao_isoSurfaceTriangles);
-	glBindVertexArray(vao_isoSurfaceTriangles);
-	glEnableVertexAttribArray(position_attrib_index);
-	glEnableVertexAttribArray(normal_attrib_index);
-
-	// Map transform feedback stream buffers to vertex attribute locations for rendering
-	// isosurface triangles.
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsPositions);
-		glVertexAttribPointer(position_attrib_index, 3, GL_FLOAT,
-				GL_FALSE, 0, reinterpret_cast<void *>(0));
-
-		glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsNormals);
-		glVertexAttribPointer(normal_attrib_index, 3, GL_FLOAT,
-				GL_FALSE, 0, reinterpret_cast<void *>(0));
-	}
-
-
-	//-- Restore Defaults:
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	CHECK_GL_ERRORS;
-}
-
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupSamplerObject() {
+void MarchingCubesSurfacePolygonizer::setupSamplerObject() {
     glGenSamplers(1, &sampler_densityGrid);
     glSamplerParameterf(sampler_densityGrid, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glSamplerParameterf(sampler_densityGrid, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -777,73 +624,102 @@ void MarchingCubesRenderer::setupSamplerObject() {
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::setupTransformFeedback() {
+void MarchingCubesSurfacePolygonizer::generateSurface (
+		TerrainBlock & block
+){
+	setTransformFeedbackStreamBuffers(block);
+	generateSurfaceVertices(block);
+}
 
-	//-- Set an upper limit for vertex buffer transform feedback storage:
-	int vec3_size = sizeof(GLfloat) * 3;
-	int vertices_per_triangle = 3;
-	int max_triangles_per_voxel = 5 * numVoxels;
-	transformFeedbackBufferSize =
-			max_triangles_per_voxel * vertices_per_triangle * vec3_size;
-
-
-		/////////////////////////////////////////////////////////////
-		// TODO Dustin - Remove after testing:
-		glGenBuffers(1, &streamBuffer_debugOut);
-		glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_debugOut);
-
-		glBufferData(GL_ARRAY_BUFFER, transformFeedbackBufferSize, nullptr, GL_STREAM_COPY);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		CHECK_GL_ERRORS;
-		/////////////////////////////////////////////////////////////
-
-
-	//-- Allocate stream buffer storage for vertex positions:
-	{
-		glGenBuffers(1, &streamBuffer_wsPositions);
-		glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsPositions);
-
-		glBufferData(GL_ARRAY_BUFFER, transformFeedbackBufferSize, nullptr, GL_STREAM_COPY);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		CHECK_GL_ERRORS;
-	}
-
-	//-- Allocate stream buffer storage for vertex normals:
-	{
-		glGenBuffers(1, &streamBuffer_wsNormals);
-		glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsNormals);
-
-		glBufferData(GL_ARRAY_BUFFER, transformFeedbackBufferSize, nullptr, GL_STREAM_COPY);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		CHECK_GL_ERRORS;
-	}
+//----------------------------------------------------------------------------------------
+void MarchingCubesSurfacePolygonizer::setTransformFeedbackStreamBuffers(
+		const TerrainBlock & block
+) {
+	const GLuint streamIndex_positions = 0;
+	const GLuint streamIndex_normals = 1;
 
 	//-- Setup transform feedback stream index binding points:
 	{
-		glGenTransformFeedbacks(1, &transformFeedbackObj);
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedbackObj);
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, block.getTransformFeedbackObj());
 
 		// vertex positions:
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,
-				streamIndex_wsPositions, streamBuffer_wsPositions);
+				streamIndex_positions, block.getPositionVertexBuffer());
+
 
 		// vertex normals:
 		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER,
-				streamIndex_wsNormals, streamBuffer_wsNormals);
+				streamIndex_normals, block.getNormalVertexBuffer());
 
-		/////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
 		// TODO Dustin - Remove after testing:
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, streamBuffer_debugOut);
-		/////////////////////////////////////////////////////////////
+//		#ifdef DEBUG
+//			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, vbo_debugStream);
+//		#endif
+		//////////////////////////////////////////////////////
 
 		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
 		CHECK_GL_ERRORS;
 	}
+
 }
+
 //----------------------------------------------------------------------------------------
+void MarchingCubesSurfacePolygonizer::generateSurfaceVertices(
+		const TerrainBlock & block
+) {
+	// Prevent rasterization.
+	glEnable(GL_RASTERIZER_DISCARD);
+
+	glBindVertexArray(vao_voxelData);
+
+	glActiveTexture(GL_TEXTURE0 + density_texUnitOffset);
+	block.getDensityTexture().bind();
+	glBindSampler(density_texUnitOffset, sampler_densityGrid);
+
+	glActiveTexture(GL_TEXTURE0 + normalAmbo_texUnitOffset);
+	block.getNormalAmboTexture().bind();
+
+	glActiveTexture(GL_TEXTURE0 + triTable_texUnitOffset);
+	glBindTexture(GL_TEXTURE_2D, triTable_texture2d);
+
+
+	GLsizei numVoxelsPerLayer = (gridWidth - 1.0f) * (gridHeight - 1.0f);
+	GLsizei numInstances = gridDepth - 1.0f;
+
+
+	glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
+			block.getFeedbackPrimitivesWrittenQuery());
+	{
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, block.getTransformFeedbackObj());
+
+		shader_genIsoSurface.enable();
+		glBeginTransformFeedback(GL_POINTS);
+
+		// Each instance is a 2D grid of points.
+		glDrawArraysInstanced(GL_POINTS, 0, numVoxelsPerLayer, numInstances);
+
+		glEndTransformFeedback();
+		shader_genIsoSurface.disable();
+	}
+	glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
+
+	//-- Restore defaults:
+	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_3D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindSampler(density_texUnitOffset, 0);
+	glDisable(GL_RASTERIZER_DISCARD);
+	CHECK_GL_ERRORS;
+}
+
+
+
+
+
+//----------------------------------------------------------------------------------------
+// FOR TESTING
 template<typename T>
 static void zeroOutArray(T * data, uint32 numElements) {
 	for(uint32 i = 0; i < numElements; ++i) {
@@ -852,176 +728,55 @@ static void zeroOutArray(T * data, uint32 numElements) {
 }
 
 //----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::inspectTransformFeedbackBuffer() {
-
+// FOR TESTING
+void MarchingCubesSurfacePolygonizer::inspectTransformFeedbackBuffer (
+		const TerrainBlock & block
+) {
 	// Empty out GL pipeline so that stream buffers have data.
 	glFlush();
 	glFinish();
 
-    GLsizei numElements =  transformFeedbackBufferSize / sizeof(GLfloat);
-    GLfloat * stream0Data = new GLfloat[numElements];
+	GLsizei numElements =  block.getBytesPerVertexBuffer() / sizeof(GLfloat);
+	GLfloat * stream0Data = new GLfloat[numElements];
 	GLfloat * stream1Data = new GLfloat[numElements];
+
+	//////////////////////////////////////////////////////
+	// TODO Dustin - Remove after testing:
+	GLfloat * stream2Data = new GLfloat[vbo_debugStream_bytes / sizeof(float)];
+
+	zeroOutArray<GLfloat>(stream2Data, numElements);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_debugStream);
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, vbo_debugStream_bytes, stream2Data);
+	//////////////////////////////////////////////////////
 
 	zeroOutArray<GLfloat>(stream0Data, numElements);
 	zeroOutArray<GLfloat>(stream1Data, numElements);
 
-	glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsPositions);
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, transformFeedbackBufferSize, stream0Data);
+	glBindBuffer(GL_ARRAY_BUFFER, block.getPositionVertexBuffer());
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, block.getBytesPerVertexBuffer(), stream0Data);
 
-	glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_wsNormals);
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, transformFeedbackBufferSize, stream1Data);
-
-
-	///////////////////////////////////////////////////
-	// TODO Dustin - Remove after testing:
-	GLfloat * stream2Data = new GLfloat[numElements];
-	glBindBuffer(GL_ARRAY_BUFFER, streamBuffer_debugOut);
-	glGetBufferSubData(GL_ARRAY_BUFFER, 0, transformFeedbackBufferSize, stream2Data);
-
-	///////////////////////////////////////////////////
+	glBindBuffer(GL_ARRAY_BUFFER, block.getNormalVertexBuffer());
+	glGetBufferSubData(GL_ARRAY_BUFFER, 0, block.getBytesPerVertexBuffer(), stream1Data);
 
 	delete [] stream0Data;
 	delete [] stream1Data;
-
-		// TODO Dustin - Remove after testing:
-		delete [] stream2Data;
+	delete [] stream2Data;
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-    CHECK_GL_ERRORS;
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::updateShaderUniforms(const Synergy::Camera &camera){
-	mat4 projMatrix = camera.getProjectionMatrix();
-	mat4 viewMatrix = camera.getViewMatrix();
-	mat4 vpMatrix = projMatrix * viewMatrix;
-
-	shader_renderIsoSurface.setUniform("MVP_Matrix", vpMatrix);
-	shader_renderIsoSurface.setUniform("NormalMatrix", glm::transpose(glm::inverse(viewMatrix)));
-
-	shader_voxelEdges.setUniform("ViewProjMatrix", vpMatrix);
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::render(
-        const Synergy::Camera & camera,
-		const Synergy::Texture3D & densityGrid_texture3d,
-        float32 isoSurfaceValue
-){
-	computeNormalAmboTexture(densityGrid_texture3d);
-	generateIsoSurfaceTriangles(densityGrid_texture3d, isoSurfaceValue);
-	renderIsoSurface(camera);
-	renderVoxelEdges(camera);
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::generateIsoSurfaceTriangles(
-		const Texture3D & densityGrid,
-		float isoSurfaceValue
-){
-	shader_genIsoSurface.setUniform("isoSurfaceValue", isoSurfaceValue);
-
-	// Prevent rasterization.
-	glEnable(GL_RASTERIZER_DISCARD);
-
-	glBindVertexArray(vao_voxelData);
-
-	glActiveTexture(GL_TEXTURE0 + densityGrid_texUnitOffset);
-	densityGrid.bind();
-	glBindSampler(densityGrid_texUnitOffset, sampler_densityGrid);
-
-	glActiveTexture(GL_TEXTURE0 + triTable_texUnitOffset);
-	glBindTexture(GL_TEXTURE_2D, triTable_texture2d);
-
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedbackObj);
-
-	GLsizei numVoxelsPerLayer = (gridWidth - 1.0f) * (gridHeight - 1.0f);
-	GLsizei numInstances = gridDepth - 1.0f;
-
-	shader_genIsoSurface.enable();
-		glBeginTransformFeedback(GL_POINTS);
-
-		// Each instance is a 2D grid of points.
-		glDrawArraysInstanced(GL_POINTS, 0, numVoxelsPerLayer, numInstances);
-
-		glEndTransformFeedback();
-	shader_genIsoSurface.disable();
-
-	#ifdef DEBUG
-		inspectTransformFeedbackBuffer();
-	#endif
-
-	//-- Restore defaults:
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindVertexArray(0);
-	densityGrid.bind();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindSampler(densityGrid_texUnitOffset, 0);
-	glDisable(GL_RASTERIZER_DISCARD);
 	CHECK_GL_ERRORS;
 }
 
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::renderIsoSurface(const Synergy::Camera & camera) {
-	updateShaderUniforms(camera);
+//---------------------------------------------------------------------------------------
+void MarchingCubesSurfacePolygonizer::allocateVboDebugStreamStorage() {
+	glGenBuffers(1, &vbo_debugStream);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_debugStream);
 
-	glBindVertexArray(vao_isoSurfaceTriangles);
+	GLsizei numVoxels = (gridWidth-1.0f) * (gridHeight-1.0f) * (gridDepth-1.0f);
+	vbo_debugStream_bytes = sizeof(float) * (15*3*3) * numVoxels;
+	glBufferData(GL_ARRAY_BUFFER, vbo_debugStream_bytes, nullptr, GL_DYNAMIC_READ);
 
-	// Contains transform feedback primitive count needed for draw call.
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transformFeedbackObj);
 
-	shader_renderIsoSurface.enable();
-		glDrawTransformFeedback(GL_TRIANGLES, transformFeedbackObj);
-	shader_renderIsoSurface.disable();
-
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	CHECK_GL_ERRORS;
 }
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::renderVoxelEdges(const Synergy::Camera &camera) {
-	updateShaderUniforms(camera);
-
-	glBindVertexArray(vao_voxelEdgeLines);
-
-	shader_voxelEdges.enable();
-		glDrawElementsInstanced(GL_LINES, 24, GL_UNSIGNED_SHORT, nullptr, numVoxels);
-	shader_voxelEdges.disable();
-
-	glBindVertexArray(0);
-	CHECK_GL_ERRORS;
-}
-
-//----------------------------------------------------------------------------------------
-void MarchingCubesRenderer::computeNormalAmboTexture(
-		const Synergy::Texture3D &densityGrid_texture3d
-) {
-//	glViewport(0, 0, texture.width(), texture.height());
-//	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-//
-//	glDisable(GL_DEPTH_TEST);
-//	glDepthMask(GL_FALSE);
-//
-//	glActiveTexture(GL_TEXTURE0);
-//	glBindTexture(GL_TEXTURE_BUFFER, texture_noiseHashTable);
-//
-//	// Bind junkVao to make gl driver happy.
-//	glBindVertexArray(junkVao);
-//
-//	shader_perlinNoise.enable();
-//	GLsizei numInstances = texture.depth;
-//	// Each instance is a viewport filling triangle without using vbo data.
-//	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, numInstances);
-//	shader_perlinNoise.disable();
-//
-//	//-- Reset defaults:
-//	glViewport(0, 0, defaultFramebufferWidth(), defaultFramebufferHeight());
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//	glBindVertexArray(0);
-//	glBindTexture(GL_TEXTURE_BUFFER, 0);
-//	glEnable(GL_DEPTH_TEST);
-//	glDepthMask(GL_TRUE);
-//	CHECK_GL_ERRORS;
-}
-
